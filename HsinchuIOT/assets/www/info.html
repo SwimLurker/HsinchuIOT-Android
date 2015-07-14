@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title></title>
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.l10n.min.js"></script>
+<script type="text/javascript" src="js/jquery.layout.js"></script>
+<script type="text/javascript" src="js/library.js"></script>
+<script type="text/javascript" src="js/nbi.js"></script>
+<script type="text/javascript" src="js/info.js"></script> 
+<style>
+form{background:#565656;border-bottom:1px solid #333;}
+#document{opacity:0;z-index:100;}
+</style>
+</head>
+<body>
+<iframe id="content" name="content" width="100%" height="100%" frameborder="0"></iframe>
+<form id="form" action="/M2M_DOC/_NBI/doc.lua" method="POST" target="response" enctype="multipart/form-data">
+	<iframe name="response" id="response" style="display:none;"></iframe>
+	<input id="domain_id" name="domain_id" type="hidden"/>
+	<input id="file_type" name="file_type" type="hidden"/>
+	<input id="__session_id" name="__session_id" type="hidden"/>
+	<input id="__response_fmt" name="__response_fmt" value="script" type="hidden"/>
+	<input id="__callback_func" name="__callback_func" value="window.parent.callback" type="hidden"/>
+	<input id="document" name="document" class="upload" type="file"/>
+	<a id="upload" class="upload"></a>
+</form>
+<div id="waiting"></div>
+</body>
+</html>

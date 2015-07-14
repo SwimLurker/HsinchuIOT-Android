@@ -1,0 +1,85 @@
+﻿.treeview{
+	margin:5px;
+	padding:0;
+	list-style: none;
+	cursor:pointer;
+}
+
+.treeview ul { 
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	background: none;
+}
+
+.treeview li { 
+	margin: 0;
+	padding: 6px 0 6px 0;
+}
+
+
+.treeview li li{ 
+	margin: 0;
+	padding: 3px 0 3px 16px;
+}
+.treeview li a{ 
+	font-weight:bold;
+	margin:0;
+}
+
+.treeview li li a{ 
+	font-weight:normal;
+}
+
+.treeview div.hitarea {
+	height: 26px;
+	width: 10px;
+	float: left;
+	cursor: pointer;
+	overflow:hidden;
+	background-image:url(images/treeview.png);
+	background-repeat:no-repeat;
+}
+
+.treeview div.hitarea.expandable-hitarea{
+	background-position:0 0;
+}
+
+.treeview div.hitarea.collapsable-hitarea{
+	background-position:-10px 0;
+}
+
+
+.treeview a {
+	display:block;
+	overflow:hidden;
+	font-size:14px;
+	white-space:nowrap;
+	padding:2px;
+	padding-left:24px;
+	border:1px solid transparent;
+	background-image:url(images/treeview.png);
+	background-repeat:no-repeat;
+}
+
+.treeview a.selected {
+	background-color:#dbecfc;
+	border:1px solid #7eb4eb;
+}
+
+.treeview a:hover {
+	background-color:#eee;
+	border:1px solid #ddd;
+}
+
+.treeview a.folder{
+	background-position:0 -26px;
+}
+
+.treeview a.file{
+	background-position:0 -52px;
+}
+
+.treeview a.device{
+	background-position:0 -78px;
+}

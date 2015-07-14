@@ -1,0 +1,105 @@
+package org.slstudio.hsinchuiot;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+
+import android.os.Environment;
+
+
+public class Constants {
+	public static final String debugLogTag = "hsinchuIOT_debug";
+	public static final String DEFAULT_URI = "download";
+	public static final String DOWNLOAD_URL = AppConfig.HTTP_SCHEME
+			+ AppConfig.HTTP_DOMAIN
+			+ ":"
+			+ AppConfig.HTTP_PORT
+			+ "/"
+			+ DEFAULT_URI
+			+ "?image=";
+	public static final String UPGRADE_FILE_PATH = Environment
+			.getExternalStorageDirectory().getAbsolutePath() + "/hsinchuIOT/";
+	
+	public static final String CACHE_FILE_PATH = Environment
+			.getExternalStorageDirectory().getAbsolutePath() + "/hsinchuIOT/cache/";
+
+	public static final String CRASH_FILE_PATH = Environment
+			.getExternalStorageDirectory().getAbsolutePath() + "/hsinchuIOT/";
+	
+	public static final String LOG_FILE_PATH = Environment
+			.getExternalStorageDirectory().getAbsolutePath() + "/hsinchuIOT/logs/";
+	
+	public static class BundleKey {
+
+		public static final String UPGRAGE_TYPE = "UPGRAGE_TYPE";
+		public static final String PUSH_MESSAGE = "PUSH_MESSAGE";
+			
+		public static final String DICTIONARY="DICTIONARY";
+	
+	}
+
+	public static class PreferenceKey {
+		public static final String SESSION_ID = "SESSION_ID";
+		public static final String LOGINNAME = "LOGIN_NAME";
+		public static final String PASSWORD = "PASSWORD";
+		public static final String USER_ID = "USER_ID";
+		public static final String SERVER_PUSH_BIND_FLAG = "SERVER_PUSH_BIND_FLAG";
+		public static final String SERVER_PUSH_BIND_USRID = "SERVER_PUSH_BIND_USRID";
+		public static final String SERVER_PUSH_BIND_DECIVEID = "SERVER_PUSH_BIND_DECIVEID";
+		
+		
+	}
+
+	public static final class Expression {
+		public static final String PASSWORD = "^[\u0021-\u007E]+$";
+		public static final String EMAIL = "^[a-zA-Z0-9]([\\w\\-\\.\\+]*)@([\\w\\-\\.]*)(\\.[a-zA-Z]{2,4}(\\.[a-zA-Z]{2}){0,2})$";
+		public static final String NUMBER = "^[0-9]*$";
+		public static final String PHONE_NUMBER = "^[\\+][0-9]*$";
+	}
+
+	public static class Action {
+		public static String HSINCHUIOT_LOGIN = "org.slstudio.hsinchuiot.login";
+		public static String HSINCHUIOT_MAIN = "org.slstudio.hsinchuiot.main";
+		public static String HSINCHUIOT_SUPERUSER_MAIN = "org.slstudio.hsinchuiot.superuser_main";
+		public static String HSINCHUIOT_SUPERUSER_SITEDETAIL = "org.slstudio.hsinchuiot.superuser_sitedetail";
+		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
+	
+	}
+
+
+	public static class ServerAPIURI {
+		public static final String COMMON_CHKVERSION="v1/common/chkversion.json";//升级检测接口（提供客户端升级检测功能）
+		public static final String COMMON_GETVERTIFYCODE="v1/common/getVertifyCode.json";//获取验证码接口（获取验证码接口)
+		public static final String COMMON_JUDGEVERTIFYCODE="v1/common/judgeVertifyCode.json";//获取验证码接口（获取验证码接口)
+		public static final String COMMON_UPLOADLOCATION="v1/common/uploadLocation.json";//上传地理位置接口
+		public static final String COMMON_GETCONSTANTS="v1/common/getConstants.json";//获取客户端常量接口
+		public static final String GET_SESSION_ID = "_NBI/get_session_id.lua";
+		public static final String LOGIN = "_NBI/login.lua";
+		public static final String DEVICE_LIST = "Device/_NBI/list.lua";
+		public static final String GET_REALTIME_DATA = "M2M/_NBI/list.lua";
+		public static final String GET_HOUR_AGG_DATA = "M2MAggByHour/_NBI/list.lua";
+		public static final String GET_HOURS_AGG_DATA = "M2MAggByHours/_NBI/list.lua";
+		public static final String GET_DAY_AGG_DATA = "M2MAggByDay/_NBI/list.lua";
+		public static final String GET_WEEK_AGG_DATA = "M2MAggByWeek/_NBI/list.lua";
+		public static final String GET_MONTH_AGG_DATA = "M2MAggByMonth/_NBI/list.lua";
+		public static final String GET_REPORT_DATA = "M2M/_NBI/report.lua";
+		
+		public static final String USER_LOGIN="api/session";//登陆接口
+		public static final String USER_UPDATEPWD="v1/user/updatePwd.json";//修改密码和忘记
+		public static final String UPLOAD_IMAGE="v1/user/updatePwd.json";
+	}
+
+
+
+
+	public static class ImageLoader {
+		public static final int IMAGE_ENGINE_CORETHREAD = 5;
+		public static DisplayImageOptions DEFAULT_IMAGE_OPTIONS = new DisplayImageOptions.Builder()
+				.cacheInMemory(true).cacheOnDisk(true).build();
+		public static final int IMAGE_ENGINE_FREQ_LIMITED_MEMECACHE = 2 * 1024 * 1024;
+		public static final String IMAGE_ENGINE_CACHE = Environment
+				.getExternalStorageDirectory().getAbsolutePath()
+				+ "/hsinchuiot/images";
+		public static final int IMAGE_UPLOAD_MAX_SIZE =1024 * 1024;
+	}
+
+
+}

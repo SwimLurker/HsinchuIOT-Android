@@ -1,0 +1,13 @@
+{
+	"super_user": false,
+	"admin_domain": "3.0.0.0",
+	"first_login": 1,
+	"user_id": "5",
+	"change_pwd_date": "2014-10-28 03:32:56",
+	"permission": "65664,65705,65664,0",
+	"server_time": "2015-06-09 03:41:04",
+	"Status":"OK",
+	"failpwd_alert_before_day":10,
+	"license_count": 2000,
+	"pwd_expiry_day": 365
+}

@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title></title>
+<link rel="stylesheet" type="text/css" href="css/main.css" />
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.l10n.min.js"></script>
+<script type="text/javascript" src="js/jquery.layout.js"></script>
+<script type="text/javascript" src="js/highcharts.js"></script>
+<script type="text/javascript" src="js/library.js"></script>
+<script type="text/javascript" src="js/nbi.js"></script>
+<script type="text/javascript" src="js/realtime.js"></script>
+<style>
+body{background:#000;color:#ccc;}
+</style>
+</head>
+<body>
+<div id="top">
+	<table width="100%">
+		<tr>
+			<th width="33%"><label domain="l10n" msgid="CO2"></label>(ppm)</th>
+			<th width="34%"><label domain="l10n" msgid="Temperature"></label>(°C)</th>
+			<th width="33%"><label domain="l10n" msgid="Humidity"></label>(%)</th>
+		</tr>
+		<tr>
+			<th class="number25" id="CO2"></th>
+			<th class="number25" id="Temp"></th>
+			<th class="number25" id="Humidity"></th>
+		</tr>
+	</table>
+</div>
+<div id="CHART"></div>
+<div id="waiting"></div>
+</body>
+</html>
