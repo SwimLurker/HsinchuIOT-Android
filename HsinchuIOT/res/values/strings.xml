@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">HsinchuIOT</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">設    定</string>
+    <string name="action_ok">確定</string>
 	
 	<!-- upgrade -->
     <string name="common_upgrade_dialog_headline">需要升级</string>

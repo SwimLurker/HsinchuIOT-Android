@@ -45,6 +45,21 @@ public class Constants {
 		public static final String SERVER_PUSH_BIND_USRID = "SERVER_PUSH_BIND_USRID";
 		public static final String SERVER_PUSH_BIND_DECIVEID = "SERVER_PUSH_BIND_DECIVEID";
 		
+		public static final String WARNING_CO2_LOWERVALUE = "WARNING_CO2_LOWERVALUE";
+		public static final String WARNING_CO2_UPPERVALUE = "WARNING_CO2_UPPERVALUE";
+		public static final String WARNING_TEMPERATURE_LOWERVALUE = "WARNING_TEMPERATURE_LOWERVALUE";
+		public static final String WARNING_TEMPERATURE_UPPERVALUE = "WARNING_TEMPERATURE_UPPERVALUE";
+		public static final String WARNING_HUMIDITY_LOWERVALUE = "WARNING_HUMIDITY_LOWERVALUE";
+		public static final String WARNING_HUMIDITY_UPPERVALUE = "WARNING_HUMIDITY_UPPERVALUE";
+		
+		public static final String BREACH_CO2_LOWERVALUE = "BREACH_CO2_LOWERVALUE";
+		public static final String BREACH_CO2_UPPERVALUE = "BREACH_CO2_UPPERVALUE";
+		public static final String BREACH_TEMPERATURE_LOWERVALUE = "BREACH_TEMPERATURE_LOWERVALUE";
+		public static final String BREACH_TEMPERATURE_UPPERVALUE = "BREACH_TEMPERATURE_UPPERVALUE";
+		public static final String BREACH_HUMIDITY_LOWERVALUE = "BREACH_HUMIDITY_LOWERVALUE";
+		public static final String BREACH_HUMIDITY_UPPERVALUE = "BREACH_HUMIDITY_UPPERVALUE";
+		
+		
 		
 	}
 
@@ -60,6 +75,7 @@ public class Constants {
 		public static String HSINCHUIOT_MAIN = "org.slstudio.hsinchuiot.main";
 		public static String HSINCHUIOT_SUPERUSER_MAIN = "org.slstudio.hsinchuiot.superuser_main";
 		public static String HSINCHUIOT_SUPERUSER_SITEDETAIL = "org.slstudio.hsinchuiot.superuser_sitedetail";
+		public static String HSINCHUIOT_SUPERUSER_SETTINGS = "org.slstudio.hsinchuiot.superuser_settings";
 		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
 	
 	}

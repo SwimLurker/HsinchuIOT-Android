@@ -1,5 +1,6 @@
 package org.slstudio.hsinchuiot;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -30,6 +31,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,8 +47,11 @@ import com.handmark.pulltorefresh.library.extras.SoundPullEventListener;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
+
+
 public class SuperUserMainActivity extends BaseActivity {
 	public static final String SELECTED_SITE = "org.slstudio.hsinchuiot.SELECTED_SITE";
+	public static final String WARNING_THRESHOLD = "org.slstudio.hsinchuiot.WARNING_THRESHOLD";
 	public static final String ALARM_THRESHOLD = "org.slstudio.hsinchuiot.ALARM_THRESHOLD";
 
 	private PullToRefreshSlideListView siteListView;
@@ -164,6 +169,13 @@ public class SuperUserMainActivity extends BaseActivity {
 					intent.putExtra(SELECTED_SITE,
 							(Site) siteListViewAdatper.getItem(position - 1));
 					intent.putExtra(
+							WARNING_THRESHOLD,
+							(IOTMonitorThreshold) ServiceContainer
+									.getInstance()
+									.getSessionService()
+									.getSessionValue(
+											SessionService.THRESHOLD_WARNING));
+					intent.putExtra(
 							ALARM_THRESHOLD,
 							(IOTMonitorThreshold) ServiceContainer
 									.getInstance()
@@ -200,6 +212,15 @@ public class SuperUserMainActivity extends BaseActivity {
 						Constants.Action.HSINCHUIOT_SUPERUSER_SITEDETAIL);
 				intent.putExtra(SELECTED_SITE,
 						(Site) siteListViewAdatper.getItem(position));
+
+				intent.putExtra(
+						WARNING_THRESHOLD,
+						(IOTMonitorThreshold) ServiceContainer
+								.getInstance()
+								.getSessionService()
+								.getSessionValue(
+										SessionService.THRESHOLD_WARNING));
+
 				intent.putExtra(
 						ALARM_THRESHOLD,
 						(IOTMonitorThreshold) ServiceContainer
@@ -208,7 +229,8 @@ public class SuperUserMainActivity extends BaseActivity {
 								.getSessionValue(
 										SessionService.THRESHOLD_BREACH));
 				startActivity(intent);
-				overridePendingTransition(R.anim.slide_in_right2,R.anim.slide_out_left2);
+				overridePendingTransition(R.anim.slide_in_right2,
+						R.anim.slide_out_left2);
 			}
 
 		});
@@ -257,10 +279,39 @@ public class SuperUserMainActivity extends BaseActivity {
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			break;
+		case R.id.menu_superuser_main_settings:
+			Intent intent = new Intent(
+					Constants.Action.HSINCHUIOT_SUPERUSER_SETTINGS);
+			startActivity(intent);
+			break;
 		}
 		return true;
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_superuser_main, menu);
+		setIconEnable(menu, true);
+		return true;
+	}
+
+	 private void setIconEnable(Menu menu, boolean enable)  
+	    {  
+	        try   
+	        {  
+	            Class<?> clazz = Class.forName("com.android.internal.view.menu.MenuBuilder");  
+	            Method m = clazz.getDeclaredMethod("setOptionalIconsVisible", boolean.class);  
+	            m.setAccessible(true);  
+	              
+	            //MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)  
+	            m.invoke(menu, enable);  
+	              
+	        } catch (Exception e)   
+	        {  
+	            e.printStackTrace();  
+	        }  
+	    }  
+	 
 	private void updateListView() {
 
 		Random r = new Random();

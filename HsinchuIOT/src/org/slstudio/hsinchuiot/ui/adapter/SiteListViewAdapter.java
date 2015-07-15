@@ -173,6 +173,7 @@ public class SiteListViewAdapter extends BaseAdapter {
 
 		int red = resources.getColor(R.color.red);
 		int black = resources.getColor(R.color.black);
+		int yellow = resources.getColor(R.color.yellow);
 		// co2
 		ImageView ivCO2 = (ImageView) convertView
 				.findViewById(R.id.li_iv_icon_co2);
@@ -182,7 +183,10 @@ public class SiteListViewAdapter extends BaseAdapter {
 		if (data.isCO2Breach(breachThreshold)) {
 			tvCO2.setTextColor(red);
 			ivCO2.setImageResource(R.drawable.co2_alarm);
-		} else {
+		}else if (data.isCO2Breach(warningThreshold)) {
+			tvCO2.setTextColor(yellow);
+			ivCO2.setImageResource(R.drawable.co2_warning);
+		}else {
 			tvCO2.setTextColor(black);
 			ivCO2.setImageResource(R.drawable.co2);
 		}
@@ -198,7 +202,10 @@ public class SiteListViewAdapter extends BaseAdapter {
 		if (data.isTemperatureBreach(breachThreshold)) {
 			tvTemperature.setTextColor(red);
 			ivTemperature.setImageResource(R.drawable.temperature_alarm);
-		} else {
+		}else if (data.isTemperatureBreach(warningThreshold)) {
+			tvTemperature.setTextColor(yellow);
+			ivTemperature.setImageResource(R.drawable.temperature_warning);
+		}else {
 			tvTemperature.setTextColor(black);
 			ivTemperature.setImageResource(R.drawable.temperature);
 		}
@@ -214,7 +221,10 @@ public class SiteListViewAdapter extends BaseAdapter {
 		if (data.isHumidityBreach(breachThreshold)) {
 			tvHumidity.setTextColor(red);
 			ivHumidity.setImageResource(R.drawable.humidity_alarm);
-		} else {
+		}else if (data.isHumidityBreach(warningThreshold)) {
+			tvHumidity.setTextColor(yellow);
+			ivHumidity.setImageResource(R.drawable.humidity_warning);
+		}else {
 			tvHumidity.setTextColor(black);
 			ivHumidity.setImageResource(R.drawable.humidity);
 		}

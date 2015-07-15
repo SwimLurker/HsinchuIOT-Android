@@ -46,6 +46,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 	public static final int REPORTTYPE_HUMIDITY = 3;
 
 	private Site currentSite;
+	private IOTMonitorThreshold warningThreshold;
 	private IOTMonitorThreshold alarmThreshold;
 
 	private IOTReportData reportData;
@@ -121,7 +122,8 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		currentSite = (Site) getIntent().getSerializableExtra(
 				SuperUserMainActivity.SELECTED_SITE);
-		
+		warningThreshold = (IOTMonitorThreshold)getIntent().getSerializableExtra(
+				SuperUserMainActivity.WARNING_THRESHOLD);
 		alarmThreshold = (IOTMonitorThreshold)getIntent().getSerializableExtra(
 				SuperUserMainActivity.ALARM_THRESHOLD);
 		
@@ -422,6 +424,8 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		tvCO2AverageValue.setText(Float.toString(averageValueCO2) + " ppm");
 		if(alarmThreshold != null && alarmThreshold.isCO2Breach(averageValueCO2)){
 			tvCO2AverageValue.setTextColor(Color.RED);
+		}else if(warningThreshold != null && warningThreshold.isCO2Breach(averageValueCO2)){
+			tvCO2AverageValue.setTextColor(Color.YELLOW);
 		}else{
 			tvCO2AverageValue.setTextColor(Color.BLACK);
 		}
@@ -436,6 +440,8 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		
 		if(alarmThreshold != null && alarmThreshold.isTemperatureBreach(averageValueTemperature)){
 			tvTemperatureAverageValue.setTextColor(Color.RED);
+		}else if(warningThreshold != null && warningThreshold.isTemperatureBreach(averageValueTemperature)){
+			tvTemperatureAverageValue.setTextColor(Color.YELLOW);
 		}else{
 			tvTemperatureAverageValue.setTextColor(Color.BLACK);
 		}
@@ -450,6 +456,8 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		
 		if(alarmThreshold != null && alarmThreshold.isHumidityBreach(averageValueHumidity)){
 			tvHumidityAverageValue.setTextColor(Color.RED);
+		}else if(warningThreshold != null && warningThreshold.isHumidityBreach(averageValueHumidity)){
+			tvHumidityAverageValue.setTextColor(Color.YELLOW);
 		}else{
 			tvHumidityAverageValue.setTextColor(Color.BLACK);
 		}
