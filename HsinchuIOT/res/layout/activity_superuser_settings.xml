@@ -17,7 +17,8 @@
                 style="@style/FillForm.Item.TextView"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
-                android:text="警告門限值設定" />
+                android:text="警告門限值設定" 
+                android:textColor="@color/black"/>
         </LinearLayout>
  		<View
             android:layout_width="match_parent"
@@ -163,6 +164,7 @@
                 style="@style/FillForm.Item.TextView"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
+                android:textColor="@color/black"
                 android:text="超標門限值設定" />
         </LinearLayout>
  		<View

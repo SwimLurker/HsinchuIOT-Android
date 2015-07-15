@@ -14,6 +14,8 @@ import org.slstudio.hsinchuiot.service.http.RequestListener;
 import org.slstudio.hsinchuiot.util.EncryptUtil;
 import org.slstudio.hsinchuiot.util.IOTLog;
 
+import android.content.Context;
+
 public class LoginService {
 	private static LoginService _instance = null;
 
@@ -36,57 +38,55 @@ public class LoginService {
 
 	public boolean login(String loginName, String password) throws IOTException {
 
-		HttpRequest request = new NoneAuthedHttpRequest(
-				new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_SESSION_ID);
 		request.addParameter("dataType", "json");
-		ServiceContainer.getInstance().getHttpHandler()
-				.doRequest(request, new RequestListener<Session>() {
+		ServiceContainer.getInstance().getHttpHandler().doRequest(request, new RequestListener<Session>() {
 
-					@Override
-					public void onRequestStart() {
-						// TODO Auto-generated method stub
+			@Override
+			public void onRequestStart() {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onRequestGetControl(RequestControl control) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onRequestGetControl(RequestControl control) {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onRequestCancelled() {
-						// TODO Auto-generated method stub
+			@Override
+			public void onRequestCancelled() {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onRequestError(Exception e) {
-						succeed = false;
-						if (e instanceof IOTException) {
-							exception = (IOTException) e;
-						} else {
-							exception = new IOTException(-1, e.getMessage());
-						}
-					}
+			@Override
+			public void onRequestError(Exception e) {
+				succeed = false;
+				if (e instanceof IOTException) {
+					exception = (IOTException) e;
+				} else {
+					exception = new IOTException(-1, e.getMessage());
+				}
+			}
 
-					@Override
-					public void onRequestResult(Session result) {
-						// TODO Auto-generated method stub
-						succeed = true;
-						sessionID = result.getSessionID();
-					}
+			@Override
+			public void onRequestResult(Session result) {
+				// TODO Auto-generated method stub
+				succeed = true;
+				sessionID = result.getSessionID();
+			}
 
-					@Override
-					public void onRequestComplete() {
-						// TODO Auto-generated method stub
-						synchronized (lock) {
-							lock.notify();
-						}
-					}
+			@Override
+			public void onRequestComplete() {
+				// TODO Auto-generated method stub
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
 
-				});
+		});
 		synchronized (lock) {
 			try {
 				lock.wait();
@@ -102,67 +102,63 @@ public class LoginService {
 		if (!succeed && exception != null)
 			throw exception;
 
-		HttpRequest request2 = new NoneAuthedHttpRequest(
-				new HttpConfig.GetHttpConfig(), Constants.ServerAPIURI.LOGIN);
+		HttpRequest request2 = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(), Constants.ServerAPIURI.LOGIN);
 
-		String mangledPwd = EncryptUtil
-				.getStringMD5(password + ":" + sessionID);
+		String mangledPwd = EncryptUtil.getStringMD5(password + ":" + sessionID);
 
 		request2.addParameter("dataType", "json");
 		request2.addParameter("__session_id", sessionID);
 		request2.addParameter("username", loginName);
 		request2.addParameter("mangled_password", mangledPwd);
 		request2.addParameter("lang", "zh-cn");
-		request2.addParameter("timezone",
-				Integer.toString(TimeZone.getDefault().getRawOffset()));
+		request2.addParameter("timezone", Integer.toString(TimeZone.getDefault().getRawOffset()));
 
-		ServiceContainer.getInstance().getHttpHandler()
-				.doRequest(request2, new RequestListener<User>() {
+		ServiceContainer.getInstance().getHttpHandler().doRequest(request2, new RequestListener<User>() {
 
-					@Override
-					public void onRequestStart() {
-						// TODO Auto-generated method stub
+			@Override
+			public void onRequestStart() {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onRequestGetControl(RequestControl control) {
-						// TODO Auto-generated method stub
+			@Override
+			public void onRequestGetControl(RequestControl control) {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onRequestCancelled() {
-						// TODO Auto-generated method stub
+			@Override
+			public void onRequestCancelled() {
+				// TODO Auto-generated method stub
 
-					}
+			}
 
-					@Override
-					public void onRequestError(Exception e) {
-						succeed = false;
-						if (e instanceof IOTException) {
-							exception = (IOTException) e;
-						} else {
-							exception = new IOTException(-1, e.getMessage());
-						}
-					}
+			@Override
+			public void onRequestError(Exception e) {
+				succeed = false;
+				if (e instanceof IOTException) {
+					exception = (IOTException) e;
+				} else {
+					exception = new IOTException(-1, e.getMessage());
+				}
+			}
 
-					@Override
-					public void onRequestResult(User result) {
-						// TODO Auto-generated method stub
-						succeed = true;
-						loginUser = result;
-					}
+			@Override
+			public void onRequestResult(User result) {
+				// TODO Auto-generated method stub
+				succeed = true;
+				loginUser = result;
+			}
 
-					@Override
-					public void onRequestComplete() {
-						// TODO Auto-generated method stub
-						synchronized (lock) {
-							lock.notify();
-						}
-					}
+			@Override
+			public void onRequestComplete() {
+				// TODO Auto-generated method stub
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
 
-				});
+		});
 		synchronized (lock) {
 			try {
 				lock.wait();
@@ -171,8 +167,7 @@ public class LoginService {
 				e1.printStackTrace();
 			}
 
-			IOTLog.d("LOGINService",
-					loginUser == null ? "null" : loginUser.getUserID());
+			IOTLog.d("LOGINService", loginUser == null ? "null" : loginUser.getUserID());
 
 		}
 
@@ -180,26 +175,124 @@ public class LoginService {
 			throw exception;
 
 		if (succeed) {
-			ServiceContainer.getInstance().getSessionService()
-					.setSessionID(sessionID);
-			ServiceContainer.getInstance().getSessionService()
-					.setLoginUser(loginUser);
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(
-							SessionService.THRESHOLD_WARNING,
-							new IOTMonitorThreshold(Integer.MIN_VALUE, 800, 16,
-									27, 0, 100));
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(
-							SessionService.THRESHOLD_BREACH,
-							new IOTMonitorThreshold(Integer.MIN_VALUE, 1000,
-									15, 28, 0, 100));
+			ServiceContainer.getInstance().getSessionService().setSessionID(sessionID);
+			ServiceContainer.getInstance().getSessionService().setLoginUser(loginUser);
 		}
 
 		return succeed;
+	}
+
+	public static IOTMonitorThreshold getWarningThreshold(Context context) {
+		int co2LowerValue = Integer.MIN_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.WARNING_CO2_LOWERVALUE))) {
+			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+					Constants.PreferenceKey.WARNING_CO2_LOWERVALUE));
+		} else {
+			co2LowerValue = Integer.MIN_VALUE;
+		}
+		int co2UpperValue = Integer.MAX_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.WARNING_CO2_UPPERVALUE))) {
+			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+					Constants.PreferenceKey.WARNING_CO2_UPPERVALUE));
+		} else {
+			co2UpperValue = 800;
+		}
+
+		int temperatureLowerValue = Integer.MIN_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE))) {
+			temperatureLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE));
+		} else {
+			temperatureLowerValue = 16;
+		}
+		int temperatureUpperValue = Integer.MAX_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE))) {
+			temperatureUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE));
+		} else {
+			temperatureUpperValue = 27;
+		}
+
+		int humidityLowerValue = Integer.MIN_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE))) {
+			humidityLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE));
+		} else {
+			humidityLowerValue = 0;
+		}
+		int humidityUpperValue = Integer.MAX_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE))) {
+			humidityUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE));
+		} else {
+			humidityUpperValue = 100;
+		}
+
+		return new IOTMonitorThreshold(co2LowerValue, co2UpperValue, temperatureLowerValue, temperatureUpperValue,
+				humidityLowerValue, humidityUpperValue);
+
+	}
+
+	public static IOTMonitorThreshold getBreachThreshold(Context context) {
+		int co2LowerValue = Integer.MIN_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.BREACH_CO2_LOWERVALUE))) {
+			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+					Constants.PreferenceKey.BREACH_CO2_LOWERVALUE));
+		} else {
+			co2LowerValue = Integer.MIN_VALUE;
+		}
+		int co2UpperValue = Integer.MAX_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.BREACH_CO2_UPPERVALUE))) {
+			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+					Constants.PreferenceKey.BREACH_CO2_UPPERVALUE));
+		} else {
+			co2UpperValue = 1000;
+		}
+
+		int temperatureLowerValue = Integer.MIN_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE))) {
+			temperatureLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE));
+		} else {
+			temperatureLowerValue = 15;
+		}
+		int temperatureUpperValue = Integer.MAX_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE))) {
+			temperatureUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE));
+		} else {
+			temperatureUpperValue = 28;
+		}
+
+		int humidityLowerValue = Integer.MIN_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE))) {
+			humidityLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE));
+		} else {
+			humidityLowerValue = 0;
+		}
+		int humidityUpperValue = Integer.MAX_VALUE;
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+				Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE))) {
+			humidityUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
+					.getValue(context, Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE));
+		} else {
+			humidityUpperValue = 100;
+		}
+
+		return new IOTMonitorThreshold(co2LowerValue, co2UpperValue, temperatureLowerValue, temperatureUpperValue,
+				humidityLowerValue, humidityUpperValue);
+
 	}
 }

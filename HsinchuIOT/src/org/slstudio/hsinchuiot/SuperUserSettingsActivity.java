@@ -193,7 +193,6 @@ public class SuperUserSettingsActivity extends BaseActivity {
 			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE, Integer.toString(breachThreshold.getHumidityLowerBound()));
 			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE, Integer.toString(breachThreshold.getHumidityUpperBound()));
 			
-			
 			finish();
 			break;
 

@@ -8,6 +8,7 @@ import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Session;
 import org.slstudio.hsinchuiot.model.User;
 import org.slstudio.hsinchuiot.service.IOTException;
+import org.slstudio.hsinchuiot.service.LoginService;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.service.SessionService;
 import org.slstudio.hsinchuiot.service.http.ForgroundRequestListener;
@@ -210,13 +211,13 @@ public class LoginActivity extends BaseActivity {
 					.getSessionService()
 					.setSessionValue(
 							SessionService.THRESHOLD_WARNING,
-							getWarningThreshold());
+							LoginService.getWarningThreshold(LoginActivity.this));
 			ServiceContainer
 					.getInstance()
 					.getSessionService()
 					.setSessionValue(
 							SessionService.THRESHOLD_BREACH,
-							getBreachThreshold());
+							LoginService.getBreachThreshold(LoginActivity.this));
 
 			handler.post(new Runnable() {
 
@@ -244,95 +245,7 @@ public class LoginActivity extends BaseActivity {
 		}
 	}
 	
-	private IOTMonitorThreshold getWarningThreshold(){
-		int co2LowerValue = Integer.MIN_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_CO2_LOWERVALUE))){
-			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_CO2_LOWERVALUE));
-		}else{
-			co2LowerValue = Integer.MIN_VALUE;
-		}
-		int co2UpperValue = Integer.MAX_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_CO2_UPPERVALUE))){
-			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_CO2_UPPERVALUE));
-		}else{
-			co2UpperValue = 800;
-		}
-		
-		int temperatureLowerValue = Integer.MIN_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE))){
-			temperatureLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE));
-		}else{
-			temperatureLowerValue = 16;
-		}
-		int temperatureUpperValue = Integer.MAX_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE))){
-			temperatureUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE));
-		}else{
-			temperatureUpperValue = 27;
-		}
-		
-		int humidityLowerValue = Integer.MIN_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE))){
-			humidityLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE));
-		}else{
-			humidityLowerValue = 0;
-		}
-		int humidityUpperValue = Integer.MAX_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE))){
-			humidityUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE));
-		}else{
-			humidityUpperValue = 100;
-		}
-		
-		return new IOTMonitorThreshold(co2LowerValue, co2UpperValue, temperatureLowerValue, temperatureUpperValue, humidityLowerValue, humidityUpperValue);
-				
-				
-	}
 	
-	private IOTMonitorThreshold getBreachThreshold(){
-		int co2LowerValue = Integer.MIN_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_CO2_LOWERVALUE))){
-			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_CO2_LOWERVALUE));
-		}else{
-			co2LowerValue = Integer.MIN_VALUE;
-		}
-		int co2UpperValue = Integer.MAX_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_CO2_UPPERVALUE))){
-			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_CO2_UPPERVALUE));
-		}else{
-			co2UpperValue = 1000;
-		}
-		
-		int temperatureLowerValue = Integer.MIN_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE))){
-			temperatureLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE));
-		}else{
-			temperatureLowerValue = 15;
-		}
-		int temperatureUpperValue = Integer.MAX_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE))){
-			temperatureUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE));
-		}else{
-			temperatureUpperValue = 28;
-		}
-		
-		int humidityLowerValue = Integer.MIN_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE))){
-			humidityLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE));
-		}else{
-			humidityLowerValue = 0;
-		}
-		int humidityUpperValue = Integer.MAX_VALUE;
-		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE))){
-			humidityUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE));
-		}else{
-			humidityUpperValue = 100;
-		}
-		
-		return new IOTMonitorThreshold(co2LowerValue, co2UpperValue, temperatureLowerValue, temperatureUpperValue, humidityLowerValue, humidityUpperValue);
-				
-				
-	}
 
 	private class LoginListener implements RequestListener<User> {
 		private RequestControl control;
