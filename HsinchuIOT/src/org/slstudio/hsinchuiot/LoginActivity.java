@@ -109,8 +109,8 @@ public class LoginActivity extends BaseActivity {
 
 	}
 
-	protected void gotoMainScreen() {
-		Intent intent = new Intent(Constants.Action.HSINCHUIOT_MAIN);
+	protected void gotoUserMainScreen() {
+		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);
 		finish();
 	}
@@ -229,7 +229,7 @@ public class LoginActivity extends BaseActivity {
 					 * .getSessionId(LoginActivity.this));
 					 */
 					if (loginUser.isSuperUser()) {
-						gotoSuperUserMainScreen();
+						gotoUserMainScreen();
 					} else {
 						gotoSuperUserMainScreen();
 					}

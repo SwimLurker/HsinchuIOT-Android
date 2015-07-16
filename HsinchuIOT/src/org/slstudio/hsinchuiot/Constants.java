@@ -76,6 +76,7 @@ public class Constants {
 		public static String HSINCHUIOT_SUPERUSER_MAIN = "org.slstudio.hsinchuiot.superuser_main";
 		public static String HSINCHUIOT_SUPERUSER_SITEDETAIL = "org.slstudio.hsinchuiot.superuser_sitedetail";
 		public static String HSINCHUIOT_SUPERUSER_SETTINGS = "org.slstudio.hsinchuiot.superuser_settings";
+		public static String HSINCHUIOT_USER_MAIN = "org.slstudio.hsinchuiot.user_main";
 		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
 	
 	}

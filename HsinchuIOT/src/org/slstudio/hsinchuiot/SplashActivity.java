@@ -121,8 +121,8 @@ public class SplashActivity extends BaseActivity {
 
 	}
 
-	protected void gotoMainScreen() {
-		Intent intent = new Intent(Constants.Action.HSINCHUIOT_MAIN);
+	protected void gotoUserMainScreen() {
+		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);
 		finish();
 	}
@@ -177,7 +177,7 @@ public class SplashActivity extends BaseActivity {
 					} else {
 
 						if (loginUser.isSuperUser()) {
-							gotoSuperUserMainScreen();
+							gotoUserMainScreen();
 						} else {
 							gotoSuperUserMainScreen();
 						}
