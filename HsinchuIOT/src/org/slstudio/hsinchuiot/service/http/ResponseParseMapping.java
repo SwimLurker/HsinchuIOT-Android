@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.responseparser.DeviceListParser;
+import org.slstudio.hsinchuiot.responseparser.DeviceListWithAggregationDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTAggregationDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTMonitorDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTReportDataParser;
@@ -27,6 +28,7 @@ public class ResponseParseMapping {
 		parserMapping.put(Constants.ServerAPIURI.GET_WEEK_AGG_DATA, new IOTAggregationDataParser());
 		parserMapping.put(Constants.ServerAPIURI.GET_MONTH_AGG_DATA, new IOTAggregationDataParser());
 		parserMapping.put(Constants.ServerAPIURI.GET_REPORT_DATA, new IOTReportDataParser());
+		parserMapping.put(Constants.ServerAPIURI.GET_DEVICE_LIST_WITH_AGG_DATA, new DeviceListWithAggregationDataParser());
 	}
 	
 	public static ResponseParser getResponseParser(String requestURI){

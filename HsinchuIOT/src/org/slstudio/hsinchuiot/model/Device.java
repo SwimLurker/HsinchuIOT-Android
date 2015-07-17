@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Device implements Serializable {
 	private String deviceID;
+	private String deviceSN;
 	private String adminDomain;
 	private String ipAddress;
 
@@ -13,6 +14,14 @@ public class Device implements Serializable {
 
 	public void setDeviceID(String deviceID) {
 		this.deviceID = deviceID;
+	}
+
+	public String getDeviceSN() {
+		return deviceSN;
+	}
+
+	public void setDeviceSN(String deviceSN) {
+		this.deviceSN = deviceSN;
 	}
 
 	public String getAdminDomain() {
@@ -34,8 +43,12 @@ public class Device implements Serializable {
 	public String getSiteName() {
 		String siteName = null;
 		if (adminDomain != null) {
-			siteName = adminDomain.substring(0, adminDomain.lastIndexOf("."));
-			siteName = siteName.substring(siteName.lastIndexOf(".") + 1);
+			if(adminDomain.lastIndexOf(".") != -1){
+				siteName = adminDomain.substring(0, adminDomain.lastIndexOf("."));
+				siteName = siteName.substring(siteName.lastIndexOf(".") + 1);
+			}else{
+				siteName = adminDomain;
+			}
 		} else {
 			siteName = "Unknown";
 		}

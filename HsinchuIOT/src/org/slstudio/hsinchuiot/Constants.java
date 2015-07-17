@@ -98,6 +98,7 @@ public class Constants {
 		public static final String GET_WEEK_AGG_DATA = "M2MAggByWeek/_NBI/list.lua";
 		public static final String GET_MONTH_AGG_DATA = "M2MAggByMonth/_NBI/list.lua";
 		public static final String GET_REPORT_DATA = "M2M/_NBI/report.lua";
+		public static final String GET_DEVICE_LIST_WITH_AGG_DATA = "_NBI/app_list.lua";
 		
 		public static final String USER_LOGIN="api/session";//登陆接口
 		public static final String USER_UPDATEPWD="v1/user/updatePwd.json";//修改密码和忘记

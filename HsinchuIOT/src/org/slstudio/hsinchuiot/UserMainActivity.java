@@ -153,7 +153,7 @@ public class UserMainActivity extends BaseActivity {
 				site.setSiteID(d.getDeviceID());
 				site.setDevice(d);
 				site.setSiteName(d.getSiteName());
-				site.setSiteImageFilename("site_" + d.getDeviceID() + ".png");
+				site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
 				site.setMonitorData(new IOTMonitorData(0, 0, 0));
 				sites.add(site);
 			}

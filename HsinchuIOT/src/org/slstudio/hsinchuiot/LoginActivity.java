@@ -229,11 +229,10 @@ public class LoginActivity extends BaseActivity {
 					 * .getSessionId(LoginActivity.this));
 					 */
 					if (loginUser.isSuperUser()) {
-						gotoUserMainScreen();
+						gotoSuperUserMainScreen();
 					} else {
 						gotoSuperUserMainScreen();
 					}
-					;
 				}
 			});
 

@@ -134,10 +134,10 @@ public class SplashActivity extends BaseActivity {
 	}
 
 	private void prepare() {
-		prepareMockData();
+		//prepareThumbnailImage();
 	}
 
-	private void prepareMockData() {
+	private void prepareThumbnailImage() {
 		String imageDir = Constants.ImageLoader.IMAGE_ENGINE_CACHE;
 		String siteImageFilename = "site_59.png";
 		String thumbnailDir = imageDir + "/thumbnail";
@@ -177,7 +177,7 @@ public class SplashActivity extends BaseActivity {
 					} else {
 
 						if (loginUser.isSuperUser()) {
-							gotoUserMainScreen();
+							gotoSuperUserMainScreen();
 						} else {
 							gotoSuperUserMainScreen();
 						}

@@ -11,19 +11,19 @@
     <string name="common_upgrade_download_over">下载完成</string>		
     
     <!-- error messages -->
-    <string name="common_default_error_name">错误</string>
-	<string name="common_default_error_string">响应发生错误</string>
+    <string name="common_default_error_name">錯誤</string>
+	<string name="common_default_error_string">回應發生錯誤</string>
 	<string name="common_please_wait">请等待</string>
 	<string name="error_message_require_loginname_text">需要填写用户名</string>
 	<string name="error_message_require_pwd_text">需要填写密码</string>
 	<string name="error_message_require_code_text">需要填写验证码</string>
 	
 	<!-- login -->
-    <string name="common_login_hint_username">请输入您的账号</string>
-    <string name="common_login_hint_password">请输入您的密码</string>
-    <string name="common_sign_in">登录</string>
-    <string name="common_login_signing">正在登录</string>
-    <string name="common_login_remember_password">记住密码</string>
+    <string name="common_login_hint_username">請輸入您的帳號</string>
+    <string name="common_login_hint_password">請輸入您的密碼</string>
+    <string name="common_sign_in">登錄</string>
+    <string name="common_login_signing">正在登錄</string>
+    <string name="common_login_remember_password">記住密碼</string>
     
     
     <!-- signup -->
@@ -44,7 +44,7 @@
     
     
     <string name="pull_to_refresh_pull_label">下拉刷新</string>
-    <string name="pull_to_refresh_release_label">松开后刷新</string>
+    <string name="pull_to_refresh_release_label">鬆開後刷新</string>
     <string name="pull_to_refresh_refreshing_label">刷新...</string>
     <string name="pull_to_refresh_tap_label">Tap to refresh...</string>
 </resources>

@@ -1,5 +1,6 @@
 package org.slstudio.hsinchuiot;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.slstudio.hsinchuiot.model.Device;
+import org.slstudio.hsinchuiot.model.DeviceWithAggregationData;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
 import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Site;
@@ -23,11 +25,13 @@ import org.slstudio.hsinchuiot.service.http.RequestListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import org.slstudio.hsinchuiot.ui.adapter.SiteListViewAdapter;
+import org.slstudio.hsinchuiot.util.ImageUtil;
 import org.slstudio.hsinchuiot.util.ReportUtil;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
@@ -47,8 +51,6 @@ import com.handmark.pulltorefresh.library.extras.SoundPullEventListener;
 import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
-
-
 public class SuperUserMainActivity extends BaseActivity {
 	public static final String SELECTED_SITE = "org.slstudio.hsinchuiot.SELECTED_SITE";
 	public static final String WARNING_THRESHOLD = "org.slstudio.hsinchuiot.WARNING_THRESHOLD";
@@ -63,6 +65,8 @@ public class SuperUserMainActivity extends BaseActivity {
 			new IOTMonitorThreshold());
 
 	private List<Device> deviceList = new ArrayList<Device>();
+
+	private List<DeviceWithAggregationData> deviceWithAggDataList = new ArrayList<DeviceWithAggregationData>();
 
 	private Handler handler;
 
@@ -94,8 +98,9 @@ public class SuperUserMainActivity extends BaseActivity {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				getDeviceList();
+				// use new api
+				// getDeviceList();
+				getDeviceListWithAggregationData();
 			}
 
 		});
@@ -124,6 +129,25 @@ public class SuperUserMainActivity extends BaseActivity {
 
 		GetDeviceListListener listener = new GetDeviceListListener(this, true,
 				getString(R.string.common_please_wait));
+
+		ServiceContainer.getInstance().getHttpHandler()
+				.doRequest(request, listener);
+
+	}
+
+	private void getDeviceListWithAggregationData() {
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
+
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
+				Constants.ServerAPIURI.GET_DEVICE_LIST_WITH_AGG_DATA);
+
+		request.addParameter("dataType", "xml");
+		request.addParameter("__session_id", sessionID);
+
+		GetDeviceListWithAggDataListener listener = new GetDeviceListWithAggDataListener(
+				this, true, getString(R.string.common_please_wait));
 
 		ServiceContainer.getInstance().getHttpHandler()
 				.doRequest(request, listener);
@@ -257,7 +281,8 @@ public class SuperUserMainActivity extends BaseActivity {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								getDeviceList();
+								// getDeviceList();
+								getDeviceListWithAggregationData();
 							}
 
 						});
@@ -295,23 +320,22 @@ public class SuperUserMainActivity extends BaseActivity {
 		return true;
 	}
 
-	 private void setIconEnable(Menu menu, boolean enable)  
-	    {  
-	        try   
-	        {  
-	            Class<?> clazz = Class.forName("com.android.internal.view.menu.MenuBuilder");  
-	            Method m = clazz.getDeclaredMethod("setOptionalIconsVisible", boolean.class);  
-	            m.setAccessible(true);  
-	              
-	            //MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)  
-	            m.invoke(menu, enable);  
-	              
-	        } catch (Exception e)   
-	        {  
-	            e.printStackTrace();  
-	        }  
-	    }  
-	 
+	private void setIconEnable(Menu menu, boolean enable) {
+		try {
+			Class<?> clazz = Class
+					.forName("com.android.internal.view.menu.MenuBuilder");
+			Method m = clazz.getDeclaredMethod("setOptionalIconsVisible",
+					boolean.class);
+			m.setAccessible(true);
+
+			// MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)
+			m.invoke(menu, enable);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	private void updateListView() {
 
 		Random r = new Random();
@@ -322,7 +346,7 @@ public class SuperUserMainActivity extends BaseActivity {
 			Site site = new Site();
 			site.setDevice(d);
 			site.setSiteName(d.getSiteName());
-			site.setSiteImageFilename("site_" + d.getDeviceID() + ".png");
+			site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
 			site.setMonitorData(new IOTMonitorData(900 + r.nextInt(200), 20 + r
 					.nextInt(20), r.nextInt(100)));
 			sites.add(site);
@@ -402,21 +426,40 @@ public class SuperUserMainActivity extends BaseActivity {
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
+	private void prepareThumbnailImage(String siteImageFilename) {
+		String imageDir = Constants.ImageLoader.IMAGE_ENGINE_CACHE;
+		String thumbnailDir = imageDir + "/thumbnail";
+
+		File dir = new File(thumbnailDir);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+
+		File thumbnailFile = new File(thumbnailDir + "/" + siteImageFilename);
+		
+		if(thumbnailFile.exists()&&thumbnailFile.isFile()){
+			return;
+		}
+		
+		File originalFile = new File(imageDir+"/" + siteImageFilename);
+		if(!originalFile.exists() ||!originalFile.isFile()){
+			return;
+		}
+		
+
+		Bitmap thumbnailImage = ImageUtil.getImageThumbnail(imageDir + "/" + siteImageFilename, 128, 128);
+		ImageUtil.writeBitmapToFile(thumbnailImage, thumbnailDir + "/" + siteImageFilename);
+
+	}
+	
 	private class GetDeviceListListener extends
 			ForgroundRequestListener<List<Device>> {
-		private RequestControl control;
 
 		public GetDeviceListListener(Context context,
 				boolean isShowProgressDialog, String content) {
 			super(context, isShowProgressDialog, content);
 		}
 
-		@Override
-		public void onRequestCancelled() {
-			if (control != null)
-				control.cancel();
-
-		}
 
 		@Override
 		public void onRequestComplete() {
@@ -442,9 +485,11 @@ public class SuperUserMainActivity extends BaseActivity {
 				site.setSiteID(d.getDeviceID());
 				site.setDevice(d);
 				site.setSiteName(d.getSiteName());
-				site.setSiteImageFilename("site_" + d.getDeviceID() + ".png");
+				site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
 				site.setMonitorData(new IOTMonitorData(0, 0, 0));
 				sites.add(site);
+				
+				prepareThumbnailImage(site.getSiteImageFilename());
 			}
 			siteListViewAdatper.setItems(sites);
 
@@ -489,10 +534,79 @@ public class SuperUserMainActivity extends BaseActivity {
 
 		}
 
-		@Override
-		public void onRequestGetControl(RequestControl control) {
-			this.control = control;
+
+	}
+
+	private class GetDeviceListWithAggDataListener extends
+			ForgroundRequestListener<List<DeviceWithAggregationData>> {
+		
+		public GetDeviceListWithAggDataListener(Context context,
+				boolean isShowProgressDialog, String content) {
+			super(context, isShowProgressDialog, content);
 		}
+
+		
+
+		@Override
+		public void onRequestComplete() {
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					if (siteListView.isRefreshing()) {
+						siteListView.onRefreshComplete();
+					}
+				}
+			});
+
+			super.onRequestComplete();
+		}
+
+		@Override
+		public void onRequestResult(final List<DeviceWithAggregationData> result) {
+			deviceWithAggDataList = result;
+			List<Site> sites = new ArrayList<Site>();
+			for (DeviceWithAggregationData dWAD : deviceWithAggDataList) {
+				Device d = dWAD.getDevice();
+				IOTMonitorData aggrData = dWAD.getAggregationData();
+				
+				Site site = new Site();
+				site.setSiteID(d.getDeviceID());
+				site.setDevice(d);
+				site.setSiteName(d.getSiteName());
+				site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
+				site.setMonitorData(aggrData);
+				sites.add(site);
+			}
+			siteListViewAdatper.setItems(sites);
+
+			final Calendar c8[] = ReportUtil.get8HoursTimePeriod();
+			final Calendar c1[] = ReportUtil.get1HourTimePeriod();
+
+
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					String str8hr = ReportUtil.get8HoursTimePeriodString(c8[0],
+							c8[1]);
+					String str1hr = ReportUtil.get1HourTimePeriodString(c1[0],
+							c1[1]);
+
+					tv8hr.setText(SuperUserMainActivity.this.getResources()
+							.getString(R.string.superuser_main_8hrtitle)
+							+ str8hr);
+					tv1hr.setText(SuperUserMainActivity.this.getResources()
+							.getString(R.string.superuser_main_1hrtitle)
+							+ str1hr);
+
+					siteListViewAdatper.notifyDataSetChanged();
+				}
+
+			});
+
+		}
+
 	}
 
 	private class GetRealtimeDataListener implements
