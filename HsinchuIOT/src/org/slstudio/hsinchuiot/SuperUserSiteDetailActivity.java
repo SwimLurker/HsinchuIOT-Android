@@ -390,11 +390,14 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 	}
 
 	private void updateUI() {
+		
+		int yellow = getResources().getColor(R.color.warning);
+		
 		tvCO2AverageValue.setText(Float.toString(averageValueCO2) + " ppm");
 		if (alarmThreshold != null && alarmThreshold.isCO2Breach(averageValueCO2)) {
 			tvCO2AverageValue.setTextColor(Color.RED);
 		} else if (warningThreshold != null && warningThreshold.isCO2Breach(averageValueCO2)) {
-			tvCO2AverageValue.setTextColor(Color.YELLOW);
+			tvCO2AverageValue.setTextColor(yellow);
 		} else {
 			tvCO2AverageValue.setTextColor(Color.BLACK);
 		}
@@ -407,7 +410,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		if (alarmThreshold != null && alarmThreshold.isTemperatureBreach(averageValueTemperature)) {
 			tvTemperatureAverageValue.setTextColor(Color.RED);
 		} else if (warningThreshold != null && warningThreshold.isTemperatureBreach(averageValueTemperature)) {
-			tvTemperatureAverageValue.setTextColor(Color.YELLOW);
+			tvTemperatureAverageValue.setTextColor(yellow);
 		} else {
 			tvTemperatureAverageValue.setTextColor(Color.BLACK);
 		}
@@ -420,7 +423,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		if (alarmThreshold != null && alarmThreshold.isHumidityBreach(averageValueHumidity)) {
 			tvHumidityAverageValue.setTextColor(Color.RED);
 		} else if (warningThreshold != null && warningThreshold.isHumidityBreach(averageValueHumidity)) {
-			tvHumidityAverageValue.setTextColor(Color.YELLOW);
+			tvHumidityAverageValue.setTextColor(yellow);
 		} else {
 			tvHumidityAverageValue.setTextColor(Color.BLACK);
 		}

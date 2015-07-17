@@ -1,10 +1,7 @@
 package org.slstudio.hsinchuiot;
 
-import static org.slstudio.hsinchuiot.BaseActivity.DIALOG_ERROR;
-
 import java.util.TimeZone;
 
-import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Session;
 import org.slstudio.hsinchuiot.model.User;
 import org.slstudio.hsinchuiot.service.IOTException;
@@ -18,8 +15,6 @@ import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
 import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
 import org.slstudio.hsinchuiot.util.EncryptUtil;
-import org.slstudio.hsinchuiot.util.IOTLog;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +45,9 @@ public class LoginActivity extends BaseActivity {
 	private String password;
 	private User loginUser;
 
+	private boolean succeed;
+	private IOTException exception;
+
 	private CheckBox rememberPassword;
 
 	@Override
@@ -72,8 +70,7 @@ public class LoginActivity extends BaseActivity {
 
 		rememberPassword = (CheckBox) findViewById(R.id.remeber_password);
 
-		listener = new GetSessionIDListener(this, true,
-				getString(R.string.common_please_wait));
+		listener = new GetSessionIDListener(this, true, getString(R.string.common_please_wait));
 		listener2 = new LoginListener();
 		handler = new Handler();
 
@@ -85,27 +82,23 @@ public class LoginActivity extends BaseActivity {
 		password = passwordET.getText().toString().trim();
 
 		if (username.equals("")) {
-			setException(new IOTException(-1,
-					getString(R.string.error_message_require_loginname_text)));
+			setException(new IOTException(-1, getString(R.string.error_message_require_loginname_text)));
 			showDialog(DIALOG_ERROR);
 			return;
 		}
 
 		if (password.equals("")) {
-			setException(new IOTException(-1,
-					getString(R.string.error_message_require_pwd_text)));
+			setException(new IOTException(-1, getString(R.string.error_message_require_pwd_text)));
 			showDialog(DIALOG_ERROR);
 			return;
 		}
 
-		HttpRequest request = new NoneAuthedHttpRequest(
-				new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_SESSION_ID);
 
 		request.addParameter("dataType", "xml");
 
-		ServiceContainer.getInstance().getHttpHandler()
-				.doRequest(request, listener);
+		ServiceContainer.getInstance().getHttpHandler().doRequest(request, listener);
 
 	}
 
@@ -137,12 +130,10 @@ public class LoginActivity extends BaseActivity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private class GetSessionIDListener extends
-			ForgroundRequestListener<Session> {
+	private class GetSessionIDListener extends ForgroundRequestListener<Session> {
 		private RequestControl control;
 
-		public GetSessionIDListener(Context context,
-				boolean isShowProgressDialog, String content) {
+		public GetSessionIDListener(Context context, boolean isShowProgressDialog, String content) {
 			super(context, isShowProgressDialog, content);
 		}
 
@@ -159,11 +150,9 @@ public class LoginActivity extends BaseActivity {
 
 			String pwdMD5 = EncryptUtil.getStringMD5(password);
 
-			String mangledPwd = EncryptUtil.getStringMD5(pwdMD5 + ":"
-					+ sessionID);
+			String mangledPwd = EncryptUtil.getStringMD5(pwdMD5 + ":" + sessionID);
 
-			HttpRequest request2 = new NoneAuthedHttpRequest(
-					new HttpConfig.GetHttpConfig(),
+			HttpRequest request2 = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
 					Constants.ServerAPIURI.LOGIN);
 
 			request2.addParameter("dataType", "json");
@@ -171,10 +160,8 @@ public class LoginActivity extends BaseActivity {
 			request2.addParameter("username", username);
 			request2.addParameter("mangled_password", mangledPwd);
 			request2.addParameter("lang", "zh-cn");
-			request2.addParameter("timezone",
-					Integer.toString(TimeZone.getDefault().getRawOffset()));
-			ServiceContainer.getInstance().getHttpHandler()
-					.doRequest(request2, listener2);
+			request2.addParameter("timezone", Integer.toString(TimeZone.getDefault().getRawOffset()));
+			ServiceContainer.getInstance().getHttpHandler().doRequest(request2, listener2);
 			synchronized (lock) {
 				try {
 					lock.wait();
@@ -185,39 +172,35 @@ public class LoginActivity extends BaseActivity {
 
 			}
 
-			if (rememberPassword.isChecked()) {
-				ServiceContainer
-						.getInstance()
-						.getPerferenceService()
-						.setValue(LoginActivity.this,
-								Constants.PreferenceKey.LOGINNAME, username);
-
-				ServiceContainer
-						.getInstance()
-						.getPerferenceService()
-						.setValue(LoginActivity.this,
-								Constants.PreferenceKey.PASSWORD,
-								EncryptUtil.getStringMD5(password));
+			if (!succeed) {
+				onRequestError(exception);
+				return;
 			}
 
-			ServiceContainer.getInstance().getSessionService()
-					.setSessionID(sessionID);
-			ServiceContainer.getInstance().getSessionService()
-					.setLoginUser(loginUser);
-			
-			
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(
-							SessionService.THRESHOLD_WARNING,
-							LoginService.getWarningThreshold(LoginActivity.this));
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(
-							SessionService.THRESHOLD_BREACH,
-							LoginService.getBreachThreshold(LoginActivity.this));
+			if (rememberPassword.isChecked()) {
+				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+						Constants.PreferenceKey.LOGINNAME, username);
+
+				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+						Constants.PreferenceKey.PASSWORD, EncryptUtil.getStringMD5(password));
+			} else {
+				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+						Constants.PreferenceKey.LOGINNAME, null);
+
+				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+						Constants.PreferenceKey.PASSWORD, null);
+			}
+
+			ServiceContainer.getInstance().getSessionService().setSessionID(sessionID);
+
+			loginUser.setLoginName(username);
+			loginUser.setPassword(pwdMD5);
+			ServiceContainer.getInstance().getSessionService().setLoginUser(loginUser);
+
+			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_WARNING,
+					LoginService.getWarningThreshold(LoginActivity.this));
+			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_BREACH,
+					LoginService.getBreachThreshold(LoginActivity.this));
 
 			handler.post(new Runnable() {
 
@@ -243,8 +226,6 @@ public class LoginActivity extends BaseActivity {
 			this.control = control;
 		}
 	}
-	
-	
 
 	private class LoginListener implements RequestListener<User> {
 		private RequestControl control;
@@ -258,6 +239,7 @@ public class LoginActivity extends BaseActivity {
 
 		@Override
 		public void onRequestResult(final User result) {
+			succeed = true;
 			loginUser = result;
 		}
 
@@ -274,8 +256,12 @@ public class LoginActivity extends BaseActivity {
 
 		@Override
 		public void onRequestError(Exception e) {
-			// TODO Auto-generated method stub
-
+			succeed = false;
+			if (e instanceof IOTException) {
+				exception = (IOTException) e;
+			} else {
+				exception = new IOTException(-1, e.getMessage());
+			}
 		}
 
 		@Override

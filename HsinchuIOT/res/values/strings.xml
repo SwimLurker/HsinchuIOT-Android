@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">HsinchuIOT</string>
-    <string name="action_settings">設    定</string>
+    <string name="action_settings">&#160;&#160;設&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;定</string>
+    <string name="action_logoff">&#160;&#160;退出登錄</string>
     <string name="action_ok">確定</string>
 	
 	<!-- upgrade -->
@@ -13,10 +14,10 @@
     <!-- error messages -->
     <string name="common_default_error_name">錯誤</string>
 	<string name="common_default_error_string">回應發生錯誤</string>
-	<string name="common_please_wait">请等待</string>
-	<string name="error_message_require_loginname_text">需要填写用户名</string>
-	<string name="error_message_require_pwd_text">需要填写密码</string>
-	<string name="error_message_require_code_text">需要填写验证码</string>
+	<string name="common_please_wait">請等待</string>
+	<string name="error_message_require_loginname_text">需要填寫用戶名</string>
+	<string name="error_message_require_pwd_text">需要填寫密碼</string>
+	<string name="error_message_require_code_text">需要填寫驗證碼</string>
 	
 	<!-- login -->
     <string name="common_login_hint_username">請輸入您的帳號</string>

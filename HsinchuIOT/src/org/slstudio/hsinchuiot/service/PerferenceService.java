@@ -19,10 +19,12 @@ public class PerferenceService {
         context.getSharedPreferences(AppConfig.PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit();
     }
 
+    
     public void setSessionId(Context context, String sessionId) {
         context.getSharedPreferences(AppConfig.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PreferenceKey.SESSION_ID, sessionId)
                 .commit();
     }
+    
     
     public void setValue(Context context, String key,String value) {
         context.getSharedPreferences(AppConfig.PREF_NAME, Context.MODE_PRIVATE).edit().putString(key, value)
@@ -32,7 +34,7 @@ public class PerferenceService {
     public String getValue(Context context, String key) {
     	 return context.getSharedPreferences(AppConfig.PREF_NAME, Context.MODE_PRIVATE).getString(key, "");
     }
-    
+    /*
     public void setUserId(Context context, String sessionId) {
         context.getSharedPreferences(AppConfig.PREF_NAME, Context.MODE_PRIVATE).edit().putString(Constants.PreferenceKey.USER_ID, sessionId)
                 .commit();
@@ -42,4 +44,5 @@ public class PerferenceService {
 		 return context.getSharedPreferences(AppConfig.PREF_NAME, Context.MODE_PRIVATE).getString(Constants.PreferenceKey.USER_ID, "");
 
 	}
+	*/
 }

@@ -22,8 +22,6 @@ import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
 import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
 
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
 import org.slstudio.hsinchuiot.ui.adapter.SiteListViewAdapter;
 import org.slstudio.hsinchuiot.util.ImageUtil;
 import org.slstudio.hsinchuiot.util.ReportUtil;
@@ -40,7 +38,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -99,7 +96,7 @@ public class SuperUserMainActivity extends BaseActivity {
 			@Override
 			public void run() {
 				// use new api
-				// getDeviceList();
+				//getDeviceList();
 				getDeviceListWithAggregationData();
 			}
 
@@ -281,7 +278,7 @@ public class SuperUserMainActivity extends BaseActivity {
 							@Override
 							public void run() {
 								// TODO Auto-generated method stub
-								// getDeviceList();
+								//getDeviceList();
 								getDeviceListWithAggregationData();
 							}
 
@@ -308,6 +305,18 @@ public class SuperUserMainActivity extends BaseActivity {
 			Intent intent = new Intent(
 					Constants.Action.HSINCHUIOT_SUPERUSER_SETTINGS);
 			startActivity(intent);
+			break;
+		case R.id.menu_superuser_main_logoff:
+			
+			ServiceContainer.getInstance().getSessionService().setLoginUser(null);
+			ServiceContainer.getInstance().getSessionService().setSessionID(null);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_BREACH, null);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_WARNING, null);
+			
+			Intent loginIntent = new Intent(
+					Constants.Action.HSINCHUIOT_LOGIN);
+			startActivity(loginIntent);
+			finish();
 			break;
 		}
 		return true;

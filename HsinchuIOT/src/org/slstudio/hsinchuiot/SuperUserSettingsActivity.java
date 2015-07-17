@@ -1,17 +1,17 @@
 package org.slstudio.hsinchuiot;
 
 import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
+import org.slstudio.hsinchuiot.model.User;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.service.SessionService;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class SuperUserSettingsActivity extends BaseActivity {
 
@@ -28,24 +28,23 @@ public class SuperUserSettingsActivity extends BaseActivity {
 	private EditText etTemperatureUpperValueBreach;
 	private EditText etHumidityLowerValueBreach;
 	private EditText etHumidityUpperValueBreach;
-	
+
+	private CheckBox cbRememberPassword;
+
 	private IOTMonitorThreshold warningThreshold;
 	private IOTMonitorThreshold breachThreshold;
-	
 
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_superuser_settings);
-		
-		warningThreshold = (IOTMonitorThreshold) ServiceContainer
-				.getInstance().getSessionService()
+
+		warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
 				.getSessionValue(SessionService.THRESHOLD_WARNING);
-		breachThreshold = (IOTMonitorThreshold) ServiceContainer
-				.getInstance().getSessionService()
+		breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
 				.getSessionValue(SessionService.THRESHOLD_BREACH);
-		
+
 		initViews();
 	}
 
@@ -63,136 +62,152 @@ public class SuperUserSettingsActivity extends BaseActivity {
 
 			break;
 		case R.id.menu_ok:
-
-			//warning threshold
+			// remember password
+			if (cbRememberPassword.isChecked()) {
+				User user = ServiceContainer.getInstance().getSessionService().getLoginUser();
+				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.LOGINNAME,
+						user.getLoginName());
+				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.PASSWORD,
+						user.getPassword());
+			} else {
+				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.LOGINNAME,
+						null);
+				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.PASSWORD,
+						null);
+			}
+			// warning threshold
 			if (!"".equals(etCO2LowerValueWarning.getText().toString().trim())) {
-				int co2LowerValueWarning = Integer
-						.parseInt(etCO2LowerValueWarning.getText().toString()
-								.trim());
+				int co2LowerValueWarning = Integer.parseInt(etCO2LowerValueWarning.getText().toString().trim());
 				warningThreshold.setCo2LowerBound(co2LowerValueWarning);
-			}else{
+			} else {
 				warningThreshold.setCo2LowerBound(Integer.MIN_VALUE);
 			}
-			
+
 			if (!"".equals(etCO2UpperValueWarning.getText().toString().trim())) {
-				int co2UpperValueWarning = Integer
-						.parseInt(etCO2UpperValueWarning.getText().toString()
-								.trim());
+				int co2UpperValueWarning = Integer.parseInt(etCO2UpperValueWarning.getText().toString().trim());
 				warningThreshold.setCo2UpperBound(co2UpperValueWarning);
-			}else{
+			} else {
 				warningThreshold.setCo2UpperBound(Integer.MAX_VALUE);
 			}
-			
+
 			if (!"".equals(etTemperatureLowerValueWarning.getText().toString().trim())) {
 				int temperatureLowerValueWarning = Integer
-						.parseInt(etTemperatureLowerValueWarning.getText().toString()
-								.trim());
+						.parseInt(etTemperatureLowerValueWarning.getText().toString().trim());
 				warningThreshold.setTemperatureLowerBound(temperatureLowerValueWarning);
-			}else{
+			} else {
 				warningThreshold.setTemperatureLowerBound(Integer.MIN_VALUE);
 			}
 			if (!"".equals(etTemperatureUpperValueWarning.getText().toString().trim())) {
 				int temperatureUpperValueWarning = Integer
-						.parseInt(etTemperatureUpperValueWarning.getText().toString()
-								.trim());
+						.parseInt(etTemperatureUpperValueWarning.getText().toString().trim());
 				warningThreshold.setTemperatureUpperBound(temperatureUpperValueWarning);
-			}else{
+			} else {
 				warningThreshold.setTemperatureUpperBound(Integer.MAX_VALUE);
 			}
-			
+
 			if (!"".equals(etHumidityLowerValueWarning.getText().toString().trim())) {
 				int humidityLowerValueWarning = Integer
-						.parseInt(etHumidityLowerValueWarning.getText().toString()
-								.trim());
+						.parseInt(etHumidityLowerValueWarning.getText().toString().trim());
 				warningThreshold.setHumidityLowerBound(humidityLowerValueWarning);
-			}else{
+			} else {
 				warningThreshold.setHumidityLowerBound(Integer.MIN_VALUE);
 			}
 			if (!"".equals(etHumidityUpperValueWarning.getText().toString().trim())) {
 				int humidityUpperValueWarning = Integer
-						.parseInt(etHumidityUpperValueWarning.getText().toString()
-								.trim());
+						.parseInt(etHumidityUpperValueWarning.getText().toString().trim());
 				warningThreshold.setHumidityUpperBound(humidityUpperValueWarning);
-			}else{
+			} else {
 				warningThreshold.setHumidityUpperBound(Integer.MAX_VALUE);
 			}
-			
-			//breach threshold
+
+			// breach threshold
 			if (!"".equals(etCO2LowerValueBreach.getText().toString().trim())) {
-				int co2LowerValueBreach = Integer
-						.parseInt(etCO2LowerValueBreach.getText().toString()
-								.trim());
+				int co2LowerValueBreach = Integer.parseInt(etCO2LowerValueBreach.getText().toString().trim());
 				breachThreshold.setCo2LowerBound(co2LowerValueBreach);
-			}else{
+			} else {
 				breachThreshold.setCo2LowerBound(Integer.MIN_VALUE);
 			}
-			
+
 			if (!"".equals(etCO2UpperValueBreach.getText().toString().trim())) {
-				int co2UpperValueBreach = Integer
-						.parseInt(etCO2UpperValueBreach.getText().toString()
-								.trim());
+				int co2UpperValueBreach = Integer.parseInt(etCO2UpperValueBreach.getText().toString().trim());
 				breachThreshold.setCo2UpperBound(co2UpperValueBreach);
-			}else{
+			} else {
 				breachThreshold.setCo2UpperBound(Integer.MAX_VALUE);
 			}
-			
+
 			if (!"".equals(etTemperatureLowerValueBreach.getText().toString().trim())) {
 				int temperatureLowerValueBreach = Integer
-						.parseInt(etTemperatureLowerValueWarning.getText().toString()
-								.trim());
+						.parseInt(etTemperatureLowerValueWarning.getText().toString().trim());
 				breachThreshold.setTemperatureLowerBound(temperatureLowerValueBreach);
-			}else{
+			} else {
 				breachThreshold.setTemperatureLowerBound(Integer.MIN_VALUE);
 			}
 			if (!"".equals(etTemperatureUpperValueBreach.getText().toString().trim())) {
 				int temperatureUpperValueBreach = Integer
-						.parseInt(etTemperatureUpperValueBreach.getText().toString()
-								.trim());
+						.parseInt(etTemperatureUpperValueBreach.getText().toString().trim());
 				breachThreshold.setTemperatureUpperBound(temperatureUpperValueBreach);
-			}else{
+			} else {
 				breachThreshold.setTemperatureUpperBound(Integer.MAX_VALUE);
 			}
-			
+
 			if (!"".equals(etHumidityLowerValueBreach.getText().toString().trim())) {
-				int humidityLowerValueBreach = Integer
-						.parseInt(etHumidityLowerValueBreach.getText().toString()
-								.trim());
+				int humidityLowerValueBreach = Integer.parseInt(etHumidityLowerValueBreach.getText().toString().trim());
 				breachThreshold.setHumidityLowerBound(humidityLowerValueBreach);
-			}else{
+			} else {
 				breachThreshold.setHumidityLowerBound(Integer.MIN_VALUE);
 			}
 			if (!"".equals(etHumidityUpperValueBreach.getText().toString().trim())) {
-				int humidityUpperValueBreach = Integer
-						.parseInt(etHumidityUpperValueBreach.getText().toString()
-								.trim());
+				int humidityUpperValueBreach = Integer.parseInt(etHumidityUpperValueBreach.getText().toString().trim());
 				breachThreshold.setHumidityUpperBound(humidityUpperValueBreach);
-			}else{
+			} else {
 				breachThreshold.setHumidityUpperBound(Integer.MAX_VALUE);
 			}
 
-			ServiceContainer
-					.getInstance().getSessionService()
-					.setSessionValue(SessionService.THRESHOLD_WARNING, warningThreshold);
-			ServiceContainer
-					.getInstance().getSessionService()
-					.setSessionValue(SessionService.THRESHOLD_BREACH, breachThreshold);
-			
-			//save to preference
-			
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.WARNING_CO2_LOWERVALUE, Integer.toString(warningThreshold.getCo2LowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.WARNING_CO2_UPPERVALUE, Integer.toString(warningThreshold.getCo2UpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE, Integer.toString(warningThreshold.getTemperatureLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE, Integer.toString(warningThreshold.getTemperatureUpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE, Integer.toString(warningThreshold.getHumidityLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE, Integer.toString(warningThreshold.getHumidityUpperBound()));
-			
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_CO2_LOWERVALUE, Integer.toString(breachThreshold.getCo2LowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_CO2_UPPERVALUE, Integer.toString(breachThreshold.getCo2UpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE, Integer.toString(breachThreshold.getTemperatureLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE, Integer.toString(breachThreshold.getTemperatureUpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE, Integer.toString(breachThreshold.getHumidityLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE, Integer.toString(breachThreshold.getHumidityUpperBound()));
-			
+			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_WARNING,
+					warningThreshold);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_BREACH,
+					breachThreshold);
+
+			// save to preference
+
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.WARNING_CO2_LOWERVALUE,
+					Integer.toString(warningThreshold.getCo2LowerBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.WARNING_CO2_UPPERVALUE,
+					Integer.toString(warningThreshold.getCo2UpperBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE,
+					Integer.toString(warningThreshold.getTemperatureLowerBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE,
+					Integer.toString(warningThreshold.getTemperatureUpperBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE,
+					Integer.toString(warningThreshold.getHumidityLowerBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE,
+					Integer.toString(warningThreshold.getHumidityUpperBound()));
+
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.BREACH_CO2_LOWERVALUE,
+					Integer.toString(breachThreshold.getCo2LowerBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.BREACH_CO2_UPPERVALUE,
+					Integer.toString(breachThreshold.getCo2UpperBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE,
+					Integer.toString(breachThreshold.getTemperatureLowerBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE,
+					Integer.toString(breachThreshold.getTemperatureUpperBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE,
+					Integer.toString(breachThreshold.getHumidityLowerBound()));
+			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+					Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE,
+					Integer.toString(breachThreshold.getHumidityUpperBound()));
+
 			finish();
 			break;
 
@@ -210,58 +225,68 @@ public class SuperUserSettingsActivity extends BaseActivity {
 	}
 
 	private void initViews() {
-		etCO2LowerValueWarning = (EditText)findViewById(R.id.et_settings_co2_lowervalue_warning);
-		etCO2UpperValueWarning = (EditText)findViewById(R.id.et_settings_co2_uppervalue_warning);
-		etTemperatureLowerValueWarning = (EditText)findViewById(R.id.et_settings_temperature_lowervalue_warning);
-		etTemperatureUpperValueWarning = (EditText)findViewById(R.id.et_settings_temperature_uppervalue_warning);
-		etHumidityLowerValueWarning = (EditText)findViewById(R.id.et_settings_humidity_lowervalue_warning);
-		etHumidityUpperValueWarning = (EditText)findViewById(R.id.et_settings_humidity_uppervalue_warning);
-		
-		etCO2LowerValueBreach = (EditText)findViewById(R.id.et_settings_co2_lowervalue_breach);
-		etCO2UpperValueBreach = (EditText)findViewById(R.id.et_settings_co2_uppervalue_breach);
-		etTemperatureLowerValueBreach = (EditText)findViewById(R.id.et_settings_temperature_lowervalue_breach);
-		etTemperatureUpperValueBreach = (EditText)findViewById(R.id.et_settings_temperature_uppervalue_breach);
-		etHumidityLowerValueBreach = (EditText)findViewById(R.id.et_settings_humidity_lowervalue_breach);
-		etHumidityUpperValueBreach = (EditText)findViewById(R.id.et_settings_humidity_uppervalue_breach);
-		
-		if(warningThreshold.getCo2LowerBound()!=Integer.MIN_VALUE){
+		cbRememberPassword = (CheckBox) findViewById(R.id.cb_settings_remember_password);
+
+		etCO2LowerValueWarning = (EditText) findViewById(R.id.et_settings_co2_lowervalue_warning);
+		etCO2UpperValueWarning = (EditText) findViewById(R.id.et_settings_co2_uppervalue_warning);
+		etTemperatureLowerValueWarning = (EditText) findViewById(R.id.et_settings_temperature_lowervalue_warning);
+		etTemperatureUpperValueWarning = (EditText) findViewById(R.id.et_settings_temperature_uppervalue_warning);
+		etHumidityLowerValueWarning = (EditText) findViewById(R.id.et_settings_humidity_lowervalue_warning);
+		etHumidityUpperValueWarning = (EditText) findViewById(R.id.et_settings_humidity_uppervalue_warning);
+
+		etCO2LowerValueBreach = (EditText) findViewById(R.id.et_settings_co2_lowervalue_breach);
+		etCO2UpperValueBreach = (EditText) findViewById(R.id.et_settings_co2_uppervalue_breach);
+		etTemperatureLowerValueBreach = (EditText) findViewById(R.id.et_settings_temperature_lowervalue_breach);
+		etTemperatureUpperValueBreach = (EditText) findViewById(R.id.et_settings_temperature_uppervalue_breach);
+		etHumidityLowerValueBreach = (EditText) findViewById(R.id.et_settings_humidity_lowervalue_breach);
+		etHumidityUpperValueBreach = (EditText) findViewById(R.id.et_settings_humidity_uppervalue_breach);
+
+		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(this,
+				Constants.PreferenceKey.LOGINNAME);
+		if (loginName != null && (!loginName.equals(""))) {
+			cbRememberPassword.setChecked(true);
+		} else {
+			cbRememberPassword.setChecked(false);
+		}
+
+		if (warningThreshold.getCo2LowerBound() != Integer.MIN_VALUE) {
 			etCO2LowerValueWarning.setText(Integer.toString(warningThreshold.getCo2LowerBound()));
 		}
-		if(warningThreshold.getCo2UpperBound()!=Integer.MAX_VALUE){
+		if (warningThreshold.getCo2UpperBound() != Integer.MAX_VALUE) {
 			etCO2UpperValueWarning.setText(Integer.toString(warningThreshold.getCo2UpperBound()));
 		}
-		if(warningThreshold.getTemperatureLowerBound()!=Integer.MIN_VALUE){
+		if (warningThreshold.getTemperatureLowerBound() != Integer.MIN_VALUE) {
 			etTemperatureLowerValueWarning.setText(Integer.toString(warningThreshold.getTemperatureLowerBound()));
 		}
-		if(warningThreshold.getTemperatureUpperBound()!=Integer.MAX_VALUE){
+		if (warningThreshold.getTemperatureUpperBound() != Integer.MAX_VALUE) {
 			etTemperatureUpperValueWarning.setText(Integer.toString(warningThreshold.getTemperatureUpperBound()));
 		}
-		if(warningThreshold.getHumidityLowerBound()!=Integer.MIN_VALUE){
+		if (warningThreshold.getHumidityLowerBound() != Integer.MIN_VALUE) {
 			etHumidityLowerValueWarning.setText(Integer.toString(warningThreshold.getHumidityLowerBound()));
 		}
-		if(warningThreshold.getHumidityUpperBound()!=Integer.MAX_VALUE){
+		if (warningThreshold.getHumidityUpperBound() != Integer.MAX_VALUE) {
 			etHumidityUpperValueWarning.setText(Integer.toString(warningThreshold.getHumidityUpperBound()));
 		}
-		
-		if(breachThreshold.getCo2LowerBound()!=Integer.MIN_VALUE){
+
+		if (breachThreshold.getCo2LowerBound() != Integer.MIN_VALUE) {
 			etCO2LowerValueBreach.setText(Integer.toString(breachThreshold.getCo2LowerBound()));
 		}
-		if(breachThreshold.getCo2UpperBound()!=Integer.MAX_VALUE){
+		if (breachThreshold.getCo2UpperBound() != Integer.MAX_VALUE) {
 			etCO2UpperValueBreach.setText(Integer.toString(breachThreshold.getCo2UpperBound()));
 		}
-		if(breachThreshold.getTemperatureLowerBound()!=Integer.MIN_VALUE){
+		if (breachThreshold.getTemperatureLowerBound() != Integer.MIN_VALUE) {
 			etTemperatureLowerValueBreach.setText(Integer.toString(breachThreshold.getTemperatureLowerBound()));
 		}
-		if(breachThreshold.getTemperatureUpperBound()!=Integer.MAX_VALUE){
+		if (breachThreshold.getTemperatureUpperBound() != Integer.MAX_VALUE) {
 			etTemperatureUpperValueBreach.setText(Integer.toString(breachThreshold.getTemperatureUpperBound()));
 		}
-		if(breachThreshold.getHumidityLowerBound()!=Integer.MIN_VALUE){
+		if (breachThreshold.getHumidityLowerBound() != Integer.MIN_VALUE) {
 			etHumidityLowerValueBreach.setText(Integer.toString(breachThreshold.getHumidityLowerBound()));
 		}
-		if(breachThreshold.getHumidityUpperBound()!=Integer.MAX_VALUE){
+		if (breachThreshold.getHumidityUpperBound() != Integer.MAX_VALUE) {
 			etHumidityUpperValueBreach.setText(Integer.toString(breachThreshold.getHumidityUpperBound()));
 		}
-		
+		setupActionBar();
 	}
 
 }

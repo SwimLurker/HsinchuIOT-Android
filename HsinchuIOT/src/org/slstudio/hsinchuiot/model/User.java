@@ -22,6 +22,13 @@ public class User implements Serializable {
 	@DatabaseField(id = true)
 	@JsonProperty("user_id")
 	private String userID;
+	
+	@DatabaseField
+	private String loginName;
+	
+	@DatabaseField
+	private String password;
+	
 
 	@DatabaseField
 	@JsonProperty("super_user")
@@ -71,6 +78,22 @@ public class User implements Serializable {
 
 	public void setUserID(String userID) {
 		this.userID = userID;
+	}
+
+	public String getLoginName() {
+		return loginName;
+	}
+
+	public void setLoginName(String loginName) {
+		this.loginName = loginName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public boolean isSuperUser() {

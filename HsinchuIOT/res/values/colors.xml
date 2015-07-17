@@ -36,5 +36,6 @@
     <color name="title_bk_green">#4fcb44</color>
     <color name="title_bk_brown">#e5a02a</color>
     <color name="title_bk_purple">#8739d5</color>
+    <color name="warning">#fcae00</color>
 
 </resources>

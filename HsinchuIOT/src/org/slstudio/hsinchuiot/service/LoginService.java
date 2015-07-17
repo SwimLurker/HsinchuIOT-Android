@@ -40,7 +40,7 @@ public class LoginService {
 
 		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_SESSION_ID);
-		request.addParameter("dataType", "json");
+		request.addParameter("dataType", "xml");
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, new RequestListener<Session>() {
 
 			@Override
@@ -175,6 +175,8 @@ public class LoginService {
 			throw exception;
 
 		if (succeed) {
+			loginUser.setLoginName(loginName);
+			loginUser.setPassword(password);
 			ServiceContainer.getInstance().getSessionService().setSessionID(sessionID);
 			ServiceContainer.getInstance().getSessionService().setLoginUser(loginUser);
 		}

@@ -173,7 +173,7 @@ public class SiteListViewAdapter extends BaseAdapter {
 
 		int red = resources.getColor(R.color.red);
 		int black = resources.getColor(R.color.black);
-		int yellow = resources.getColor(R.color.yellow);
+		int yellow = resources.getColor(R.color.warning);
 		// co2
 		ImageView ivCO2 = (ImageView) convertView
 				.findViewById(R.id.li_iv_icon_co2);

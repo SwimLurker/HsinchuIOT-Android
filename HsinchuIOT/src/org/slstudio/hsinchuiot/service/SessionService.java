@@ -36,7 +36,11 @@ public class SessionService {
 	}
 
 	public void setSessionValue(String key, Object value) {
-		sessionValues.put(key, value);
+		if(value == null){
+			sessionValues.remove(key);
+		}else{
+			sessionValues.put(key, value);
+		}
 	}
 
 }

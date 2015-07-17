@@ -17,15 +17,59 @@
                 style="@style/FillForm.Item.TextView"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
-                android:text="警告門限值設定" 
-                android:textColor="@color/black"/>
+                android:text="個人偏好設定"
+                android:textColor="@color/black" />
         </LinearLayout>
- 		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
+        <LinearLayout style="@style/Form.Item.Layout" >
+
+            <TextView
+                style="@style/FillForm.Item.TextView"
+                android:layout_width="wrap_content"
+                android:text="@string/common_login_remember_password" />
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1px"
+                android:layout_weight="1" />
+
+            <CheckBox
+                android:id="@+id/cb_settings_remember_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/com_checkbox"
+                android:button="@null"
+                android:textColor="@color/text_color_gray_2" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="@drawable/divider_horizontal" />
+
         <LinearLayout
-            style="@style/Form.Item.Layout">
+            style="@style/Form.Item.Layout"
+            android:layout_marginTop="10dip" >
+
+            <TextView
+                style="@style/FillForm.Item.TextView"
+                android:layout_width="wrap_content"
+                android:layout_weight="1"
+                android:text="警告門限值設定"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="@drawable/divider_horizontal" />
+
+        <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -43,10 +87,12 @@
                 android:singleLine="true"
                 android:textColor="@color/text_color_gray_2" />
         </LinearLayout>
-		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
         <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
@@ -64,12 +110,13 @@
                 android:hint="請輸入"
                 android:singleLine="true" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
-        <LinearLayout
-            style="@style/Form.Item.Layout">
+
+        <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -87,10 +134,12 @@
                 android:singleLine="true"
                 android:textColor="@color/text_color_gray_2" />
         </LinearLayout>
-		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
         <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
@@ -108,12 +157,13 @@
                 android:hint="請輸入"
                 android:singleLine="true" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
-        <LinearLayout
-            style="@style/Form.Item.Layout">
+
+        <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -131,11 +181,16 @@
                 android:singleLine="true"
                 android:textColor="@color/text_color_gray_2" />
         </LinearLayout>
-		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
-        <LinearLayout style="@style/Form.Item.Layout" >
+
+        <LinearLayout
+            style="@style/Form.Item.Layout"
+            android:focusable="true"
+            android:focusableInTouchMode="true" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -152,10 +207,12 @@
                 android:hint="請輸入"
                 android:singleLine="true" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
         <LinearLayout
             style="@style/Form.Item.Layout"
             android:layout_marginTop="10dip" >
@@ -164,15 +221,16 @@
                 style="@style/FillForm.Item.TextView"
                 android:layout_width="wrap_content"
                 android:layout_weight="1"
-                android:textColor="@color/black"
-                android:text="超標門限值設定" />
+                android:text="超標門限值設定"
+                android:textColor="@color/black" />
         </LinearLayout>
- 		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
-        <LinearLayout
-            style="@style/Form.Item.Layout">
+
+        <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -190,10 +248,12 @@
                 android:singleLine="true"
                 android:textColor="@color/text_color_gray_2" />
         </LinearLayout>
-		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
         <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
@@ -211,12 +271,13 @@
                 android:hint="請輸入"
                 android:singleLine="true" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
-        <LinearLayout
-            style="@style/Form.Item.Layout">
+
+        <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -234,10 +295,12 @@
                 android:singleLine="true"
                 android:textColor="@color/text_color_gray_2" />
         </LinearLayout>
-		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
         <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
@@ -255,12 +318,13 @@
                 android:hint="請輸入"
                 android:singleLine="true" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
-        <LinearLayout
-            style="@style/Form.Item.Layout">
+
+        <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
                 style="@style/FillForm.Item.TextView"
@@ -278,10 +342,12 @@
                 android:singleLine="true"
                 android:textColor="@color/text_color_gray_2" />
         </LinearLayout>
-		<View
+
+        <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
             android:background="@drawable/divider_horizontal" />
+
         <LinearLayout style="@style/Form.Item.Layout" >
 
             <TextView
@@ -299,6 +365,7 @@
                 android:hint="請輸入"
                 android:singleLine="true" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dip"
