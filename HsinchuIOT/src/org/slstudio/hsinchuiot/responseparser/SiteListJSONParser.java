@@ -14,17 +14,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slstudio.hsinchuiot.model.Device;
 import org.slstudio.hsinchuiot.model.DeviceWithAggregationData;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
+import org.slstudio.hsinchuiot.model.Site;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeviceListWithAggregationDataJSONParser implements ResponseParser{
+public class SiteListJSONParser implements ResponseParser{
 
-	private Class<List<DeviceWithAggregationData>> clz;
+	private Class<List<Site>> clz;
 	
 	@Override
 	public Object parseResponse(InputStream is) throws IOTException {
-		List<DeviceWithAggregationData> result = new ArrayList<DeviceWithAggregationData>();
+		List<Site> result = new ArrayList<Site>();
 		
 		BufferedReader in = null;
 		try {
@@ -73,10 +74,14 @@ public class DeviceListWithAggregationDataJSONParser implements ResponseParser{
 					data.setHumidity(f2);
 				}
 				
+				Site site = new Site();
+				site.setDevice(d);
+				site.setSiteID(d.getDeviceID());
+				site.setSiteName(d.getSiteName());
+				site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
+				site.setMonitorData(data);
 				
-				
-				DeviceWithAggregationData dwad = new DeviceWithAggregationData(d, data);
-				result.add(dwad);
+				result.add(site);
 				
 			}
 			return result;

@@ -179,7 +179,7 @@ public class SplashActivity extends BaseActivity {
 						if (loginUser.isSuperUser()) {
 							gotoSuperUserMainScreen();
 						} else {
-							gotoSuperUserMainScreen();
+							gotoUserMainScreen();
 						}
 					}
 				} else {

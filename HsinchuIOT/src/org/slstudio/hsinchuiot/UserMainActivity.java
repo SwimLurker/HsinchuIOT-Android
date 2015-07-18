@@ -44,7 +44,7 @@ public class UserMainActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_superuser_main);
+		setContentView(R.layout.activity_user_main);
 		initViews();
 		handler = new Handler();
 		handler.post(new Runnable() {
@@ -57,8 +57,18 @@ public class UserMainActivity extends BaseActivity {
 
 		});
 	}
+	
+	@Override
+	protected void setupActionBar() {
+		actionBar = getActionBar();
+		actionBar.setTitle("");
+		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		super.setupActionBar();
+	}
 
 	private void initViews() {
+		
 		viewPager = (ViewPager) findViewById(R.id.vp_user_site_home);
 		pagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
 
@@ -97,6 +107,8 @@ public class UserMainActivity extends BaseActivity {
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
+		
+		setupActionBar();
 	}
 
 	private void getDeviceList() {
@@ -122,12 +134,17 @@ public class UserMainActivity extends BaseActivity {
 	}
 	
 	private void createHomeFragments(List<Site> sites) {
+		fragments.clear();
+		
 		for(Site site: sites){
 			UserSiteHomePageFragment fragment = new UserSiteHomePageFragment();
 			fragment.setSite(site);
 			fragments.add(fragment);
 		}
 		pagerAdapter.notifyDataSetChanged();
+		if(fragments.size() >0){
+			viewPager.setCurrentItem(0);
+		}
 		
 	}
 

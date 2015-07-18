@@ -63,7 +63,7 @@ public class SuperUserMainActivity extends BaseActivity {
 
 	private List<Device> deviceList = new ArrayList<Device>();
 
-	private List<DeviceWithAggregationData> deviceWithAggDataList = new ArrayList<DeviceWithAggregationData>();
+	//private List<Site> siteList = new ArrayList<Site>();
 
 	private Handler handler;
 
@@ -97,7 +97,7 @@ public class SuperUserMainActivity extends BaseActivity {
 			public void run() {
 				// use new api
 				//getDeviceList();
-				getDeviceListWithAggregationData();
+				getSiteList();
 			}
 
 		});
@@ -132,18 +132,18 @@ public class SuperUserMainActivity extends BaseActivity {
 
 	}
 
-	private void getDeviceListWithAggregationData() {
+	private void getSiteList() {
 		String sessionID = ServiceContainer.getInstance().getSessionService()
 				.getSessionID();
 
 		HttpRequest request = new NoneAuthedHttpRequest(
 				new HttpConfig.GetHttpConfig(),
-				Constants.ServerAPIURI.GET_DEVICE_LIST_WITH_AGG_DATA);
+				Constants.ServerAPIURI.GET_SITE_LIST_WITH_AGG_DATA);
 
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 
-		GetDeviceListWithAggDataListener listener = new GetDeviceListWithAggDataListener(
+		GetSiteListListener listener = new GetSiteListListener(
 				this, true, getString(R.string.common_please_wait));
 
 		ServiceContainer.getInstance().getHttpHandler()
@@ -279,7 +279,7 @@ public class SuperUserMainActivity extends BaseActivity {
 							public void run() {
 								// TODO Auto-generated method stub
 								//getDeviceList();
-								getDeviceListWithAggregationData();
+								getSiteList();
 							}
 
 						});
@@ -546,10 +546,10 @@ public class SuperUserMainActivity extends BaseActivity {
 
 	}
 
-	private class GetDeviceListWithAggDataListener extends
-			ForgroundRequestListener<List<DeviceWithAggregationData>> {
+	private class GetSiteListListener extends
+			ForgroundRequestListener<List<Site>> {
 		
-		public GetDeviceListWithAggDataListener(Context context,
+		public GetSiteListListener(Context context,
 				boolean isShowProgressDialog, String content) {
 			super(context, isShowProgressDialog, content);
 		}
@@ -572,22 +572,9 @@ public class SuperUserMainActivity extends BaseActivity {
 		}
 
 		@Override
-		public void onRequestResult(final List<DeviceWithAggregationData> result) {
-			deviceWithAggDataList = result;
-			List<Site> sites = new ArrayList<Site>();
-			for (DeviceWithAggregationData dWAD : deviceWithAggDataList) {
-				Device d = dWAD.getDevice();
-				IOTMonitorData aggrData = dWAD.getAggregationData();
-				
-				Site site = new Site();
-				site.setSiteID(d.getDeviceID());
-				site.setDevice(d);
-				site.setSiteName(d.getSiteName());
-				site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
-				site.setMonitorData(aggrData);
-				sites.add(site);
-			}
-			siteListViewAdatper.setItems(sites);
+		public void onRequestResult(final List<Site> result) {
+			
+			siteListViewAdatper.setItems(result);
 
 			final Calendar c8[] = ReportUtil.get8HoursTimePeriod();
 			final Calendar c1[] = ReportUtil.get1HourTimePeriod();

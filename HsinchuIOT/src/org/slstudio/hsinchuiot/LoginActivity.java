@@ -214,7 +214,7 @@ public class LoginActivity extends BaseActivity {
 					if (loginUser.isSuperUser()) {
 						gotoSuperUserMainScreen();
 					} else {
-						gotoSuperUserMainScreen();
+						gotoUserMainScreen();
 					}
 				}
 			});
