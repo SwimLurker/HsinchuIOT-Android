@@ -99,7 +99,7 @@ public class User implements Serializable {
 	public boolean isSuperUser() {
 		//return superUser;
 		//hack for testing
-		return true;
+		return false;
 	}
 
 	public void setSuperUser(boolean superUser) {

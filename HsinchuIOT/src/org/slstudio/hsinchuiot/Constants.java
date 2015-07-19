@@ -35,6 +35,10 @@ public class Constants {
 		public static final String DICTIONARY="DICTIONARY";
 	
 	}
+	
+	public static class MessageKey{
+		public static final int MESSAGE_GET_REALTIME_DATA = 1;
+	}
 
 	public static class PreferenceKey {
 		public static final String SESSION_ID = "SESSION_ID";
