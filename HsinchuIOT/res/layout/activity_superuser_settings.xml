@@ -37,14 +37,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="1px"
                 android:layout_weight="1" />
-
-            <CheckBox
-                android:id="@+id/cb_settings_remember_password"
+			<Switch
+                android:id="@+id/sw_settings_remember_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/com_checkbox"
-                android:button="@null"
-                android:textColor="@color/text_color_gray_2" />
+                android:checked="true"
+                android:textOff="@string/no"
+                android:textOn="@string/yes" />
         </LinearLayout>
 
         <View
@@ -58,7 +57,7 @@
 
             <TextView
                 style="@style/FillForm.Item.TextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_weight="1"
                 android:text="警告門限值設定"
                 android:textColor="@color/black" />

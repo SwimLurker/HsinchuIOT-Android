@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Switch;
 
 public class UserSettingsActivity extends BaseActivity {
 
@@ -29,7 +30,7 @@ public class UserSettingsActivity extends BaseActivity {
 	private EditText etHumidityLowerValueBreach;
 	private EditText etHumidityUpperValueBreach;
 
-	private CheckBox cbRememberPassword;
+	private Switch swRememberPassword;
 
 	private IOTMonitorThreshold warningThreshold;
 	private IOTMonitorThreshold breachThreshold;
@@ -63,7 +64,7 @@ public class UserSettingsActivity extends BaseActivity {
 			break;
 		case R.id.menu_ok:
 			// remember password
-			if (cbRememberPassword.isChecked()) {
+			if (swRememberPassword.isChecked()) {
 				User user = ServiceContainer.getInstance().getSessionService().getLoginUser();
 				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.LOGINNAME,
 						user.getLoginName());
@@ -225,7 +226,7 @@ public class UserSettingsActivity extends BaseActivity {
 	}
 
 	private void initViews() {
-		cbRememberPassword = (CheckBox) findViewById(R.id.cb_settings_remember_password);
+		swRememberPassword = (Switch) findViewById(R.id.sw_settings_remember_password);
 
 		etCO2LowerValueWarning = (EditText) findViewById(R.id.et_settings_co2_lowervalue_warning);
 		etCO2UpperValueWarning = (EditText) findViewById(R.id.et_settings_co2_uppervalue_warning);
@@ -244,9 +245,9 @@ public class UserSettingsActivity extends BaseActivity {
 		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(this,
 				Constants.PreferenceKey.LOGINNAME);
 		if (loginName != null && (!loginName.equals(""))) {
-			cbRememberPassword.setChecked(true);
+			swRememberPassword.setChecked(true);
 		} else {
-			cbRememberPassword.setChecked(false);
+			swRememberPassword.setChecked(false);
 		}
 
 		if (warningThreshold.getCo2LowerBound() != Integer.MIN_VALUE) {
