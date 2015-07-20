@@ -1,13 +1,16 @@
 package org.slstudio.hsinchuiot;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slstudio.hsinchuiot.fragment.UserSiteHomePageFragment;
 import org.slstudio.hsinchuiot.model.Device;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
+import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.service.SessionService;
 import org.slstudio.hsinchuiot.service.http.ForgroundRequestListener;
 import org.slstudio.hsinchuiot.service.http.HttpConfig;
 import org.slstudio.hsinchuiot.service.http.HttpRequest;
@@ -18,6 +21,7 @@ import org.slstudio.hsinchuiot.util.IOTLog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +29,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 public class UserMainActivity extends BaseActivity {
@@ -63,6 +69,7 @@ public class UserMainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_user_main);
+		
 		initViews();
 		handler.post(new Runnable() {
 
@@ -73,6 +80,35 @@ public class UserMainActivity extends BaseActivity {
 			}
 
 		});
+	}
+	
+	
+
+	@Override
+	protected void onResume() {
+		Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
+		if(currentIndex >= 0 && currentIndex < fragments.size() -1){
+			UserSiteHomePageFragment fragment = fragments.get(currentIndex);
+			sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
+		}
+		
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+
+		Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		super.onPause();
+	}
+
+	@Override
+	protected void onDestroy() {
+
+		Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		super.onDestroy();
 	}
 
 	public void moveToPreSite() {
@@ -93,10 +129,64 @@ public class UserMainActivity extends BaseActivity {
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
 		
 		if(currentIndex!=-1){
-			UserSiteHomePageFragment fragment = fragments.get(currentIndex);
-			sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
+			Message msg = new Message();
+			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
+			handler.sendMessageDelayed(msg, 2000);
+			//UserSiteHomePageFragment fragment = fragments.get(currentIndex);
+			//sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
 		}
 	}
+	
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			break;
+		case R.id.menu_user_main_settings:
+			Intent intent = new Intent(
+					Constants.Action.HSINCHUIOT_USER_SETTINGS);
+			startActivity(intent);
+			break;
+		case R.id.menu_user_main_logoff:
+			
+			ServiceContainer.getInstance().getSessionService().setLoginUser(null);
+			ServiceContainer.getInstance().getSessionService().setSessionID(null);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH, null);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING, null);
+			
+			Intent loginIntent = new Intent(
+					Constants.Action.HSINCHUIOT_LOGIN);
+			startActivity(loginIntent);
+			finish();
+			break;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_user_main, menu);
+		setIconEnable(menu, true);
+		return true;
+	}
+
+	private void setIconEnable(Menu menu, boolean enable) {
+		try {
+			Class<?> clazz = Class
+					.forName("com.android.internal.view.menu.MenuBuilder");
+			Method m = clazz.getDeclaredMethod("setOptionalIconsVisible",
+					boolean.class);
+			m.setAccessible(true);
+
+			// MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)
+			m.invoke(menu, enable);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	private void initViews() {
 

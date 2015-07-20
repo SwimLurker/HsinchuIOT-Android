@@ -31,6 +31,15 @@ public class IOTMonitorThreshold implements Serializable{
 		this.humidityLowerBound = humidityLowerBound;
 		this.humidityUpperBound = humidityUpperBound;
 	}
+	
+	public IOTMonitorThreshold(IOTMonitorThreshold value){
+		this.co2LowerBound = value.co2LowerBound;
+		this.co2UpperBound = value.co2UpperBound;
+		this.temperatureLowerBound = value.temperatureLowerBound;
+		this.temperatureUpperBound = value.temperatureUpperBound;
+		this.humidityLowerBound = value.humidityLowerBound;
+		this.humidityUpperBound = value.humidityUpperBound;
+	}
 
 	public int getCo2LowerBound() {
 		return co2LowerBound;

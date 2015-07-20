@@ -13,6 +13,8 @@ import org.slstudio.hsinchuiot.R.color;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
 import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Site;
+import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.service.SessionService;
 import org.slstudio.hsinchuiot.util.ImageUtil;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -38,23 +40,16 @@ public class SiteListViewAdapter extends BaseAdapter {
 
 	
 	private List<Site> items = null;
-	private IOTMonitorThreshold warningThreshold = null;
-	private IOTMonitorThreshold breachThreshold = null;
-
+	
 	private LayoutInflater mInflater = null;
 	private Context context = null;
 	
 	private int selectedPosition = -1;
 	private int clickedPosition = -1;
 	
-	public SiteListViewAdapter(Context c, List<Site> items,
-			IOTMonitorThreshold warningThreshold,
-			IOTMonitorThreshold breachThreshold) {
+	public SiteListViewAdapter(Context c, List<Site> items) {
 		this.context = c;
 		this.items = items;
-		this.warningThreshold = warningThreshold;
-		this.breachThreshold = breachThreshold;
-
 	}
 
 	public void setSelectedPosition(int position) {  
@@ -67,22 +62,6 @@ public class SiteListViewAdapter extends BaseAdapter {
 
 	public void setItems(List<Site> items) {
 		this.items = items;
-	}
-
-	public IOTMonitorThreshold getWarningThreshold() {
-		return warningThreshold;
-	}
-
-	public void setWarningThreshold(IOTMonitorThreshold warningThreshold) {
-		this.warningThreshold = warningThreshold;
-	}
-
-	public IOTMonitorThreshold getBreachThreshold() {
-		return breachThreshold;
-	}
-
-	public void setBreachThreshold(IOTMonitorThreshold breachThreshold) {
-		this.breachThreshold = breachThreshold;
 	}
 
 	public Site getSiteByDeviceID(String deviceID) {
@@ -171,23 +150,27 @@ public class SiteListViewAdapter extends BaseAdapter {
 				.findViewById(R.id.li_tv_sitename);
 		tvSiteName.setText(data == null ? null : site.getSiteName());
 
-		int red = resources.getColor(R.color.red);
-		int black = resources.getColor(R.color.black);
-		int yellow = resources.getColor(R.color.warning);
+		int alarm = resources.getColor(R.color.status_alarm);
+		int normal = resources.getColor(R.color.black);
+		int warning = resources.getColor(R.color.status_warning);
+		
+		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		
 		// co2
 		ImageView ivCO2 = (ImageView) convertView
 				.findViewById(R.id.li_iv_icon_co2);
 		TextView tvCO2 = (TextView) convertView
 				.findViewById(R.id.li_tv_co2value);
 
-		if (data.isCO2Breach(breachThreshold)) {
-			tvCO2.setTextColor(red);
+		if (breachThreshold != null && data.isCO2Breach(breachThreshold)) {
+			tvCO2.setTextColor(alarm);
 			ivCO2.setImageResource(R.drawable.co2_alarm);
-		}else if (data.isCO2Breach(warningThreshold)) {
-			tvCO2.setTextColor(yellow);
+		}else if (warningThreshold != null && data.isCO2Breach(warningThreshold)) {
+			tvCO2.setTextColor(warning);
 			ivCO2.setImageResource(R.drawable.co2_warning);
 		}else {
-			tvCO2.setTextColor(black);
+			tvCO2.setTextColor(normal);
 			ivCO2.setImageResource(R.drawable.co2);
 		}
 		tvCO2.setText(Float.toString(data.getCo2()) + " ppm");
@@ -199,14 +182,14 @@ public class SiteListViewAdapter extends BaseAdapter {
 				.findViewById(R.id.li_tv_temperaturevalue);
 		tvTemperature.setText(Float.toString(data.getTemperature()) + " ℃");
 
-		if (data.isTemperatureBreach(breachThreshold)) {
-			tvTemperature.setTextColor(red);
+		if (breachThreshold != null && data.isTemperatureBreach(breachThreshold)) {
+			tvTemperature.setTextColor(alarm);
 			ivTemperature.setImageResource(R.drawable.temperature_alarm);
-		}else if (data.isTemperatureBreach(warningThreshold)) {
-			tvTemperature.setTextColor(yellow);
+		}else if (warningThreshold != null && data.isTemperatureBreach(warningThreshold)) {
+			tvTemperature.setTextColor(warning);
 			ivTemperature.setImageResource(R.drawable.temperature_warning);
 		}else {
-			tvTemperature.setTextColor(black);
+			tvTemperature.setTextColor(normal);
 			ivTemperature.setImageResource(R.drawable.temperature);
 		}
 
@@ -218,14 +201,14 @@ public class SiteListViewAdapter extends BaseAdapter {
 		
 		tvHumidity.setText(Float.toString(data.getHumidity()) + " %");
 
-		if (data.isHumidityBreach(breachThreshold)) {
-			tvHumidity.setTextColor(red);
+		if (breachThreshold != null && data.isHumidityBreach(breachThreshold)) {
+			tvHumidity.setTextColor(alarm);
 			ivHumidity.setImageResource(R.drawable.humidity_alarm);
-		}else if (data.isHumidityBreach(warningThreshold)) {
-			tvHumidity.setTextColor(yellow);
+		}else if (warningThreshold != null && data.isHumidityBreach(warningThreshold)) {
+			tvHumidity.setTextColor(warning);
 			ivHumidity.setImageResource(R.drawable.humidity_warning);
 		}else {
-			tvHumidity.setTextColor(black);
+			tvHumidity.setTextColor(normal);
 			ivHumidity.setImageResource(R.drawable.humidity);
 		}
 		

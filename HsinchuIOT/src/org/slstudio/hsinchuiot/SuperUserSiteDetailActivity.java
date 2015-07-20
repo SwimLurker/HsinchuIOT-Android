@@ -122,10 +122,9 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		setContentView(R.layout.activity_superuser_sitedetail);
 
 		currentSite = (Site) getIntent().getSerializableExtra(SuperUserMainActivity.SELECTED_SITE);
-		warningThreshold = (IOTMonitorThreshold) getIntent()
-				.getSerializableExtra(SuperUserMainActivity.WARNING_THRESHOLD);
-		alarmThreshold = (IOTMonitorThreshold) getIntent().getSerializableExtra(SuperUserMainActivity.ALARM_THRESHOLD);
-
+		warningThreshold = (IOTMonitorThreshold)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		alarmThreshold = (IOTMonitorThreshold)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+		
 		Calendar c8[] = ReportUtil.get8HoursTimePeriod();
 		co2From = c8[0];
 		co2To = c8[1];
@@ -391,15 +390,18 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 	private void updateUI() {
 		
-		int yellow = getResources().getColor(R.color.warning);
+		int alarm = getResources().getColor(R.color.status_alarm);
+		int warning = getResources().getColor(R.color.status_warning);
+		int normal = getResources().getColor(R.color.black);
+		
 		
 		tvCO2AverageValue.setText(Float.toString(averageValueCO2) + " ppm");
 		if (alarmThreshold != null && alarmThreshold.isCO2Breach(averageValueCO2)) {
-			tvCO2AverageValue.setTextColor(Color.RED);
+			tvCO2AverageValue.setTextColor(alarm);
 		} else if (warningThreshold != null && warningThreshold.isCO2Breach(averageValueCO2)) {
-			tvCO2AverageValue.setTextColor(yellow);
+			tvCO2AverageValue.setTextColor(warning);
 		} else {
-			tvCO2AverageValue.setTextColor(Color.BLACK);
+			tvCO2AverageValue.setTextColor(normal);
 		}
 
 		tvCO2MaxValue.setText(Integer.toString(Math.round(maxValueCO2)) + " ppm");
@@ -408,11 +410,11 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		tvTemperatureAverageValue.setText(Float.toString(averageValueTemperature) + " ℃");
 
 		if (alarmThreshold != null && alarmThreshold.isTemperatureBreach(averageValueTemperature)) {
-			tvTemperatureAverageValue.setTextColor(Color.RED);
+			tvTemperatureAverageValue.setTextColor(alarm);
 		} else if (warningThreshold != null && warningThreshold.isTemperatureBreach(averageValueTemperature)) {
-			tvTemperatureAverageValue.setTextColor(yellow);
+			tvTemperatureAverageValue.setTextColor(warning);
 		} else {
-			tvTemperatureAverageValue.setTextColor(Color.BLACK);
+			tvTemperatureAverageValue.setTextColor(normal);
 		}
 
 		tvTemperatureMaxValue.setText(Float.toString(maxValueTemperature) + " ℃");
@@ -421,11 +423,11 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 		tvHumidityAverageValue.setText(Float.toString(averageValueHumidity) + " %");
 
 		if (alarmThreshold != null && alarmThreshold.isHumidityBreach(averageValueHumidity)) {
-			tvHumidityAverageValue.setTextColor(Color.RED);
+			tvHumidityAverageValue.setTextColor(alarm);
 		} else if (warningThreshold != null && warningThreshold.isHumidityBreach(averageValueHumidity)) {
-			tvHumidityAverageValue.setTextColor(yellow);
+			tvHumidityAverageValue.setTextColor(warning);
 		} else {
-			tvHumidityAverageValue.setTextColor(Color.BLACK);
+			tvHumidityAverageValue.setTextColor(normal);
 		}
 
 		tvHumidityMaxValue.setText(Integer.toString(Math.round(maxValueHumidity)) + " %");

@@ -6,9 +6,6 @@ import java.util.Map;
 import org.slstudio.hsinchuiot.model.User;
 
 public class SessionService {
-	public static final String THRESHOLD_WARNING = "org.slstudio.hsinchuiot.THRESHOLD_WARING";
-	public static final String THRESHOLD_BREACH = "org.slstudio.hsinchuiot.THRESHOLD_BREACH";
-	
 	
 	private Map<String, Object> sessionValues = new HashMap<String, Object>();
 	private String sessionID;

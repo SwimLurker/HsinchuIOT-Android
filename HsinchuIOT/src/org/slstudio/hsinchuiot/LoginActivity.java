@@ -197,9 +197,9 @@ public class LoginActivity extends BaseActivity {
 			loginUser.setPassword(pwdMD5);
 			ServiceContainer.getInstance().getSessionService().setLoginUser(loginUser);
 
-			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_WARNING,
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
 					LoginService.getWarningThreshold(LoginActivity.this));
-			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_BREACH,
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
 					LoginService.getBreachThreshold(LoginActivity.this));
 
 			handler.post(new Runnable() {

@@ -166,9 +166,9 @@ public class SplashActivity extends BaseActivity {
 		} else {
 			try {
 				if (LoginService.getInstance().login(loginName, password)) {
-					ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_WARNING,
+					ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
 							LoginService.getWarningThreshold(this));
-					ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_BREACH,
+					ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
 							LoginService.getBreachThreshold(this));
 					User loginUser = ServiceContainer.getInstance().getSessionService().getLoginUser();
 

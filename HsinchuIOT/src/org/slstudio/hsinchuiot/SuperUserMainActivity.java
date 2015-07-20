@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.slstudio.hsinchuiot.model.Device;
-import org.slstudio.hsinchuiot.model.DeviceWithAggregationData;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
-import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.service.SessionService;
@@ -39,7 +37,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
-
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
@@ -50,16 +47,13 @@ import com.mobeta.android.dslv.DragSortListView;
 
 public class SuperUserMainActivity extends BaseActivity {
 	public static final String SELECTED_SITE = "org.slstudio.hsinchuiot.SELECTED_SITE";
-	public static final String WARNING_THRESHOLD = "org.slstudio.hsinchuiot.WARNING_THRESHOLD";
-	public static final String ALARM_THRESHOLD = "org.slstudio.hsinchuiot.ALARM_THRESHOLD";
-
+	
 	private PullToRefreshSlideListView siteListView;
 	private TextView tv8hr;
 	private TextView tv1hr;
 
 	private SiteListViewAdapter siteListViewAdatper = new SiteListViewAdapter(
-			this, new ArrayList<Site>(), new IOTMonitorThreshold(),
-			new IOTMonitorThreshold());
+			this, new ArrayList<Site>());
 
 	private List<Device> deviceList = new ArrayList<Device>();
 
@@ -73,20 +67,6 @@ public class SuperUserMainActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_superuser_main);
-
-		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer
-				.getInstance().getSessionService()
-				.getSessionValue(SessionService.THRESHOLD_WARNING);
-		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer
-				.getInstance().getSessionService()
-				.getSessionValue(SessionService.THRESHOLD_BREACH);
-
-		if (warningThreshold != null) {
-			siteListViewAdatper.setWarningThreshold(warningThreshold);
-		}
-		if (breachThreshold != null) {
-			siteListViewAdatper.setBreachThreshold(breachThreshold);
-		}
 
 		initViews();
 
@@ -106,6 +86,7 @@ public class SuperUserMainActivity extends BaseActivity {
 
 	@Override
 	protected void onResume() {
+		
 		siteListViewAdatper.notifyDataSetChanged();
 		super.onResume();
 	}
@@ -189,20 +170,7 @@ public class SuperUserMainActivity extends BaseActivity {
 							Constants.Action.HSINCHUIOT_SUPERUSER_SITEDETAIL);
 					intent.putExtra(SELECTED_SITE,
 							(Site) siteListViewAdatper.getItem(position - 1));
-					intent.putExtra(
-							WARNING_THRESHOLD,
-							(IOTMonitorThreshold) ServiceContainer
-									.getInstance()
-									.getSessionService()
-									.getSessionValue(
-											SessionService.THRESHOLD_WARNING));
-					intent.putExtra(
-							ALARM_THRESHOLD,
-							(IOTMonitorThreshold) ServiceContainer
-									.getInstance()
-									.getSessionService()
-									.getSessionValue(
-											SessionService.THRESHOLD_BREACH));
+					
 					startActivity(intent);
 				}
 			}
@@ -234,21 +202,6 @@ public class SuperUserMainActivity extends BaseActivity {
 				intent.putExtra(SELECTED_SITE,
 						(Site) siteListViewAdatper.getItem(position));
 
-				intent.putExtra(
-						WARNING_THRESHOLD,
-						(IOTMonitorThreshold) ServiceContainer
-								.getInstance()
-								.getSessionService()
-								.getSessionValue(
-										SessionService.THRESHOLD_WARNING));
-
-				intent.putExtra(
-						ALARM_THRESHOLD,
-						(IOTMonitorThreshold) ServiceContainer
-								.getInstance()
-								.getSessionService()
-								.getSessionValue(
-										SessionService.THRESHOLD_BREACH));
 				startActivity(intent);
 				overridePendingTransition(R.anim.slide_in_right2,
 						R.anim.slide_out_left2);
@@ -310,8 +263,8 @@ public class SuperUserMainActivity extends BaseActivity {
 			
 			ServiceContainer.getInstance().getSessionService().setLoginUser(null);
 			ServiceContainer.getInstance().getSessionService().setSessionID(null);
-			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_BREACH, null);
-			ServiceContainer.getInstance().getSessionService().setSessionValue(SessionService.THRESHOLD_WARNING, null);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH, null);
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING, null);
 			
 			Intent loginIntent = new Intent(
 					Constants.Action.HSINCHUIOT_LOGIN);

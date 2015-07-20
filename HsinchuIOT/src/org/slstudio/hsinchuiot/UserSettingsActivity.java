@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-public class SuperUserSettingsActivity extends BaseActivity {
+public class UserSettingsActivity extends BaseActivity {
 
 	private EditText etCO2LowerValueWarning;
 	private EditText etCO2UpperValueWarning;
@@ -38,7 +38,7 @@ public class SuperUserSettingsActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_superuser_settings);
+		setContentView(R.layout.activity_user_settings);
 
 		warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
 				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
@@ -50,7 +50,7 @@ public class SuperUserSettingsActivity extends BaseActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_superuser_settings, menu);
+		getMenuInflater().inflate(R.menu.activity_user_settings, menu);
 		return true;
 	}
 

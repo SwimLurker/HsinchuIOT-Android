@@ -40,6 +40,12 @@ public class Constants {
 		public static final int MESSAGE_GET_REALTIME_DATA = 1;
 	}
 
+	public static class SessionKey{
+		public static final String THRESHOLD_WARNING = "org.slstudio.hsinchuiot.THRESHOLD_WARING";
+		public static final String THRESHOLD_BREACH = "org.slstudio.hsinchuiot.THRESHOLD_BREACH";
+		
+	}
+	
 	public static class PreferenceKey {
 		public static final String SESSION_ID = "SESSION_ID";
 		public static final String LOGINNAME = "LOGIN_NAME";
@@ -81,8 +87,9 @@ public class Constants {
 		public static String HSINCHUIOT_SUPERUSER_SITEDETAIL = "org.slstudio.hsinchuiot.superuser_sitedetail";
 		public static String HSINCHUIOT_SUPERUSER_SETTINGS = "org.slstudio.hsinchuiot.superuser_settings";
 		public static String HSINCHUIOT_USER_MAIN = "org.slstudio.hsinchuiot.user_main";
+		public static String HSINCHUIOT_USER_SETTINGS = "org.slstudio.hsinchuiot.user_settings";
 		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
-	
+	 
 	}
 
 
