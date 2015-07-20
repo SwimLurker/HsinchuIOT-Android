@@ -43,7 +43,7 @@ public class Constants {
 	public static class SessionKey{
 		public static final String THRESHOLD_WARNING = "org.slstudio.hsinchuiot.THRESHOLD_WARING";
 		public static final String THRESHOLD_BREACH = "org.slstudio.hsinchuiot.THRESHOLD_BREACH";
-		
+		public static final String REALTIME_DATA_MONITOR_REFRESH_TIME = "org.slstudio.hsinchuiot.REALTIME_DATA_MONITOR_REFRESH_TIME";
 	}
 	
 	public static class PreferenceKey {
@@ -68,6 +68,8 @@ public class Constants {
 		public static final String BREACH_TEMPERATURE_UPPERVALUE = "BREACH_TEMPERATURE_UPPERVALUE";
 		public static final String BREACH_HUMIDITY_LOWERVALUE = "BREACH_HUMIDITY_LOWERVALUE";
 		public static final String BREACH_HUMIDITY_UPPERVALUE = "BREACH_HUMIDITY_UPPERVALUE";
+		
+		public static final String REALTIME_DATA_MONITOR_REFRESH_TIME = "REALTIME_DATA_MONITOR_REFRESH_TIME";
 		
 		
 		

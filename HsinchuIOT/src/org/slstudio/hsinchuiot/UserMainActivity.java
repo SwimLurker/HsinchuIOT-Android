@@ -317,7 +317,9 @@ public class UserMainActivity extends BaseActivity {
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 			
-			handler.sendMessageDelayed(msg, 10000);
+			int refreshTime = (Integer)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
+			
+			handler.sendMessageDelayed(msg, refreshTime * 1000);
 		}
 
 		@Override

@@ -175,10 +175,16 @@ public class SplashActivity extends BaseActivity {
 					if (loginUser == null) {
 						showLoginActivity();
 					} else {
-
 						if (loginUser.isSuperUser()) {
 							gotoSuperUserMainScreen();
 						} else {
+							int refreshTime = 10;
+							String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
+							if(!"".equals(refreshTimeStr)){
+								refreshTime = Integer.parseInt(refreshTimeStr);
+							}
+							
+							ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, refreshTime);
 							gotoUserMainScreen();
 						}
 					}

@@ -31,6 +31,8 @@ public class UserSettingsActivity extends BaseActivity {
 	private EditText etHumidityUpperValueBreach;
 
 	private Switch swRememberPassword;
+	
+	private EditText etRTDataMonitorRefreshTime;
 
 	private IOTMonitorThreshold warningThreshold;
 	private IOTMonitorThreshold breachThreshold;
@@ -76,6 +78,18 @@ public class UserSettingsActivity extends BaseActivity {
 				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.PASSWORD,
 						null);
 			}
+			
+			//real time data monitor refresh time
+			int refreshTime = 10; 
+			
+			if (!"".equals(etRTDataMonitorRefreshTime.getText().toString().trim())) {
+				refreshTime = Integer.parseInt(etRTDataMonitorRefreshTime.getText().toString().trim());
+			}
+			ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME,
+					Integer.toString(refreshTime));
+			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, refreshTime);
+			
+			
 			// warning threshold
 			if (!"".equals(etCO2LowerValueWarning.getText().toString().trim())) {
 				int co2LowerValueWarning = Integer.parseInt(etCO2LowerValueWarning.getText().toString().trim());
@@ -228,6 +242,8 @@ public class UserSettingsActivity extends BaseActivity {
 	private void initViews() {
 		swRememberPassword = (Switch) findViewById(R.id.sw_settings_remember_password);
 
+		etRTDataMonitorRefreshTime = (EditText)findViewById(R.id.et_settings_monitor_refresh_time);
+		
 		etCO2LowerValueWarning = (EditText) findViewById(R.id.et_settings_co2_lowervalue_warning);
 		etCO2UpperValueWarning = (EditText) findViewById(R.id.et_settings_co2_uppervalue_warning);
 		etTemperatureLowerValueWarning = (EditText) findViewById(R.id.et_settings_temperature_lowervalue_warning);
@@ -248,6 +264,11 @@ public class UserSettingsActivity extends BaseActivity {
 			swRememberPassword.setChecked(true);
 		} else {
 			swRememberPassword.setChecked(false);
+		}
+		if(!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME))){
+			etRTDataMonitorRefreshTime.setText(ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME));
+		}else{
+			etRTDataMonitorRefreshTime.setText("10");
 		}
 
 		if (warningThreshold.getCo2LowerBound() != Integer.MIN_VALUE) {

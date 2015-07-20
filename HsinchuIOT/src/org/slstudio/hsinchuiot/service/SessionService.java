@@ -29,7 +29,15 @@ public class SessionService {
 	}
 
 	public Object getSessionValue(String key) {
-		return sessionValues.get(key);
+		return getSessionValue(key, null);
+	}
+
+	public Object getSessionValue(String key, Object defaultValue) {
+		if(sessionValues.containsKey(key)){
+			return sessionValues.get(key);
+		}else{
+			return defaultValue;
+		}
 	}
 
 	public void setSessionValue(String key, Object value) {
