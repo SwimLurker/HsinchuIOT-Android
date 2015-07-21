@@ -47,6 +47,7 @@ public class UserMainActivity extends BaseActivity {
 		public void handleMessage(Message msg) {   
 			switch (msg.what) {   
                  case Constants.MessageKey.MESSAGE_GET_REALTIME_DATA:   
+                	 IOTLog.d("Handler", "receive get real data message");
                      UserSiteHomePageFragment currentFragment = fragments.get(currentIndex);
                      if(currentFragment != null){
                     	 sendQueryRealtimeDataRequest(currentFragment.getSite().getDevice().getDeviceID());
@@ -86,7 +87,6 @@ public class UserMainActivity extends BaseActivity {
 
 	@Override
 	protected void onResume() {
-		Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
 		if(currentIndex >= 0 && currentIndex < fragments.size() -1){
 			UserSiteHomePageFragment fragment = fragments.get(currentIndex);
 			sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
@@ -97,16 +97,12 @@ public class UserMainActivity extends BaseActivity {
 
 	@Override
 	protected void onPause() {
-
-		Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
 		super.onPause();
 	}
 
 	@Override
 	protected void onDestroy() {
-
-		Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
 		super.onDestroy();
 	}
@@ -129,11 +125,11 @@ public class UserMainActivity extends BaseActivity {
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
 		
 		if(currentIndex!=-1){
+			
+			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_REALTIME_DATA - 2");
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 			handler.sendMessageDelayed(msg, 2000);
-			//UserSiteHomePageFragment fragment = fragments.get(currentIndex);
-			//sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
 		}
 	}
 	
@@ -258,14 +254,13 @@ public class UserMainActivity extends BaseActivity {
 		if (fragments.size() > 0) {
 			viewPager.setCurrentItem(0);
 			currentIndex = 0;
-			UserSiteHomePageFragment fragment = fragments.get(0);
-			sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
+			resendMessage();
 		}
 
 	}
 
 	private void sendQueryRealtimeDataRequest(String deviceID) {
-		Toast.makeText(this, "send request for site:" + deviceID , Toast.LENGTH_SHORT).show();
+		IOTLog.d("UserMainActivity", "send request for site:" + deviceID);
 		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_REALTIME_DATA);
 		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
@@ -299,7 +294,7 @@ public class UserMainActivity extends BaseActivity {
 
 		@Override
 		public void onRequestResult(final IOTMonitorData result) {
-			//IOTLog.e("xxx", "receive request for:" + deviceID);
+			IOTLog.d("UserMainActivity", "receive response for request:" + deviceID);
 			
 			final UserSiteHomePageFragment fragment = fragments.get(currentIndex);
 			
@@ -314,12 +309,7 @@ public class UserMainActivity extends BaseActivity {
 					}
 				});
 			}
-			Message msg = new Message();
-			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 			
-			int refreshTime = (Integer)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
-			
-			handler.sendMessageDelayed(msg, refreshTime * 1000);
 		}
 
 		@Override
@@ -341,8 +331,13 @@ public class UserMainActivity extends BaseActivity {
 
 		@Override
 		public void onRequestComplete() {
-			// TODO Auto-generated method stub
-
+			Message msg = new Message();
+			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
+			
+			int refreshTime = (Integer)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
+			
+			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_REALTIME_DATA");
+			handler.sendMessageDelayed(msg, refreshTime * 1000);
 		}
 	}
 
