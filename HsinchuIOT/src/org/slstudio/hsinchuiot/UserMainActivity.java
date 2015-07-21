@@ -64,6 +64,12 @@ public class UserMainActivity extends BaseActivity {
 		return siteList;
 	}
 
+	
+	public ViewPager getViewPager() {
+		return viewPager;
+	}
+
+
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

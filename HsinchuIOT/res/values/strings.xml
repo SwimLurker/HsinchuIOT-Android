@@ -50,4 +50,6 @@
     <string name="pull_to_refresh_release_label">鬆開後刷新</string>
     <string name="pull_to_refresh_refreshing_label">刷新...</string>
     <string name="pull_to_refresh_tap_label">Tap to refresh...</string>
+    
+    <string name="chart_settings">圖表設置</string>
 </resources>

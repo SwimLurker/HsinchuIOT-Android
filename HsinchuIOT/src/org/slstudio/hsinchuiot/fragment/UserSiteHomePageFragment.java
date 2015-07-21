@@ -6,9 +6,11 @@ import java.util.Random;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.chart.TimeChart;
 import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
+import org.achartengine.renderer.BasicStroke;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 import org.slstudio.hsinchuiot.Constants;
@@ -19,7 +21,9 @@ import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.util.IOTLog;
+
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -27,10 +31,12 @@ import android.graphics.Paint.Align;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,6 +69,8 @@ public class UserSiteHomePageFragment extends Fragment {
 
 	private GraphicalView chartView;
 	private LinearLayout chartLayout;
+	private TextView tvChartTitle;
+	private Button btnChartSettings;
 
 	public UserSiteHomePageFragment() {
 		super();
@@ -225,6 +233,8 @@ public class UserSiteHomePageFragment extends Fragment {
 		ivCO2Status = (ImageView) parentView.findViewById(R.id.iv_userhome_co2_status);
 
 		chartLayout = (LinearLayout) parentView.findViewById(R.id.id_chart);
+		tvChartTitle = (TextView)parentView.findViewById(R.id.tv_chart_title);
+		btnChartSettings = (Button)parentView.findViewById(R.id.btn_chart_settings);
 		
 	}
 
@@ -236,14 +246,15 @@ public class UserSiteHomePageFragment extends Fragment {
 		
 		chartRenderer.setApplyBackgroundColor(true);// 设置是否显示背景色
 		chartRenderer.setBackgroundColor(resources.getColor(R.color.white));// 设置背景色
-		chartRenderer.setMargins(new int[] { 40, 20, 5, 20 });// 设置图表的外边框(上/左/下/右)
+		chartRenderer.setMargins(new int[] { 20, 20, 5, 20 });// 设置图表的外边框(上/左/下/右)
 		chartRenderer.setMarginsColor(resources.getColor(R.color.white));
 		
-		chartRenderer.setChartTitleTextSize(25);// ?设置整个图表标题文字大小
-		chartRenderer.setChartTitle("2015/07/20 15:00:00 - 2015/07/20 16:00:00");
+		chartRenderer.setChartTitleTextSize(0);// ?设置整个图表标题文字大小
+		//chartRenderer.setChartTitle("2015/07/20 15:00:00 - 2015/07/20 16:00:00");
 		
 		chartRenderer.setAxesColor(resources.getColor(R.color.dark_gray));
 		chartRenderer.setAxisTitleTextSize(16); // 设置轴标题文字的大小
+		chartRenderer.setLabelsColor(resources.getColor(R.color.red));
 		
 		chartRenderer.setLabelsTextSize(15);// 设置刻度显示文字的大小(XY轴都会被设置)
 		chartRenderer.setLegendTextSize(15);// 图例文字大小
@@ -258,8 +269,8 @@ public class UserSiteHomePageFragment extends Fragment {
 
 		chartRenderer.setYLabelsColor(1, resources.getColor(R.color.title_bk_brown));
 		chartRenderer.setYTitle("℃", 1);
-		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
-		chartRenderer.setYLabelsAlign(Align.LEFT, 1);
+		chartRenderer.setYAxisAlign(Align.CENTER, 1);
+		chartRenderer.setYLabelsAlign(Align.CENTER, 1);
 
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
 		chartRenderer.setYTitle("%", 2);
@@ -267,13 +278,28 @@ public class UserSiteHomePageFragment extends Fragment {
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 2);
 		
 		
+		
 		chartRenderer.setZoomButtonsVisible(true);// 是否显示放大缩小按钮
 		chartRenderer.setPointSize(3);// 设置点的大小(图上显示的点的大小和图例中点的大小都会被设置)
+		chartRenderer.setPanEnabled(true);
+		//chartRenderer.setClickEnabled(true);
+	
+		XYSeries co2WarningSeries = new XYSeries("",0);// 定义XYSeries
+		chartDataset.addSeries(co2WarningSeries);// 在XYMultipleSeriesDataset中添加XYSeries
+		XYSeriesRenderer co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
 		
+		chartRenderer.addSeriesRenderer(co2WarningRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
+		co2WarningRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
+		co2WarningRenderer.setFillPoints(true);// 设置点是否实心
+		co2WarningRenderer.setColor(resources.getColor(R.color.title_bk_green));
+		co2WarningRenderer.setLineWidth(1);
+		co2WarningRenderer.setStroke(BasicStroke.DOTTED);
+		co2WarningRenderer.setShowLegendItem(false);
 		
 		co2Series = new XYSeries(resources.getString(R.string.co2),0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
 		co2Renderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
+		
 		chartRenderer.addSeriesRenderer(co2Renderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
 		co2Renderer.setPointStyle(PointStyle.CIRCLE);// 点的类型是圆形
 		co2Renderer.setFillPoints(true);// 设置点是否实心
@@ -309,11 +335,11 @@ public class UserSiteHomePageFragment extends Fragment {
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.HOUR, -1);
 			c.add(Calendar.MINUTE, i);
+			co2WarningSeries.add(c.getTime().getTime() , 800);
 			co2Series.add(c.getTime().getTime() , Math.abs(r.nextInt() % 2000));
 			temperatureSeries.add(c.getTime().getTime(), Math.abs(r.nextInt(4000)) / 100.0f);
 			humiditySeries.add(c.getTime().getTime(), Math.abs(r.nextInt(10000)) / 100.0f);
 		}
-		
 		
 		chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy-MM-dd HH:mm:ss");
 		chartRenderer.setClickEnabled(true);// 设置图表是否允许点击
@@ -322,6 +348,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		chartLayout.removeAllViews();
 		chartLayout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
+
 
 	private void destroyChart(){
 		chartDataset.clear();
