@@ -8,6 +8,7 @@ import org.slstudio.hsinchuiot.responseparser.DeviceListParser;
 import org.slstudio.hsinchuiot.responseparser.IOTAggregationDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTMonitorDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTReportDataParser;
+import org.slstudio.hsinchuiot.responseparser.IOTSampleDataListParser;
 import org.slstudio.hsinchuiot.responseparser.SessionIDParser;
 import org.slstudio.hsinchuiot.responseparser.SiteListJSONParser;
 import org.slstudio.hsinchuiot.responseparser.UserParser;
@@ -21,7 +22,7 @@ public class ResponseParseMapping {
 		parserMapping.put(Constants.ServerAPIURI.GET_SESSION_ID, new SessionIDParser());
 		parserMapping.put(Constants.ServerAPIURI.LOGIN, new UserParser());
 		parserMapping.put(Constants.ServerAPIURI.DEVICE_LIST, new DeviceListParser());
-		parserMapping.put(Constants.ServerAPIURI.GET_REALTIME_DATA, new IOTMonitorDataParser());
+		parserMapping.put(Constants.ServerAPIURI.GET_SAMPLE_DATA, new IOTSampleDataListParser());
 		parserMapping.put(Constants.ServerAPIURI.GET_HOUR_AGG_DATA, new IOTAggregationDataParser());
 		parserMapping.put(Constants.ServerAPIURI.GET_HOURS_AGG_DATA, new IOTAggregationDataParser());
 		parserMapping.put(Constants.ServerAPIURI.GET_DAY_AGG_DATA, new IOTAggregationDataParser());

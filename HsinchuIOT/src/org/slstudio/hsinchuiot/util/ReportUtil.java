@@ -3,6 +3,7 @@ package org.slstudio.hsinchuiot.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class ReportUtil {
 	private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
@@ -119,5 +120,12 @@ public class ReportUtil {
 		result.add(Calendar.HOUR, -8);
 		
 		return sdfHour2.format(result.getTime()) + ":00:00";
+	}
+	
+	public static Date getLocalTime(Date utcTime){
+		Calendar c = Calendar.getInstance();
+		c.setTime(utcTime);
+		c.add(Calendar.HOUR, 8);
+		return c.getTime();
 	}
 }

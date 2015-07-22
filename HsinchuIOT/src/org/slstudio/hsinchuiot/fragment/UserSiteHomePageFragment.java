@@ -1,7 +1,11 @@
 package org.slstudio.hsinchuiot.fragment;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -18,6 +22,7 @@ import org.slstudio.hsinchuiot.R;
 import org.slstudio.hsinchuiot.UserMainActivity;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
 import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
+import org.slstudio.hsinchuiot.model.IOTSampleData;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.util.IOTLog;
@@ -66,12 +71,16 @@ public class UserSiteHomePageFragment extends Fragment {
 	private XYSeriesRenderer temperatureRenderer;
 	private XYSeries humiditySeries;
 	private XYSeriesRenderer humidityRenderer;
+	private XYSeries co2WarningSeries;
+	private XYSeriesRenderer co2WarningRenderer;
 
 	private GraphicalView chartView;
 	private LinearLayout chartLayout;
 	private TextView tvChartTitle;
 	private Button btnChartSettings;
 
+	private List<IOTSampleData> chartData = new ArrayList<IOTSampleData>();
+	
 	public UserSiteHomePageFragment() {
 		super();
 	}
@@ -183,6 +192,35 @@ public class UserSiteHomePageFragment extends Fragment {
 			
 		}
 	}
+	
+	public void updateChartData(List<IOTSampleData> samples){
+		chartData = samples;
+		updateChartData();
+		chartView.repaint();
+	}
+	
+	private void updateChartData(){
+
+		Set<Long> timeSet = new HashSet<Long>();
+		
+		for (IOTSampleData sample: chartData) {
+			if(sample.getType() == IOTSampleData.IOTSampleDataType.CO2){
+				co2Series.add(sample.getTime().getTime(), sample.getValue());
+				timeSet.add(sample.getTime().getTime());
+			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE){
+				temperatureSeries.add(sample.getTime().getTime(), sample.getValue());
+				timeSet.add(sample.getTime().getTime());
+			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY){
+				humiditySeries.add(sample.getTime().getTime(), sample.getValue());
+				timeSet.add(sample.getTime().getTime());
+			}
+			
+		}
+		
+		for(long time: timeSet){
+			co2WarningSeries.add(time , 800);
+		}
+	}
 
 	private void initViews(View parentView) {
 		final UserMainActivity parentActivity = (UserMainActivity) this.getActivity();
@@ -284,9 +322,9 @@ public class UserSiteHomePageFragment extends Fragment {
 		chartRenderer.setPanEnabled(true);
 		//chartRenderer.setClickEnabled(true);
 	
-		XYSeries co2WarningSeries = new XYSeries("",0);// 定义XYSeries
+		co2WarningSeries = new XYSeries("",0);// 定义XYSeries
 		chartDataset.addSeries(co2WarningSeries);// 在XYMultipleSeriesDataset中添加XYSeries
-		XYSeriesRenderer co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
+		co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
 		
 		chartRenderer.addSeriesRenderer(co2WarningRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
 		co2WarningRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
@@ -325,6 +363,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
 		humidityRenderer.setLineWidth(3);
 		
+		/*
 		Calendar now = Calendar.getInstance();
 		Calendar lastHour = Calendar.getInstance();
 		lastHour.add(Calendar.HOUR, -1);
@@ -340,7 +379,9 @@ public class UserSiteHomePageFragment extends Fragment {
 			temperatureSeries.add(c.getTime().getTime(), Math.abs(r.nextInt(4000)) / 100.0f);
 			humiditySeries.add(c.getTime().getTime(), Math.abs(r.nextInt(10000)) / 100.0f);
 		}
+		*/
 		
+		updateChartData();
 		chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy-MM-dd HH:mm:ss");
 		chartRenderer.setClickEnabled(true);// 设置图表是否允许点击
 		chartRenderer.setSelectableBuffer(100);// 设置点的缓冲半径值(在某点附件点击时,多大范围内都算点击这个点)

@@ -318,24 +318,6 @@ public class SuperUserMainActivity extends BaseActivity {
 		siteListViewAdatper.notifyDataSetChanged();
 	}
 
-	private void sendQueryRealtimeDataRequest(String deviceID) {
-		HttpRequest request = new NoneAuthedHttpRequest(
-				new HttpConfig.GetHttpConfig(),
-				Constants.ServerAPIURI.GET_REALTIME_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService()
-				.getSessionID();
-		request.addParameter("dataType", "xml");
-		request.addParameter("__session_id", sessionID);
-		request.addParameter("__page_no", "1");
-		request.addParameter("__column", "did,sensor,name,value,t");
-		request.addParameter("__having_max", "id");
-		request.addParameter("__group_by", "did,name");
-		request.addParameter("__sort", "-id");
-		request.addParameter("did[0]", deviceID);
-		GetRealtimeDataListener l = new GetRealtimeDataListener(deviceID);
-
-		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
-	}
 
 	private void sendQuery1HourAggDataRequest(String deviceID, String from,
 			String to) {
@@ -556,62 +538,6 @@ public class SuperUserMainActivity extends BaseActivity {
 
 		}
 
-	}
-
-	private class GetRealtimeDataListener implements
-			RequestListener<IOTMonitorData> {
-		private RequestControl control;
-		private String deviceID;
-
-		public GetRealtimeDataListener(String deviceID) {
-			this.deviceID = deviceID;
-		}
-
-		@Override
-		public void onRequestCancelled() {
-			if (control != null)
-				control.cancel();
-
-		}
-
-		@Override
-		public void onRequestResult(final IOTMonitorData result) {
-			Site s = siteListViewAdatper.getSiteByDeviceID(deviceID);
-			if (s != null) {
-				s.setMonitorData(result);
-			}
-			handler.post(new Runnable() {
-
-				@Override
-				public void run() {
-					siteListViewAdatper.notifyDataSetChanged();
-				}
-			});
-
-		}
-
-		@Override
-		public void onRequestGetControl(RequestControl control) {
-			this.control = control;
-		}
-
-		@Override
-		public void onRequestStart() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onRequestError(Exception e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onRequestComplete() {
-			// TODO Auto-generated method stub
-
-		}
 	}
 
 	private class Get1HourAggDataListener implements

@@ -38,6 +38,7 @@ public class Constants {
 	
 	public static class MessageKey{
 		public static final int MESSAGE_GET_REALTIME_DATA = 1;
+		public static final int MESSAGE_GET_CHART_DATA = 2;
 	}
 
 	public static class SessionKey{
@@ -104,7 +105,7 @@ public class Constants {
 		public static final String GET_SESSION_ID = "_NBI/get_session_id.lua";
 		public static final String LOGIN = "_NBI/login.lua";
 		public static final String DEVICE_LIST = "Device/_NBI/list.lua";
-		public static final String GET_REALTIME_DATA = "M2M/_NBI/list.lua";
+		public static final String GET_SAMPLE_DATA = "M2M/_NBI/list.lua";
 		public static final String GET_HOUR_AGG_DATA = "M2MAggByHour/_NBI/list.lua";
 		public static final String GET_HOURS_AGG_DATA = "M2MAggByHours/_NBI/list.lua";
 		public static final String GET_DAY_AGG_DATA = "M2MAggByDay/_NBI/list.lua";

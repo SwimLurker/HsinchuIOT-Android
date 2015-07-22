@@ -8,6 +8,7 @@ import org.slstudio.hsinchuiot.fragment.UserSiteHomePageFragment;
 import org.slstudio.hsinchuiot.model.Device;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
 import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
+import org.slstudio.hsinchuiot.model.IOTSampleData;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.service.SessionService;
@@ -51,6 +52,13 @@ public class UserMainActivity extends BaseActivity {
                      UserSiteHomePageFragment currentFragment = fragments.get(currentIndex);
                      if(currentFragment != null){
                     	 sendQueryRealtimeDataRequest(currentFragment.getSite().getDevice().getDeviceID());
+                     }
+                     break;   
+                 case Constants.MessageKey.MESSAGE_GET_CHART_DATA:   
+                	 IOTLog.d("Handler", "receive get chart data message");
+                     UserSiteHomePageFragment currentFragment2 = fragments.get(currentIndex);
+                     if(currentFragment2 != null){
+                    	 sendQueryChartDataRequest(currentFragment2.getSite().getDevice().getDeviceID());
                      }
                      break;   
             }   
@@ -104,12 +112,14 @@ public class UserMainActivity extends BaseActivity {
 	@Override
 	protected void onPause() {
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 		super.onPause();
 	}
 
 	@Override
 	protected void onDestroy() {
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 		super.onDestroy();
 	}
 
@@ -129,6 +139,7 @@ public class UserMainActivity extends BaseActivity {
 	
 	public void resendMessage(){
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 		
 		if(currentIndex!=-1){
 			
@@ -136,6 +147,11 @@ public class UserMainActivity extends BaseActivity {
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 			handler.sendMessageDelayed(msg, 2000);
+			
+			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_CHART_DATA");
+			Message msg2 = new Message();
+			msg2.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
+			handler.sendMessageDelayed(msg2, 2000);
 		}
 	}
 	
@@ -268,7 +284,7 @@ public class UserMainActivity extends BaseActivity {
 	private void sendQueryRealtimeDataRequest(String deviceID) {
 		IOTLog.d("UserMainActivity", "send request for site:" + deviceID);
 		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
-				Constants.ServerAPIURI.GET_REALTIME_DATA);
+				Constants.ServerAPIURI.GET_SAMPLE_DATA);
 		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
@@ -282,8 +298,26 @@ public class UserMainActivity extends BaseActivity {
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
+	
+	private void sendQueryChartDataRequest(String deviceID) {
+		IOTLog.d("UserMainActivity", "send chart data request for site:" + deviceID);
+		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+				Constants.ServerAPIURI.GET_SAMPLE_DATA);
+		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		request.addParameter("dataType", "xml");
+		request.addParameter("__session_id", sessionID);
+		request.addParameter("__page_no", "1");
+		request.addParameter("__column", "name,value,t");
+		request.addParameter("__page_size", "720");
+		request.addParameter("__group_by", "did,name");
+		request.addParameter("__sort", "-id");
+		request.addParameter("did[0]", deviceID);
+		GetChartDataListener l = new GetChartDataListener(deviceID);
 
-	private class GetRealtimeDataListener implements RequestListener<IOTMonitorData> {
+		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
+	}
+
+	private class GetRealtimeDataListener implements RequestListener<List<IOTSampleData>> {
 		private RequestControl control;
 		private String deviceID;
 
@@ -299,8 +333,20 @@ public class UserMainActivity extends BaseActivity {
 		}
 
 		@Override
-		public void onRequestResult(final IOTMonitorData result) {
+		public void onRequestResult(final List<IOTSampleData> result) {
 			IOTLog.d("UserMainActivity", "receive response for request:" + deviceID);
+			IOTLog.d("UserMainActivity", "receive result size:" + result.size());
+			
+			final IOTMonitorData data = new IOTMonitorData();
+			for(IOTSampleData sample: result){
+				if(sample.getType() == IOTSampleData.IOTSampleDataType.CO2){
+					data.setCo2(sample.getValue());
+				}else if(sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE){
+					data.setTemperature(sample.getValue());
+				}else if(sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY){
+					data.setHumidity(sample.getValue());
+				}
+			}
 			
 			final UserSiteHomePageFragment fragment = fragments.get(currentIndex);
 			
@@ -310,7 +356,7 @@ public class UserMainActivity extends BaseActivity {
 					@Override
 					public void run() {
 						//IOTLog.e("xxx", "update ui:" + deviceID);
-						fragment.getSite().setMonitorData(result);
+						fragment.getSite().setMonitorData(data);
 						fragment.updateUI();
 					}
 				});
@@ -343,6 +389,72 @@ public class UserMainActivity extends BaseActivity {
 			int refreshTime = (Integer)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
 			
 			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_REALTIME_DATA");
+			handler.sendMessageDelayed(msg, refreshTime * 1000);
+		}
+	}
+	
+	
+	private class GetChartDataListener implements RequestListener<List<IOTSampleData>> {
+		private RequestControl control;
+		private String deviceID;
+
+		public GetChartDataListener(String deviceID) {
+			this.deviceID = deviceID;
+		}
+
+		@Override
+		public void onRequestCancelled() {
+			if (control != null)
+				control.cancel();
+
+		}
+
+		@Override
+		public void onRequestResult(final List<IOTSampleData> result) {
+			IOTLog.d("UserMainActivity", "receive response for chart request:" + deviceID);
+			IOTLog.d("UserMainActivity", "receive chart result size:" + result.size());
+			
+			
+			final UserSiteHomePageFragment fragment = fragments.get(currentIndex);
+			
+			if (fragment != null && fragment.getSite().getDevice().getDeviceID().equals(deviceID)) {
+				handler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						//IOTLog.e("xxx", "update ui:" + deviceID);
+						fragment.updateChartData(result);
+					}
+				});
+			}
+			
+		}
+
+		@Override
+		public void onRequestGetControl(RequestControl control) {
+			this.control = control;
+		}
+
+		@Override
+		public void onRequestStart() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onRequestError(Exception e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onRequestComplete() {
+			Message msg = new Message();
+			msg.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
+			
+			int refreshTime = (Integer)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
+			
+			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_CHART_DATA");
 			handler.sendMessageDelayed(msg, refreshTime * 1000);
 		}
 	}
