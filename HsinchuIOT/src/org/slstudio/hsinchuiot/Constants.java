@@ -91,6 +91,7 @@ public class Constants {
 		public static String HSINCHUIOT_SUPERUSER_SETTINGS = "org.slstudio.hsinchuiot.superuser_settings";
 		public static String HSINCHUIOT_USER_MAIN = "org.slstudio.hsinchuiot.user_main";
 		public static String HSINCHUIOT_USER_SETTINGS = "org.slstudio.hsinchuiot.user_settings";
+		public static String HSINCHUIOT_USER_CHART_SETTINGS = "org.slstudio.hsinchuiot.user_chart_settings";
 		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
 	 
 	}

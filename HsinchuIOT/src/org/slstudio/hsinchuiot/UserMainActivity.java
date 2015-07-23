@@ -41,6 +41,8 @@ public class UserMainActivity extends BaseActivity {
 	private List<UserSiteHomePageFragment> fragments = new ArrayList<UserSiteHomePageFragment>();
 	private int currentIndex = -1;
 	private List<Site> siteList = new ArrayList<Site>();
+	
+	private boolean isPaused = false;
 
 	private Handler handler = new Handler(){
 		
@@ -50,14 +52,14 @@ public class UserMainActivity extends BaseActivity {
                  case Constants.MessageKey.MESSAGE_GET_REALTIME_DATA:   
                 	 IOTLog.d("Handler", "receive get real data message");
                      UserSiteHomePageFragment currentFragment = fragments.get(currentIndex);
-                     if(currentFragment != null){
+                     if(currentFragment != null && !isPaused){
                     	 sendQueryRealtimeDataRequest(currentFragment.getSite().getDevice().getDeviceID());
                      }
                      break;   
                  case Constants.MessageKey.MESSAGE_GET_CHART_DATA:   
                 	 IOTLog.d("Handler", "receive get chart data message");
                      UserSiteHomePageFragment currentFragment2 = fragments.get(currentIndex);
-                     if(currentFragment2 != null){
+                     if(currentFragment2 != null&&!isPaused){
                     	 sendQueryChartDataRequest(currentFragment2.getSite().getDevice().getDeviceID());
                      }
                      break;   
@@ -101,9 +103,11 @@ public class UserMainActivity extends BaseActivity {
 
 	@Override
 	protected void onResume() {
+		isPaused = false;
 		if(currentIndex >= 0 && currentIndex < fragments.size() -1){
 			UserSiteHomePageFragment fragment = fragments.get(currentIndex);
 			sendQueryRealtimeDataRequest(fragment.getSite().getDevice().getDeviceID());
+			sendQueryChartDataRequest(fragment.getSite().getDevice().getDeviceID());
 		}
 		
 		super.onResume();
@@ -111,6 +115,7 @@ public class UserMainActivity extends BaseActivity {
 
 	@Override
 	protected void onPause() {
+		isPaused = true;
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 		super.onPause();

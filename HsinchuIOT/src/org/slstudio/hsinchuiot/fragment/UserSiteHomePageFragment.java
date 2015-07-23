@@ -32,6 +32,7 @@ import org.slstudio.hsinchuiot.util.IOTLog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -306,6 +307,16 @@ public class UserSiteHomePageFragment extends Fragment {
 		tvChartTitle = (TextView)parentView.findViewById(R.id.tv_chart_title);
 		btnChartSettings = (Button)parentView.findViewById(R.id.btn_chart_settings);
 		
+		btnChartSettings.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View arg0) {
+				Intent intent = new Intent(
+						Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
+				startActivity(intent);
+			}
+			
+		});
 	}
 
 	private void createChart(View parentView) {

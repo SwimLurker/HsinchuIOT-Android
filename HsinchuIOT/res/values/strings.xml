@@ -5,6 +5,9 @@
     <string name="action_settings">&#160;&#160;設&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;定</string>
     <string name="action_logoff">&#160;&#160;退出登錄</string>
     <string name="action_ok">確定</string>
+    <string name="action_cancel">取消</string>
+    <string name="action_input">請輸入</string>
+    <string name="action_select">請選擇</string>
     <string name="yes">是</string>
     <string name="no">否</string>
 	

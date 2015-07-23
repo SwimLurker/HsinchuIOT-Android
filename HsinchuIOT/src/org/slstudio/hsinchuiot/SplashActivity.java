@@ -85,8 +85,8 @@ public class SplashActivity extends BaseActivity {
 					@Override
 					public void run() {
 						prepare();
-						login();
-
+						//login();
+						showDebugActivity(Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
 					}
 
 				}).start();
@@ -129,6 +129,12 @@ public class SplashActivity extends BaseActivity {
 
 	protected void gotoSuperUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_SUPERUSER_MAIN);
+		startActivity(intent);
+		finish();
+	}
+	
+	private void showDebugActivity(String action){
+		Intent intent = new Intent(action);
 		startActivity(intent);
 		finish();
 	}

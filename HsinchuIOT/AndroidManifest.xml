@@ -206,6 +206,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="org.slstudio.hsinchuiot.UserChartSettingsActivity"
+            android:configChanges="orientation|keyboardHidden"  
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="org.slstudio.hsinchuiot.user_chart_settings" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
