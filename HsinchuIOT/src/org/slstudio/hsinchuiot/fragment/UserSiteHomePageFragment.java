@@ -218,10 +218,16 @@ public class UserSiteHomePageFragment extends Fragment {
 		co2WarningSeries.clear();
 		co2AlarmSeries.clear();
 		
-		Date minTime, maxTime;
+		Date minTime = new Date();
+		Date maxTime = new Date();
 		
 		for (IOTSampleData sample: chartData) {
-			
+			if(minTime.after(sample.getTime())){
+				minTime = sample.getTime();
+			}
+			if(maxTime.before(sample.getTime())){
+				maxTime = sample.getTime();
+			}
 			if(sample.getType() == IOTSampleData.IOTSampleDataType.CO2){
 				co2Series.add(sample.getTime().getTime(), sample.getValue());
 			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE){
