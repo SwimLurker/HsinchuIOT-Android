@@ -1,7 +1,10 @@
 package org.slstudio.hsinchuiot.fragment;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -71,9 +74,12 @@ public class UserSiteHomePageFragment extends Fragment {
 	private XYSeriesRenderer temperatureRenderer;
 	private XYSeries humiditySeries;
 	private XYSeriesRenderer humidityRenderer;
+	
 	private XYSeries co2WarningSeries;
 	private XYSeriesRenderer co2WarningRenderer;
-
+	private XYSeries co2AlarmSeries;
+	private XYSeriesRenderer co2AlarmRenderer;
+	
 	private GraphicalView chartView;
 	private LinearLayout chartLayout;
 	private TextView tvChartTitle;
@@ -201,25 +207,45 @@ public class UserSiteHomePageFragment extends Fragment {
 	
 	private void updateChartData(){
 
-		Set<Long> timeSet = new HashSet<Long>();
+		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance()
+				.getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance()
+				.getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+		
+		co2Series.clear();
+		temperatureSeries.clear();
+		humiditySeries.clear();
+		co2WarningSeries.clear();
+		co2AlarmSeries.clear();
+		
+		Date minTime, maxTime;
 		
 		for (IOTSampleData sample: chartData) {
+			
 			if(sample.getType() == IOTSampleData.IOTSampleDataType.CO2){
 				co2Series.add(sample.getTime().getTime(), sample.getValue());
-				timeSet.add(sample.getTime().getTime());
 			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE){
 				temperatureSeries.add(sample.getTime().getTime(), sample.getValue());
-				timeSet.add(sample.getTime().getTime());
 			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY){
 				humiditySeries.add(sample.getTime().getTime(), sample.getValue());
-				timeSet.add(sample.getTime().getTime());
 			}
 			
 		}
+				
+		double maxX = co2Series.getMaxX();
+		double minX = co2Series.getMinX();
 		
-		for(long time: timeSet){
-			co2WarningSeries.add(time , 800);
+		double interval = (maxX-minX)/80;
+		
+		for(double x=minX ;x<maxX; x=x+interval){
+			co2WarningSeries.add(x , warningThreshold.getCo2UpperBound());
+			co2AlarmSeries.add(x , breachThreshold.getCo2UpperBound());
 		}
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		
+		tvChartTitle.setText(sdf.format(minTime) + " - " + sdf.format(maxTime));
+		
 	}
 
 	private void initViews(View parentView) {
@@ -284,7 +310,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		
 		chartRenderer.setApplyBackgroundColor(true);// 设置是否显示背景色
 		chartRenderer.setBackgroundColor(resources.getColor(R.color.white));// 设置背景色
-		chartRenderer.setMargins(new int[] { 20, 20, 5, 20 });// 设置图表的外边框(上/左/下/右)
+		chartRenderer.setMargins(new int[] { 20, 50, 20, 30 });// 设置图表的外边框(上/左/下/右)
 		chartRenderer.setMarginsColor(resources.getColor(R.color.white));
 		
 		chartRenderer.setChartTitleTextSize(0);// ?设置整个图表标题文字大小
@@ -292,47 +318,47 @@ public class UserSiteHomePageFragment extends Fragment {
 		
 		chartRenderer.setAxesColor(resources.getColor(R.color.dark_gray));
 		chartRenderer.setAxisTitleTextSize(16); // 设置轴标题文字的大小
-		chartRenderer.setLabelsColor(resources.getColor(R.color.red));
+		chartRenderer.setLabelsColor(resources.getColor(R.color.dark_gray));
 		
 		chartRenderer.setLabelsTextSize(15);// 设置刻度显示文字的大小(XY轴都会被设置)
-		chartRenderer.setLegendTextSize(15);// 图例文字大小
-		
+		chartRenderer.setLegendTextSize(18);// 图例文字大小
+		chartRenderer.setFitLegend(true);
+		chartRenderer.setTextTypeface("sans_serif", Typeface.BOLD);
+	  
 		chartRenderer.setXLabelsColor(resources.getColor(R.color.dark_gray));
-		chartRenderer.setXTitle("时间");
+		chartRenderer.setXLabels(5);
+		chartRenderer.setYLabels(5);
 		
 		chartRenderer.setYLabelsColor(0, resources.getColor(R.color.title_bk_green));
 		chartRenderer.setYTitle("ppm", 0);
 		chartRenderer.setYAxisAlign(Align.LEFT, 0);
-		chartRenderer.setYLabelsAlign(Align.LEFT, 0);
-
+		chartRenderer.setYLabelsAlign(Align.RIGHT, 0);
+		chartRenderer.setYAxisMax(1200,0);
+		chartRenderer.setYAxisMin(0, 0);
 		chartRenderer.setYLabelsColor(1, resources.getColor(R.color.title_bk_brown));
 		chartRenderer.setYTitle("℃", 1);
-		chartRenderer.setYAxisAlign(Align.CENTER, 1);
-		chartRenderer.setYLabelsAlign(Align.CENTER, 1);
-
+		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
+		chartRenderer.setYLabelsAlign(Align.RIGHT, 1);
+		chartRenderer.setYAxisMax(40, 1);
+		chartRenderer.setYAxisMin(0, 1);
+		
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
 		chartRenderer.setYTitle("%", 2);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
-		chartRenderer.setYLabelsAlign(Align.RIGHT, 2);
+		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
+		chartRenderer.setYAxisMax(100,2);
+		chartRenderer.setYAxisMin(0, 2);
 		
 		
 		
-		chartRenderer.setZoomButtonsVisible(true);// 是否显示放大缩小按钮
+		chartRenderer.setZoomButtonsVisible(false);// 是否显示放大缩小按钮
 		chartRenderer.setPointSize(3);// 设置点的大小(图上显示的点的大小和图例中点的大小都会被设置)
 		chartRenderer.setPanEnabled(true);
 		//chartRenderer.setClickEnabled(true);
 	
-		co2WarningSeries = new XYSeries("",0);// 定义XYSeries
-		chartDataset.addSeries(co2WarningSeries);// 在XYMultipleSeriesDataset中添加XYSeries
-		co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
 		
-		chartRenderer.addSeriesRenderer(co2WarningRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
-		co2WarningRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
-		co2WarningRenderer.setFillPoints(true);// 设置点是否实心
-		co2WarningRenderer.setColor(resources.getColor(R.color.title_bk_green));
-		co2WarningRenderer.setLineWidth(1);
-		co2WarningRenderer.setStroke(BasicStroke.DOTTED);
-		co2WarningRenderer.setShowLegendItem(false);
+		
+		
 		
 		co2Series = new XYSeries(resources.getString(R.string.co2),0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -343,7 +369,8 @@ public class UserSiteHomePageFragment extends Fragment {
 		co2Renderer.setFillPoints(true);// 设置点是否实心
 		co2Renderer.setColor(resources.getColor(R.color.title_bk_green));
 		co2Renderer.setLineWidth(3);
-
+		//co2Renderer.setDisplayChartValues(true);
+		
 		temperatureSeries = new XYSeries(resources.getString(R.string.temperature), 1);// 定义XYSeries
 		chartDataset.addSeries(temperatureSeries);// 在XYMultipleSeriesDataset中添加XYSeries
 		temperatureRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
@@ -362,6 +389,35 @@ public class UserSiteHomePageFragment extends Fragment {
 		humidityRenderer.setFillPoints(true);// 设置点是否实心
 		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
 		humidityRenderer.setLineWidth(3);
+		
+		co2AlarmSeries = new XYSeries("",0);// 定义XYSeries
+		chartDataset.addSeries(co2AlarmSeries);// 在XYMultipleSeriesDataset中添加XYSeries
+		co2AlarmRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
+		chartRenderer.addSeriesRenderer(co2AlarmRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
+		co2AlarmRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
+		co2AlarmRenderer.setFillPoints(true);// 设置点是否实心
+		co2AlarmRenderer.setColor(resources.getColor(R.color.status_alarm));
+		co2AlarmRenderer.setLineWidth(2);
+		co2AlarmRenderer.setStroke(BasicStroke.DOTTED);
+		co2AlarmRenderer.setShowLegendItem(false);
+		//FillOutsideLine fill2 = new FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
+        //fill2.setColor(Color.argb(60, 255, 255, 255));
+        //co2AlarmRenderer.addFillOutsideLine(fill2);
+		
+        co2WarningSeries = new XYSeries("",0);// 定义XYSeries
+		chartDataset.addSeries(co2WarningSeries);// 在XYMultipleSeriesDataset中添加XYSeries
+		co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
+		chartRenderer.addSeriesRenderer(co2WarningRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
+		co2WarningRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
+		co2WarningRenderer.setFillPoints(true);// 设置点是否实心
+		co2WarningRenderer.setColor(resources.getColor(R.color.status_warning));
+		co2WarningRenderer.setLineWidth(2);
+		co2WarningRenderer.setStroke(BasicStroke.DOTTED);
+		co2WarningRenderer.setShowLegendItem(false);
+		//FillOutsideLine fill = new FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
+        //fill.setColor(Color.argb(60, 0, 255, 0));
+        //co2WarningRenderer.addFillOutsideLine(fill);
+
 		
 		/*
 		Calendar now = Calendar.getInstance();
@@ -382,7 +438,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		*/
 		
 		updateChartData();
-		chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy-MM-dd HH:mm:ss");
+		chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "HH:mm:ss");
 		chartRenderer.setClickEnabled(true);// 设置图表是否允许点击
 		chartRenderer.setSelectableBuffer(100);// 设置点的缓冲半径值(在某点附件点击时,多大范围内都算点击这个点)
 		
