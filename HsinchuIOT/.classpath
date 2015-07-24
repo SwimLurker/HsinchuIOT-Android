@@ -18,5 +18,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/PullToRefreshViewPager"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/DatePicker"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
