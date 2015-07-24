@@ -73,7 +73,6 @@ public class Constants {
 		public static final String REALTIME_DATA_MONITOR_REFRESH_TIME = "REALTIME_DATA_MONITOR_REFRESH_TIME";
 		
 		
-		
 	}
 
 	public static final class Expression {
@@ -96,7 +95,31 @@ public class Constants {
 	 
 	}
 
+	public static class ResultCode{
+		public static final int CHART_SETTINGS = 1;
+	}
 
+	public static class ActivityResult{
+		public static final String CHART_TYPE = "CHART_TYPE";
+		public static final String CHART_RT_DURATION = "CHART_RT_DURATION";
+		public static final String CHART_AGGR_GRANULARITY = "CHART_AGGR_GRANULARITY";
+		public static final String CHART_AGGR_STARTTIME = "CHART_AGGR_STARTTIME";
+		public static final String CHART_AGGR_ENDTIME = "CHART_AGGR_ENDTIME";
+	}
+	
+	public static class ChartSettings{
+		public static final int CHART_TYPE_REALTIME = 0;
+		public static final int CHART_TYPE_AGGRAGATION = 1;
+
+		public static final int GRANULARITY_HOUR = 0;
+		public static final int GRANULARITY_HOURS = 1;
+		public static final int GRANULARITY_DAY = 2;
+		public static final int GRANULARITY_WEEK = 3;
+		public static final int GRANULARITY_MONTH = 4;
+		
+	}
+	
+	
 	public static class ServerAPIURI {
 		public static final String COMMON_CHKVERSION="v1/common/chkversion.json";//升级检测接口（提供客户端升级检测功能）
 		public static final String COMMON_GETVERTIFYCODE="v1/common/getVertifyCode.json";//获取验证码接口（获取验证码接口)

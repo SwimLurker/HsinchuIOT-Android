@@ -23,7 +23,11 @@
 	<string name="error_message_require_loginname_text">需要填寫用戶名</string>
 	<string name="error_message_require_pwd_text">需要填寫密碼</string>
 	<string name="error_message_require_code_text">需要填寫驗證碼</string>
-	
+	<string name="error_message_chart_settings_require_duration">需要填寫資料範圍</string>
+	<string name="error_message_chart_settings_invalid_duration">需要填寫合法的資料範圍</string>
+	<string name="error_message_chart_settings_require_starttime">需要填寫開始時間</string>
+	<string name="error_message_chart_settings_require_endtime">需要填寫結束時間</string>
+	<string name="error_message_chart_settings_invalid_starttime">開始時間應早於結束時間</string>
 	<!-- login -->
     <string name="common_login_hint_username">請輸入您的帳號</string>
     <string name="common_login_hint_password">請輸入您的密碼</string>

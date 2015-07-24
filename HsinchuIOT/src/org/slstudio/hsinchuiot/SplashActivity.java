@@ -85,8 +85,8 @@ public class SplashActivity extends BaseActivity {
 					@Override
 					public void run() {
 						prepare();
-						//login();
-						showDebugActivity(Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
+						login();
+						//showDebugActivity(Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
 					}
 
 				}).start();

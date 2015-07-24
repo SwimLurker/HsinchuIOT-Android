@@ -2,6 +2,7 @@ package org.slstudio.hsinchuiot;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slstudio.hsinchuiot.fragment.UserSiteHomePageFragment;
@@ -44,6 +45,12 @@ public class UserMainActivity extends BaseActivity {
 	
 	private boolean isPaused = false;
 
+	private int chartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
+	private int chartTimeDuration = 1;
+	private int chartGranularity = Constants.ChartSettings.GRANULARITY_HOUR;
+	private Date chartStartTime;
+	private Date chartEndTime;
+	
 	private Handler handler = new Handler(){
 		
 		@Override
@@ -77,6 +84,31 @@ public class UserMainActivity extends BaseActivity {
 	
 	public ViewPager getViewPager() {
 		return viewPager;
+	}
+
+
+	public int getChartType() {
+		return chartType;
+	}
+
+
+	public int getChartTimeDuration() {
+		return chartTimeDuration;
+	}
+
+
+	public int getChartGranularity() {
+		return chartGranularity;
+	}
+
+
+	public Date getChartStartTime() {
+		return chartStartTime;
+	}
+
+
+	public Date getChartEndTime() {
+		return chartEndTime;
 	}
 
 
@@ -128,38 +160,35 @@ public class UserMainActivity extends BaseActivity {
 		super.onDestroy();
 	}
 
-	public void moveToPreSite() {
-		int currentItem = viewPager.getCurrentItem();
-		if (currentItem > 0) {
-			viewPager.setCurrentItem(currentItem - 1);
-		}
-	}
-
-	public void moveToNextSite() {
-		int currentItem = viewPager.getCurrentItem();
-		if (currentItem < fragments.size() - 1) {
-			viewPager.setCurrentItem(currentItem + 1);
-		}
-	}
 	
-	public void resendMessage(){
-		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
-		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
-		
-		if(currentIndex!=-1){
-			
-			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_REALTIME_DATA - 2");
-			Message msg = new Message();
-			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
-			handler.sendMessageDelayed(msg, 2000);
-			
-			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_CHART_DATA");
-			Message msg2 = new Message();
-			msg2.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
-			handler.sendMessageDelayed(msg2, 2000);
-		}
-	}
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == Constants.ResultCode.CHART_SETTINGS){
+			if(resultCode == RESULT_OK){
+				chartType = data.getIntExtra(Constants.ActivityResult.CHART_TYPE, Constants.ChartSettings.CHART_TYPE_REALTIME);
+				if(chartType == Constants.ChartSettings.CHART_TYPE_REALTIME){
+					chartTimeDuration = data.getIntExtra(Constants.ActivityResult.CHART_RT_DURATION, 1);
+				}else if(chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
+					chartGranularity = data.getIntExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, Constants.ChartSettings.GRANULARITY_HOUR);
+					long startTimeLong = data.getLongExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, 0);
+					if(startTimeLong!=0){
+						chartStartTime = new Date();
+						chartStartTime.setTime(startTimeLong);
+					}
+					long endTimeLong = data.getLongExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, 0);
+					if(endTimeLong!=0){
+						chartEndTime = new Date();
+						chartEndTime.setTime(endTimeLong);
+					}	
+				}
+				
+				//re-generate chart
+				
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -193,6 +222,41 @@ public class UserMainActivity extends BaseActivity {
 		setIconEnable(menu, true);
 		return true;
 	}
+
+	public void moveToPreSite() {
+		int currentItem = viewPager.getCurrentItem();
+		if (currentItem > 0) {
+			viewPager.setCurrentItem(currentItem - 1);
+		}
+	}
+
+	public void moveToNextSite() {
+		int currentItem = viewPager.getCurrentItem();
+		if (currentItem < fragments.size() - 1) {
+			viewPager.setCurrentItem(currentItem + 1);
+		}
+	}
+	
+	public void resendMessage(){
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
+		
+		if(currentIndex!=-1){
+			
+			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_REALTIME_DATA - 2");
+			Message msg = new Message();
+			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
+			handler.sendMessageDelayed(msg, 2000);
+			
+			IOTLog.d("UserMainActivity", "send message MESSAGE_GET_CHART_DATA");
+			Message msg2 = new Message();
+			msg2.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
+			handler.sendMessageDelayed(msg2, 2000);
+		}
+	}
+	
+
+	
 
 	private void setIconEnable(Menu menu, boolean enable) {
 		try {

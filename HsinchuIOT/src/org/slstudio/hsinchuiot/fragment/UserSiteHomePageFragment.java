@@ -311,12 +311,28 @@ public class UserSiteHomePageFragment extends Fragment {
 
 			@Override
 			public void onClick(View arg0) {
+				
+			
 				Intent intent = new Intent(
 						Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
-				startActivity(intent);
+				intent.putExtra(Constants.ActivityResult.CHART_TYPE, parentActivity.getChartType());
+				if(parentActivity.getChartType() == Constants.ChartSettings.CHART_TYPE_REALTIME){
+					intent.putExtra(Constants.ActivityResult.CHART_RT_DURATION, parentActivity.getChartTimeDuration());
+				}else if(parentActivity.getChartType() == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
+					intent.putExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, parentActivity.getChartGranularity());
+					if(parentActivity.getChartStartTime() != null){
+						intent.putExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, parentActivity.getChartStartTime().getTime());
+					}
+					if(parentActivity.getChartEndTime() != null){
+						intent.putExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, parentActivity.getChartEndTime().getTime());
+					}
+				}
+				getActivity().startActivityForResult(intent, Constants.ResultCode.CHART_SETTINGS);
 			}
 			
 		});
+		
+		
 	}
 
 	private void createChart(View parentView) {

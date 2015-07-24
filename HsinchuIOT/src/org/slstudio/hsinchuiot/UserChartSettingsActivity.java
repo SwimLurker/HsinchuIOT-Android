@@ -1,40 +1,38 @@
 package org.slstudio.hsinchuiot;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import org.slstudio.hsinchuiot.service.IOTException;
+
+import com.amo.demo.arrWheelview.StrArrayWheelView;
+import com.amo.demo.arrWheelview.StrArrayWheelView.OnWheelChangedListener;
+import com.amo.demo.wheelview.NumericWheelAdapter;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
 import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 public class UserChartSettingsActivity extends BaseActivity {
 
-	public static final int CHART_TYPE_REALTIME = 0;
-	public static final int CHART_TYPE_AGGRAGATION = 1;
-
-	public static final int GRANULARITY_HOUR = 0;
-	public static final int GRANULARITY_HOURS = 1;
-	public static final int GRANULARITY_DAY = 2;
-	public static final int GRANULARITY_WEEK = 3;
-	public static final int GRANULARITY_MONTH = 4;
+	public static final String[] CHART_TYPE = new String[] { "即時資料", "歷史統計" };
+	public static final String[] GRANULARITY_TYPE = new String[] { "1小時",
+		"8小時", "日", "周", "月" };
 
 	public static final int TIME_PERIOD_TODAY = 0;
 	public static final int TIME_PERIOD_YESTERDAY = 1;
@@ -52,9 +50,13 @@ public class UserChartSettingsActivity extends BaseActivity {
 	public static final int TIME_PERIOD_LAST_2MONTHS = 13;
 	public static final int TIME_PERIOD_LAST_3MONTHS = 14;
 
+	private static int START_YEAR = 1990, END_YEAR = 2100;
+
 	private View chartTypeLayout;
 	private TextView tvChartType;
 
+	private EditText etDuration;
+	
 	private LinearLayout rtChartParameterLayout;
 	private LinearLayout aggrChartParameterLayout;
 
@@ -68,13 +70,14 @@ public class UserChartSettingsActivity extends BaseActivity {
 	private View timePeriodEndTimeLayout;
 	private TextView tvTimePeriodEndTime;
 
-	private static final String[] CHART_TYPE = new String[] { "即時資料", "歷史統計" };
-	private int currentChartType = CHART_TYPE_REALTIME;
+	
+	private int currentChartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
 
-	private static final String[] GRANULARITY_TYPE = new String[] { "1小時",
-			"8小時", "日", "周", "月" };
-	private int currentGranularityType = GRANULARITY_HOUR;
+	private int currentTimeDuration = 1;
 
+	private int currentGranularityType = Constants.ChartSettings.GRANULARITY_HOUR;
+	
+	
 	private static final String[] TIME_PERIOD_QUICKLINK = new String[] { "今天",
 			"昨天", "本周", "上周", "本月", "上月", "過去3天", "過去5天", "過去7天", "過去1周",
 			"過去2周", "過去3周", "過去1月", "過去2月", "過去3月" };
@@ -87,7 +90,11 @@ public class UserChartSettingsActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		getPassedData(this.getIntent());
+		
 		setContentView(R.layout.activity_user_chart_settings);
+		
 		initViews();
 	}
 
@@ -105,6 +112,57 @@ public class UserChartSettingsActivity extends BaseActivity {
 
 			break;
 		case R.id.menu_ok:
+			if(currentChartType == Constants.ChartSettings.CHART_TYPE_REALTIME){
+				String durationStr = etDuration.getText().toString();
+				if(durationStr.equals("")){
+					setException(new IOTException(-1, getString(R.string.error_message_chart_settings_require_duration)));
+					showDialog(DIALOG_ERROR);
+					return true;
+				}
+				int duration=0;
+				try{
+					duration = Integer.parseInt(durationStr);
+				}catch(Exception exp){
+					setException(new IOTException(-1, getString(R.string.error_message_chart_settings_invalid_duration)));
+					showDialog(DIALOG_ERROR);
+					return true;
+				}
+				if(duration<=0){
+					setException(new IOTException(-1, getString(R.string.error_message_chart_settings_invalid_duration)));
+					showDialog(DIALOG_ERROR);
+					return true;
+				}
+				Intent result = new Intent();
+				result.putExtra(Constants.ActivityResult.CHART_TYPE, currentChartType);
+				result.putExtra(Constants.ActivityResult.CHART_RT_DURATION, duration);
+				setResult(this.RESULT_OK, result);
+				
+			}else if(currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
+				if(startTime == null){
+					setException(new IOTException(-1, getString(R.string.error_message_chart_settings_require_starttime)));
+					showDialog(DIALOG_ERROR);
+					return true;
+				}
+				if(endTime == null){
+					setException(new IOTException(-1, getString(R.string.error_message_chart_settings_require_endtime)));
+					showDialog(DIALOG_ERROR);
+					return true;
+				}
+				
+				if(startTime.after(endTime)){
+					setException(new IOTException(-1, getString(R.string.error_message_chart_settings_invalid_starttime)));
+					showDialog(DIALOG_ERROR);
+					return true;
+				}
+				
+				Intent result = new Intent();
+				result.putExtra(Constants.ActivityResult.CHART_TYPE, currentChartType);
+				result.putExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, startTime.getTime());
+				result.putExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, endTime.getTime());
+				result.putExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, currentGranularityType);
+				setResult(this.RESULT_OK, result);
+			}
+			
 			finish();
 			break;
 
@@ -120,13 +178,31 @@ public class UserChartSettingsActivity extends BaseActivity {
 		actionBar.setTitle(R.string.action_settings);
 		super.setupActionBar();
 	}
+	
+	private void getPassedData(Intent data){
+		currentChartType = data.getIntExtra(Constants.ActivityResult.CHART_TYPE, Constants.ChartSettings.CHART_TYPE_REALTIME);
+		if(currentChartType == Constants.ChartSettings.CHART_TYPE_REALTIME){
+			currentTimeDuration = data.getIntExtra(Constants.ActivityResult.CHART_RT_DURATION, 1);
+		}else if(currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
+			currentGranularityType = data.getIntExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, Constants.ChartSettings.GRANULARITY_HOUR);
+			long startTimeLong = data.getLongExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, 0);
+			if(startTimeLong != 0){
+				startTime = new Date();
+				startTime.setTime(startTimeLong);
+			}
+			long endTimeLong = data.getLongExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, 0);
+			if(endTimeLong != 0){
+				endTime = new Date();
+				endTime.setTime(endTimeLong);
+			}
+		}
+	}
 
 	private void initViews() {
 
-		final Resources resources = getResources();
-
 		tvChartType = (TextView) findViewById(R.id.tv_chartsettings_type);
 		chartTypeLayout = findViewById(R.id.layout_chartsettings_type);
+		etDuration = (EditText) findViewById(R.id.et_chartsettings_rtchart_duration);
 		rtChartParameterLayout = (LinearLayout) findViewById(R.id.layout_chartsettings_rtchart_parameter);
 		aggrChartParameterLayout = (LinearLayout) findViewById(R.id.layout_chartsettings_aggrchart_parameter);
 		tvGranularityType = (TextView) findViewById(R.id.tv_chartsettings_aggrchart_granularity);
@@ -138,15 +214,42 @@ public class UserChartSettingsActivity extends BaseActivity {
 		timePeriodEndTimeLayout = findViewById(R.id.layout_chartsettings_aggrchart_endtime);
 
 		tvChartType.setText(CHART_TYPE[currentChartType]);
+		setupChartTypeDlg(this);
+		
+		etDuration.setText(Integer.toString(currentTimeDuration));
 
-		if (currentChartType == CHART_TYPE_AGGRAGATION) {
-			rtChartParameterLayout.setVisibility(View.INVISIBLE);
-			aggrChartParameterLayout.setVisibility(View.VISIBLE);
-		} else {
-			rtChartParameterLayout.setVisibility(View.VISIBLE);
-			aggrChartParameterLayout.setVisibility(View.INVISIBLE);
+		tvGranularityType.setText(GRANULARITY_TYPE[currentGranularityType]);
+		setupChartGranularityTypeDlg(this);
+
+		setupTimePeriodDlg(this);
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+		if(startTime != null){
+			tvTimePeriodStartTime.setText(sdf.format(startTime));
+		}
+		
+		setupStartTimePickerDlg(this);
+		
+		if(endTime != null){
+			tvTimePeriodEndTime.setText(sdf.format(endTime));
 		}
 
+		setupEndTimePickerDlg(this);
+		
+
+		if (currentChartType == Constants.ChartSettings.CHART_TYPE_REALTIME) {
+			rtChartParameterLayout.setVisibility(View.VISIBLE);
+			aggrChartParameterLayout.setVisibility(View.INVISIBLE);
+		} else if (currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
+			rtChartParameterLayout.setVisibility(View.INVISIBLE);
+			aggrChartParameterLayout.setVisibility(View.VISIBLE);
+		}
+		
+		setupActionBar();
+	}
+	
+	private void setupChartTypeDlg(final Context context) {
 		chartTypeLayout.setOnClickListener(new View.OnClickListener() {
 			private int tempSelect = 0;
 
@@ -158,7 +261,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 						.setTitle("請選擇圖表類型")
 						.setIcon(android.R.drawable.ic_menu_more)
 						.setPositiveButton(
-								resources.getString(R.string.action_ok),
+								context.getResources().getString(R.string.action_ok),
 								new DialogInterface.OnClickListener() {
 
 									public void onClick(DialogInterface dialog,
@@ -166,7 +269,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 										currentChartType = tempSelect;
 										tvChartType
 												.setText(CHART_TYPE[currentChartType]);
-										if (currentChartType == CHART_TYPE_AGGRAGATION) {
+										if (currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
 											rtChartParameterLayout
 													.setVisibility(View.INVISIBLE);
 											aggrChartParameterLayout
@@ -188,7 +291,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 									}
 								})
 						.setNegativeButton(
-								resources.getString(R.string.action_cancel),
+								context.getResources().getString(R.string.action_cancel),
 								new DialogInterface.OnClickListener() {
 
 									public void onClick(DialogInterface dialog,
@@ -199,9 +302,11 @@ public class UserChartSettingsActivity extends BaseActivity {
 				dialog.show();
 			}
 		});
+	}
 
-		tvGranularityType.setText(GRANULARITY_TYPE[currentGranularityType]);
-
+	private void setupChartGranularityTypeDlg(final Context context) {
+		
+		
 		granularityTypeLayout.setOnClickListener(new View.OnClickListener() {
 			private int tempSelect = 0;
 
@@ -213,7 +318,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 						.setTitle("請選擇統計單位")
 						.setIcon(android.R.drawable.ic_menu_more)
 						.setPositiveButton(
-								resources.getString(R.string.action_ok),
+								context.getResources().getString(R.string.action_ok),
 								new DialogInterface.OnClickListener() {
 
 									public void onClick(DialogInterface dialog,
@@ -233,7 +338,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 									}
 								})
 						.setNegativeButton(
-								resources.getString(R.string.action_cancel),
+								context.getResources().getString(R.string.action_cancel),
 								new DialogInterface.OnClickListener() {
 
 									public void onClick(DialogInterface dialog,
@@ -244,7 +349,9 @@ public class UserChartSettingsActivity extends BaseActivity {
 				dialog.show();
 			}
 		});
+	}
 
+	private void setupTimePeriodDlg(final Context context){
 		timePeriodLayout.setOnClickListener(new View.OnClickListener() {
 			private int tempSelect = 0;
 
@@ -256,7 +363,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 						.setTitle("請選擇統計週期")
 						.setIcon(android.R.drawable.ic_menu_more)
 						.setPositiveButton(
-								resources.getString(R.string.action_ok),
+								context.getResources().getString(R.string.action_ok),
 								new DialogInterface.OnClickListener() {
 
 									public void onClick(DialogInterface dialog,
@@ -287,7 +394,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 									}
 								})
 						.setNegativeButton(
-								resources.getString(R.string.action_cancel),
+								context.getResources().getString(R.string.action_cancel),
 								new DialogInterface.OnClickListener() {
 
 									public void onClick(DialogInterface dialog,
@@ -298,263 +405,201 @@ public class UserChartSettingsActivity extends BaseActivity {
 				dialog.show();
 			}
 		});
-
-		timePeriodStartTimeLayout
-				.setOnClickListener(new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-
-						View view = View.inflate(getApplicationContext(),
-								R.layout.date_time_picker, null);
-						final DatePicker datePicker = (DatePicker) view
-								.findViewById(R.id.date_picker);
-						final TimePicker timePicker = (TimePicker) view
-								.findViewById(R.id.time_picker);
-
-						LinearLayout dpContainer = (LinearLayout) datePicker
-								.getChildAt(0);
-						LinearLayout dpSpinner = (LinearLayout) dpContainer
-								.getChildAt(0);
-
-						for (int i = 0; i < dpSpinner.getChildCount(); i++) {
-							NumberPicker numPicker = (NumberPicker) dpSpinner
-									.getChildAt(i);
-							for(int j=0; j<numPicker.getChildCount(); j++){
-								View child = numPicker.getChildAt(j);
-//								if(child instanceof EditText){
-//									((EditText)child).setTextColor(UserChartSettingsActivity.this.getResources().getColor(R.color.dark_gray));
-//								}
-							}
-							
-							/*
-							LayoutParams params1 = new LayoutParams(120,
-									LayoutParams.WRAP_CONTENT);
-							params1.leftMargin = 0;
-							params1.rightMargin = 30;
-							numPicker.setLayoutParams(params1);
-							*/
-						}
-
-						LinearLayout tpContainer = (LinearLayout) timePicker
-								.getChildAt(0);
-						LinearLayout tpSpinner = (LinearLayout) tpContainer
-								.getChildAt(0);
-						for (int i = 0; i < tpSpinner.getChildCount(); i++) {
-							if (i == 1) {
-								continue;
-							}
-							NumberPicker numPicker = (NumberPicker) tpSpinner
-									.getChildAt(i);
-							for(int j=0; j<numPicker.getChildCount(); j++){
-								View child = numPicker.getChildAt(j);
-								if(child instanceof EditText){
-									((EditText)child).setTextColor(UserChartSettingsActivity.this.getResources().getColor(R.color.dark_gray));
-								}else if(child instanceof TextView){
-									((TextView)child).setTextColor(UserChartSettingsActivity.this.getResources().getColor(R.color.dark_gray));
-								}
-							}
-						}
-
-						initDatePicker(startTime, datePicker);
-						initTimePicker(startTime, timePicker);
-
-						AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(UserChartSettingsActivity.this, R.style.Theme_picker))
-								.setView(view)
-								.setTitle("請設定開始時間")
-								.setIcon(android.R.drawable.ic_menu_more)
-								.setPositiveButton(
-										resources.getString(R.string.action_ok),
-										new DialogInterface.OnClickListener() {
-
-											public void onClick(
-													DialogInterface dialog,
-													int which) {
-												int year = datePicker.getYear();
-												int month = datePicker
-														.getMonth();
-												int day = datePicker
-														.getDayOfMonth();
-												int hour = timePicker
-														.getCurrentHour();
-												int minute = timePicker
-														.getCurrentMinute();
-
-												Calendar c = Calendar
-														.getInstance();
-												c.set(Calendar.YEAR, year);
-												c.set(Calendar.MONTH, month);
-												c.set(Calendar.DAY_OF_MONTH,
-														day);
-												c.set(Calendar.HOUR_OF_DAY,
-														hour);
-												c.set(Calendar.MINUTE, minute);
-												c.set(Calendar.SECOND, 0);
-
-												startTime = c.getTime();
-												SimpleDateFormat sdf = new SimpleDateFormat(
-														"yyyy-MM-dd HH:mm:ss");
-												if (startTime != null) {
-													tvTimePeriodStartTime.setText(sdf
-															.format(startTime));
-												}
-											}
-										})
-								.setNegativeButton(
-										resources
-												.getString(R.string.action_cancel),
-										new DialogInterface.OnClickListener() {
-
-											public void onClick(
-													DialogInterface dialog,
-													int which) {
-
-											}
-										});
-						builder.create().show();
-					}
-
-				});
-		timePeriodEndTimeLayout
-				.setOnClickListener(new View.OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-
-						View view = View.inflate(getApplicationContext(),
-								R.layout.date_time_picker, null);
-						final DatePicker datePicker = (DatePicker) view
-								.findViewById(R.id.date_picker);
-						final TimePicker timePicker = (TimePicker) view
-								.findViewById(R.id.time_picker);
-
-						LinearLayout dpContainer = (LinearLayout) datePicker
-								.getChildAt(0);
-						LinearLayout dpSpinner = (LinearLayout) dpContainer
-								.getChildAt(0);
-
-						for (int i = 0; i < dpSpinner.getChildCount(); i++) {
-							NumberPicker numPicker = (NumberPicker) dpSpinner
-									.getChildAt(i);
-							for(int j=0; j<numPicker.getChildCount(); j++){
-								View child = numPicker.getChildAt(j);
-								if(child instanceof EditText){
-									((EditText)child).setTextColor(UserChartSettingsActivity.this.getResources().getColor(R.color.dark_gray));
-								}
-							}
-						}
-
-						LinearLayout tpContainer = (LinearLayout) timePicker
-								.getChildAt(0);
-						LinearLayout tpSpinner = (LinearLayout) tpContainer
-								.getChildAt(0);
-						for (int i = 0; i < tpSpinner.getChildCount(); i++) {
-							if (i == 1) {
-								continue;
-							}
-							NumberPicker numPicker = (NumberPicker) tpSpinner
-									.getChildAt(i);
-							for(int j=0; j<numPicker.getChildCount(); j++){
-								View child = numPicker.getChildAt(j);
-								if(child instanceof EditText){
-									((EditText)child).setTextColor(UserChartSettingsActivity.this.getResources().getColor(R.color.dark_gray));
-								}
-							}
-						}
-
-						initDatePicker(endTime, datePicker);
-						initTimePicker(endTime, timePicker);
-
-						AlertDialog.Builder builder = new AlertDialog.Builder(
-								UserChartSettingsActivity.this)
-								.setView(view)
-								.setTitle("請設定結束時間")
-								.setIcon(android.R.drawable.ic_menu_more)
-								.setPositiveButton(
-										resources.getString(R.string.action_ok),
-										new DialogInterface.OnClickListener() {
-
-											public void onClick(
-													DialogInterface dialog,
-													int which) {
-												int year = datePicker.getYear();
-												int month = datePicker
-														.getMonth();
-												int day = datePicker
-														.getDayOfMonth();
-												int hour = timePicker
-														.getCurrentHour();
-												int minute = timePicker
-														.getCurrentMinute();
-
-												Calendar c = Calendar
-														.getInstance();
-												c.set(Calendar.YEAR, year);
-												c.set(Calendar.MONTH, month);
-												c.set(Calendar.DAY_OF_MONTH,
-														day);
-												c.set(Calendar.HOUR_OF_DAY,
-														hour);
-												c.set(Calendar.MINUTE, minute);
-												c.set(Calendar.SECOND, 0);
-
-												endTime = c.getTime();
-												SimpleDateFormat sdf = new SimpleDateFormat(
-														"yyyy-MM-dd HH:mm:ss");
-												if (endTime != null) {
-													tvTimePeriodEndTime.setText(sdf
-															.format(endTime));
-												}
-											}
-										})
-								.setNegativeButton(
-										resources
-												.getString(R.string.action_cancel),
-										new DialogInterface.OnClickListener() {
-
-											public void onClick(
-													DialogInterface dialog,
-													int which) {
-
-											}
-										});
-						builder.create().show();
-					}
-
-				});
-		setupActionBar();
 	}
-
-	private void initDatePicker(Date time, DatePicker datePicker) {
-		int year;
-		int month;
-		int day;
-
-		Calendar c = Calendar.getInstance();
-		if (time != null) {
-			c.setTime(time);
-		}
-		year = c.get(Calendar.YEAR);
-		month = c.get(Calendar.MONTH);
-		day = c.get(Calendar.DAY_OF_MONTH);
-
-		datePicker.init(year, month, day, null);
+	
+	private void setupStartTimePickerDlg(final Context context){
+		timePeriodStartTimeLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				setupTimePickerDlg(context, true);
+			}
+		});
 	}
+	
+	private void setupEndTimePickerDlg(final Context context){
+		timePeriodEndTimeLayout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				setupTimePickerDlg(context, false);
+			}
+		});
+	}
+	
+	private void setupTimePickerDlg(final Context context, final boolean isStartTime) {
 
-	private void initTimePicker(Date time, TimePicker timePicker) {
-		int hour;
-		int minute;
+		Resources resources = context.getResources();
+		View view = View.inflate(getApplicationContext(),
+				R.layout.date_time_picker2, null);
 
-		Calendar c = Calendar.getInstance();
-		if (time != null) {
-			c.setTime(time);
+		Calendar now = Calendar.getInstance();
+		if (isStartTime && startTime != null) {
+			now.setTime(startTime);
+		} else if (!isStartTime && endTime != null) {
+			now.setTime(endTime);
 		}
-		hour = c.get(Calendar.HOUR_OF_DAY);
-		minute = c.get(Calendar.MINUTE);
 
-		timePicker.setIs24HourView(true);
-		timePicker.setCurrentHour(hour);
-		timePicker.setCurrentMinute(minute);
+		int year = now.get(Calendar.YEAR);
+		int month = now.get(Calendar.MONTH);
+		int day = now.get(Calendar.DAY_OF_MONTH);
+		int hour = now.get(Calendar.HOUR_OF_DAY);
+		int minute = now.get(Calendar.MINUTE);
+
+		String[] months_big = { "1", "3", "5", "7", "8", "10", "12" };
+		String[] months_little = { "4", "6", "9", "11" };
+
+		final List<String> list_big = Arrays.asList(months_big);
+		final List<String> list_little = Arrays.asList(months_little);
+
+		final StrArrayWheelView wv_year = (StrArrayWheelView) view
+				.findViewById(R.id.year);
+		wv_year.setAdapter(new NumericWheelAdapter(START_YEAR, END_YEAR));
+		wv_year.setCyclic(true);
+		wv_year.setLabel("年");
+		wv_year.setCurrentItem(year - START_YEAR);
+
+		final StrArrayWheelView wv_month = (StrArrayWheelView) view
+				.findViewById(R.id.month);
+		wv_month.setAdapter(new NumericWheelAdapter(1, 12));
+		wv_month.setCyclic(true);
+		wv_month.setLabel("月");
+		wv_month.setCurrentItem(month);
+
+		final StrArrayWheelView wv_day = (StrArrayWheelView) view
+				.findViewById(R.id.day);
+		wv_day.setCyclic(true);
+		if (list_big.contains(String.valueOf(month + 1))) {
+			wv_day.setAdapter(new NumericWheelAdapter(1, 31));
+		} else if (list_little.contains(String.valueOf(month + 1))) {
+			wv_day.setAdapter(new NumericWheelAdapter(1, 30));
+		} else {
+			if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+				wv_day.setAdapter(new NumericWheelAdapter(1, 29));
+			else
+				wv_day.setAdapter(new NumericWheelAdapter(1, 28));
+		}
+		wv_day.setLabel("日");
+		wv_day.setCurrentItem(day - 1);
+
+		final StrArrayWheelView wv_hours = (StrArrayWheelView) view
+				.findViewById(R.id.hour);
+		wv_hours.setAdapter(new NumericWheelAdapter(0, 23));
+		wv_hours.setCyclic(true);
+		wv_hours.setCurrentItem(hour);
+		wv_hours.setLabel("時");
+
+		final StrArrayWheelView wv_mins = (StrArrayWheelView) view
+				.findViewById(R.id.mins);
+		wv_mins.setAdapter(new NumericWheelAdapter(0, 59, "%02d"));
+		wv_mins.setCyclic(true);
+		wv_mins.setCurrentItem(minute);
+		wv_mins.setLabel("分");
+
+		OnWheelChangedListener wheelListener_year = new OnWheelChangedListener() {
+
+			@Override
+			public void onChanged(StrArrayWheelView wheel, int oldValue,
+					int newValue) {
+				int year_num = newValue + START_YEAR;
+				if (list_big
+						.contains(String.valueOf(wv_month.getCurrentItem() + 1))) {
+					wv_day.setAdapter(new NumericWheelAdapter(1, 31));
+				} else if (list_little.contains(String.valueOf(wv_month
+						.getCurrentItem() + 1))) {
+					wv_day.setAdapter(new NumericWheelAdapter(1, 30));
+				} else {
+					if ((year_num % 4 == 0 && year_num % 100 != 0)
+							|| year_num % 400 == 0)
+						wv_day.setAdapter(new NumericWheelAdapter(1, 29));
+					else
+						wv_day.setAdapter(new NumericWheelAdapter(1, 28));
+				}
+			}
+		};
+
+		OnWheelChangedListener wheelListener_month = new OnWheelChangedListener() {
+
+			@Override
+			public void onChanged(StrArrayWheelView wheel, int oldValue,
+					int newValue) {
+				int month_num = newValue + 1;
+				if (list_big.contains(String.valueOf(month_num))) {
+					wv_day.setAdapter(new NumericWheelAdapter(1, 31));
+				} else if (list_little.contains(String.valueOf(month_num))) {
+					wv_day.setAdapter(new NumericWheelAdapter(1, 30));
+				} else {
+					if (((wv_year.getCurrentItem() + START_YEAR) % 4 == 0 && (wv_year
+							.getCurrentItem() + START_YEAR) % 100 != 0)
+							|| (wv_year.getCurrentItem() + START_YEAR) % 400 == 0)
+						wv_day.setAdapter(new NumericWheelAdapter(1, 29));
+					else
+						wv_day.setAdapter(new NumericWheelAdapter(1, 28));
+				}
+			}
+		};
+
+		wv_year.addChangingListener(wheelListener_year);
+		wv_month.addChangingListener(wheelListener_month);
+
+		int textSize = 0;
+
+		textSize = 15;
+
+		wv_day.TEXT_SIZE = textSize;
+		wv_hours.TEXT_SIZE = textSize;
+		wv_mins.TEXT_SIZE = textSize;
+		wv_month.TEXT_SIZE = textSize;
+		wv_year.TEXT_SIZE = textSize;
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(context)
+				.setView(view)
+				.setTitle(isStartTime ? "請設定開始時間" : "請設定結束時間")
+				.setIcon(android.R.drawable.ic_menu_more)
+				.setPositiveButton(resources.getString(R.string.action_ok),
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								int year = wv_year.getCurrentItem()
+										+ START_YEAR;
+								int month = wv_month.getCurrentItem();
+								int day = wv_day.getCurrentItem() + 1;
+								int hour = wv_hours.getCurrentItem();
+								int minute = wv_mins.getCurrentItem();
+								Calendar c = Calendar.getInstance();
+								c.set(Calendar.YEAR, year);
+								c.set(Calendar.MONTH, month);
+								c.set(Calendar.DAY_OF_MONTH, day);
+								c.set(Calendar.HOUR_OF_DAY, hour);
+								c.set(Calendar.MINUTE, minute);
+								c.set(Calendar.SECOND, 0);
+
+								SimpleDateFormat sdf = new SimpleDateFormat(
+										"yyyy-MM-dd HH:mm:ss");
+								if (isStartTime) {
+									startTime = c.getTime();
+									if (startTime != null) {
+										tvTimePeriodStartTime.setText(sdf
+												.format(startTime));
+									}
+								} else {
+									endTime = c.getTime();
+									if (endTime != null) {
+										tvTimePeriodEndTime.setText(sdf
+												.format(endTime));
+									}
+								}
+							}
+						})
+				.setNegativeButton(resources.getString(R.string.action_cancel),
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+
+							}
+						});
+		builder.create().show();
+
 	}
 
 	private Date getStartTime(int preDefinedTimePeriod) {
