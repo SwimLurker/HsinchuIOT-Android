@@ -121,13 +121,13 @@ public class SplashActivity extends BaseActivity {
 
 	}
 
-	protected void gotoUserMainScreen() {
+	protected void gotoNormalUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);
 		finish();
 	}
 
-	protected void gotoSuperUserMainScreen() {
+	protected void gotoAdminUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_SUPERUSER_MAIN);
 		startActivity(intent);
 		finish();
@@ -181,9 +181,9 @@ public class SplashActivity extends BaseActivity {
 					if (loginUser == null) {
 						showLoginActivity();
 					} else {
-						if (loginUser.isSuperUser()) {
-							gotoSuperUserMainScreen();
-						} else {
+						if (loginUser.isAdminUser()) {
+							gotoAdminUserMainScreen();
+						} else if(loginUser.isNormalUser()) {
 							int refreshTime = 10;
 							String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
 							if(!"".equals(refreshTimeStr)){
@@ -191,7 +191,9 @@ public class SplashActivity extends BaseActivity {
 							}
 							
 							ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, refreshTime);
-							gotoUserMainScreen();
+							gotoNormalUserMainScreen();
+						}else{
+							showLoginActivity();
 						}
 					}
 				} else {

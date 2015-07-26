@@ -133,8 +133,8 @@ public class UserChartSettingsActivity extends BaseActivity {
 					return true;
 				}
 				Intent result = new Intent();
-				result.putExtra(Constants.ActivityResult.CHART_TYPE, currentChartType);
-				result.putExtra(Constants.ActivityResult.CHART_RT_DURATION, duration);
+				result.putExtra(Constants.ActivityPassValue.CHART_TYPE, currentChartType);
+				result.putExtra(Constants.ActivityPassValue.CHART_RT_DURATION, duration);
 				setResult(this.RESULT_OK, result);
 				
 			}else if(currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
@@ -156,10 +156,10 @@ public class UserChartSettingsActivity extends BaseActivity {
 				}
 				
 				Intent result = new Intent();
-				result.putExtra(Constants.ActivityResult.CHART_TYPE, currentChartType);
-				result.putExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, startTime.getTime());
-				result.putExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, endTime.getTime());
-				result.putExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, currentGranularityType);
+				result.putExtra(Constants.ActivityPassValue.CHART_TYPE, currentChartType);
+				result.putExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, startTime.getTime());
+				result.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME, endTime.getTime());
+				result.putExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY, currentGranularityType);
 				setResult(this.RESULT_OK, result);
 			}
 			
@@ -175,22 +175,22 @@ public class UserChartSettingsActivity extends BaseActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setIcon(R.drawable.icon_back);
-		actionBar.setTitle(R.string.action_settings);
+		actionBar.setTitle(R.string.chart_settings);
 		super.setupActionBar();
 	}
 	
 	private void getPassedData(Intent data){
-		currentChartType = data.getIntExtra(Constants.ActivityResult.CHART_TYPE, Constants.ChartSettings.CHART_TYPE_REALTIME);
+		currentChartType = data.getIntExtra(Constants.ActivityPassValue.CHART_TYPE, Constants.ChartSettings.CHART_TYPE_REALTIME);
 		if(currentChartType == Constants.ChartSettings.CHART_TYPE_REALTIME){
-			currentTimeDuration = data.getIntExtra(Constants.ActivityResult.CHART_RT_DURATION, 1);
+			currentTimeDuration = data.getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 1);
 		}else if(currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
-			currentGranularityType = data.getIntExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, Constants.ChartSettings.GRANULARITY_HOUR);
-			long startTimeLong = data.getLongExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, 0);
+			currentGranularityType = data.getIntExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY, Constants.ChartSettings.GRANULARITY_HOUR);
+			long startTimeLong = data.getLongExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, 0);
 			if(startTimeLong != 0){
 				startTime = new Date();
 				startTime.setTime(startTimeLong);
 			}
-			long endTimeLong = data.getLongExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, 0);
+			long endTimeLong = data.getLongExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME, 0);
 			if(endTimeLong != 0){
 				endTime = new Date();
 				endTime.setTime(endTimeLong);

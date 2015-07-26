@@ -8,6 +8,7 @@
     <color name="darkgrey"> #434343</color>
     <color name="white"> #FFFFFF</color>
     <color name="red">#FF0000</color>
+    <color name="orange">#FEB016</color>
     <color name="common_blue"> #0092ce </color>
     <color name="common_blue_light"> #49BCEB  </color>
     <color name="common_green">#008000</color>

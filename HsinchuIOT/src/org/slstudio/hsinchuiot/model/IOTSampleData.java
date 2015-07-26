@@ -1,8 +1,9 @@
 package org.slstudio.hsinchuiot.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class IOTSampleData {
+public class IOTSampleData implements Serializable, Comparable{
 	public enum IOTSampleDataType {
 		CO2, TEMPERATURE, HUMIDITY
 	};
@@ -44,6 +45,18 @@ public class IOTSampleData {
 
 	public void setValue(float value) {
 		this.value = value;
+	}
+
+	@Override
+	public int compareTo(Object another) {
+		IOTSampleData o = (IOTSampleData)another;
+		if(this.time.after(o.time)){
+			return 1;
+		}else if(this.time.before(o.time)){
+			return -1;
+		}else{
+			return 0;
+		}
 	}
 
 }

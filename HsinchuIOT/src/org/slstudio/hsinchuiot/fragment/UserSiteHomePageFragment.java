@@ -1,6 +1,7 @@
 package org.slstudio.hsinchuiot.fragment;
 
 import java.util.Date;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,8 +61,9 @@ public class UserSiteHomePageFragment extends Fragment {
 
 	private ImageButton btnPreSite;
 	private ImageButton btnNextSite;
-	private TextView tvTitle;
+	private Button btnTitle;
 
+	private View layoutMonitor;
 	private TextView tvCO2Value;
 	private TextView tvTemperatureValue;
 	private TextView tvHumidityValue;
@@ -75,19 +77,20 @@ public class UserSiteHomePageFragment extends Fragment {
 	private XYSeriesRenderer temperatureRenderer;
 	private XYSeries humiditySeries;
 	private XYSeriesRenderer humidityRenderer;
-	
+
 	private XYSeries co2WarningSeries;
 	private XYSeriesRenderer co2WarningRenderer;
 	private XYSeries co2AlarmSeries;
 	private XYSeriesRenderer co2AlarmRenderer;
-	
+
 	private GraphicalView chartView;
 	private LinearLayout chartLayout;
 	private TextView tvChartTitle;
+	private TextView tvChartTitleBottom;
 	private Button btnChartSettings;
 
 	private List<IOTSampleData> chartData = new ArrayList<IOTSampleData>();
-	
+
 	public UserSiteHomePageFragment() {
 		super();
 	}
@@ -117,18 +120,17 @@ public class UserSiteHomePageFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_user_site_homepage, container, false);
 		initViews(view);
-		
-		createChart(view);
-		
-		updateUI();
-		
-		UserMainActivity parentActivity = (UserMainActivity) this.getActivity();
-		parentActivity.resendMessage();
+
+		updateMonitorData();
+
+		createChart();
+		updateChartData();
+
+		chartView.repaint();
 
 		return view;
 	}
 
-	
 	@Override
 	public void onDestroyView() {
 		destroyChart();
@@ -141,18 +143,40 @@ public class UserSiteHomePageFragment extends Fragment {
 		if (chartView != null) {
 			chartView.repaint();
 		}
-		
+
 	}
 
 	@SuppressLint("NewApi")
-	public void updateUI() {
+	public boolean updateMonitorData(IOTMonitorData data) {
 		if (site != null && getActivity() != null && !getActivity().isDestroyed()) {
+			site.setMonitorData(data);
+		}
+		updateMonitorData();
+		return true;
+	}
+
+	public void updateChartDataFinished() {
+		IOTLog.d("UserSiteHomePageFragment", "debuginfo - updateChartDataFinished: update chart title proceed");
+		tvChartTitle.setText(getChartTitle());
+	}
+
+	public void updateChartDataInProcessing() {
+		IOTLog.d("UserSiteHomePageFragment",
+				"debuginfo - updateChartDataInProcessing: update chart title in processing");
+		String title = getChartTitle();
+		tvChartTitle.setText(title + " - 正在獲取數據...");
+	}
+
+	@SuppressLint("NewApi")
+	private void updateMonitorData() {
+		if (site != null && getActivity() != null && !getActivity().isDestroyed()) {
+
 			IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance()
 					.getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
 			IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance()
 					.getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
 
-			tvTitle.setText(site.getSiteName());
+			btnTitle.setText(site.getSiteName());
 
 			int alarm = getActivity().getResources().getColor(R.color.status_alarm);
 			int warning = getActivity().getResources().getColor(R.color.status_warning);
@@ -189,70 +213,136 @@ public class UserSiteHomePageFragment extends Fragment {
 				tvHumidityValue.setTextColor(normal);
 			}
 			tvHumidityValue.setText(Float.toString(site.getMonitorData().getHumidity()));
-			
-			if(chartView != null){
-				IOTLog.d("UserSiteHomePageFragment", "charview refresh");
-				chartView.repaint();
-			}else{
-				IOTLog.e("UserSiteHomePageFragment", "charview is null");
-			}
-			
+
 		}
 	}
-	
-	public void updateChartData(List<IOTSampleData> samples){
+
+	private String getChartTitle() {
+		UserMainActivity parent = (UserMainActivity) getActivity();
+		if (parent.getChartType() == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
+			if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_HOUR) {
+				return "歷史統計(單位:每1小時)";
+			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_HOURS) {
+				return "歷史統計(單位:每8小時)";
+			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_DAY) {
+				return "歷史統計(單位:每日)";
+			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_WEEK) {
+				return "歷史統計(單位:每周)";
+			} else {
+				return "歷史統計(單位:每月)";
+			}
+		} else {
+			return "即時資料(資料範圍:" + parent.getChartTimeDuration() + "小時)";
+		}
+	}
+
+	public boolean updateChartData(List<IOTSampleData> samples) {
 		chartData = samples;
 		updateChartData();
 		chartView.repaint();
+		return true;
 	}
-	
-	private void updateChartData(){
 
-		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance()
-				.getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
-		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance()
-				.getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
-		
+	public void generateChart() {
+		chartData = new ArrayList<IOTSampleData>();
+		createChart();
+		updateChartData();
+		chartView.repaint();
+	}
+
+	private void updateChartData() {
+
+		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+
 		co2Series.clear();
 		temperatureSeries.clear();
 		humiditySeries.clear();
 		co2WarningSeries.clear();
 		co2AlarmSeries.clear();
-		
+
 		Date minTime = new Date();
 		Date maxTime = new Date();
-		
-		for (IOTSampleData sample: chartData) {
-			if(minTime.after(sample.getTime())){
+
+		for (IOTSampleData sample : chartData) {
+			if (minTime.after(sample.getTime())) {
 				minTime = sample.getTime();
 			}
-			if(maxTime.before(sample.getTime())){
+			if (maxTime.before(sample.getTime())) {
 				maxTime = sample.getTime();
 			}
-			if(sample.getType() == IOTSampleData.IOTSampleDataType.CO2){
+			if (sample.getType() == IOTSampleData.IOTSampleDataType.CO2) {
 				co2Series.add(sample.getTime().getTime(), sample.getValue());
-			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE){
+			} else if (sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE) {
 				temperatureSeries.add(sample.getTime().getTime(), sample.getValue());
-			}else if(sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY){
+			} else if (sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY) {
 				humiditySeries.add(sample.getTime().getTime(), sample.getValue());
 			}
-			
+
 		}
-				
-		double maxX = co2Series.getMaxX();
-		double minX = co2Series.getMinX();
-		
-		double interval = (maxX-minX)/80;
-		
-		for(double x=minX ;x<maxX; x=x+interval){
-			co2WarningSeries.add(x , warningThreshold.getCo2UpperBound());
-			co2AlarmSeries.add(x , breachThreshold.getCo2UpperBound());
+
+		if (co2Series.getItemCount() > 0) {
+			double maxX = co2Series.getMaxX();
+			double minX = co2Series.getMinX();
+
+			double interval = (maxX - minX) / 80;
+			for (double x = minX; x < maxX; x = x + interval) {
+				co2WarningSeries.add(x, warningThreshold.getCo2UpperBound());
+				co2AlarmSeries.add(x, breachThreshold.getCo2UpperBound());
+			}
+
+			double maxY0 = co2Series.getMaxY();
+			double minY0 = co2Series.getMinY();
+
+			if (Math.abs(maxY0 - minY0) < 20) {
+				maxY0 += 10;
+				minY0 = minY0 - 10 < 0 ? 0 : minY0 - 10;
+			}
+
+			if (maxY0 < breachThreshold.getCo2UpperBound()) {
+				maxY0 = breachThreshold.getCo2UpperBound();
+			}
+
+			if (minY0 > warningThreshold.getCo2UpperBound()) {
+				minY0 = warningThreshold.getCo2UpperBound();
+			}
+
+			chartRenderer.setYAxisMax(maxY0, 0);
+			chartRenderer.setYAxisMin(minY0, 0);
+
 		}
-		
+
+		if (temperatureSeries.getItemCount() > 0) {
+			double maxY1 = temperatureSeries.getMaxY();
+			double minY1 = temperatureSeries.getMinY();
+
+			if (Math.abs(maxY1 - minY1) < 10) {
+				maxY1 += 5;
+				minY1 = minY1 - 5 < 0 ? 0 : minY1 - 5;
+			}
+			chartRenderer.setYAxisMax(maxY1, 1);
+			chartRenderer.setYAxisMin(minY1, 1);
+		}
+
+		if (humiditySeries.getItemCount() > 0) {
+			double maxY2 = humiditySeries.getMaxY();
+			double minY2 = humiditySeries.getMinY();
+
+			if (Math.abs(maxY2 - minY2) < 20) {
+				maxY2 = maxY2 + 10 > 100 ? 100 : maxY2 + 10;
+				minY2 = ((minY2 - 10) < 0) ? 0 : minY2 - 10;
+			}
+			chartRenderer.setYAxisMax(maxY2, 2);
+			chartRenderer.setYAxisMin(minY2, 2);
+
+		}
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		
-		tvChartTitle.setText(sdf.format(minTime) + " - " + sdf.format(maxTime));
-		
+		tvChartTitleBottom.setText(sdf.format(minTime) + " - " + sdf.format(maxTime));
+
+		tvChartTitle.setText(getChartTitle());
 	}
 
 	private void initViews(View parentView) {
@@ -288,7 +378,29 @@ public class UserSiteHomePageFragment extends Fragment {
 
 		});
 
-		tvTitle = (TextView) parentView.findViewById(R.id.tv_userhome_title);
+		btnTitle = (Button) parentView.findViewById(R.id.btn_userhome_title);
+		btnTitle.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_SITEDETAIL);
+				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE, site);
+
+				startActivity(intent);
+			}
+		});
+
+		layoutMonitor = parentView.findViewById(R.id.layout_monitor);
+		layoutMonitor.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_SITEDETAIL);
+				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE, site);
+
+				startActivity(intent);
+			}
+		});
 
 		Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/DS-DIGIB.TTF");
 
@@ -304,106 +416,103 @@ public class UserSiteHomePageFragment extends Fragment {
 		ivCO2Status = (ImageView) parentView.findViewById(R.id.iv_userhome_co2_status);
 
 		chartLayout = (LinearLayout) parentView.findViewById(R.id.id_chart);
-		tvChartTitle = (TextView)parentView.findViewById(R.id.tv_chart_title);
-		btnChartSettings = (Button)parentView.findViewById(R.id.btn_chart_settings);
-		
-		btnChartSettings.setOnClickListener(new OnClickListener(){
+		tvChartTitle = (TextView) parentView.findViewById(R.id.tv_chart_title);
+		tvChartTitleBottom = (TextView) parentView.findViewById(R.id.tv_chart_bottom_title);
+		btnChartSettings = (Button) parentView.findViewById(R.id.btn_chart_settings);
+
+		btnChartSettings.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				
-			
-				Intent intent = new Intent(
-						Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
-				intent.putExtra(Constants.ActivityResult.CHART_TYPE, parentActivity.getChartType());
-				if(parentActivity.getChartType() == Constants.ChartSettings.CHART_TYPE_REALTIME){
-					intent.putExtra(Constants.ActivityResult.CHART_RT_DURATION, parentActivity.getChartTimeDuration());
-				}else if(parentActivity.getChartType() == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
-					intent.putExtra(Constants.ActivityResult.CHART_AGGR_GRANULARITY, parentActivity.getChartGranularity());
-					if(parentActivity.getChartStartTime() != null){
-						intent.putExtra(Constants.ActivityResult.CHART_AGGR_STARTTIME, parentActivity.getChartStartTime().getTime());
+
+				Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
+				intent.putExtra(Constants.ActivityPassValue.CHART_TYPE, parentActivity.getChartType());
+				if (parentActivity.getChartType() == Constants.ChartSettings.CHART_TYPE_REALTIME) {
+					intent.putExtra(Constants.ActivityPassValue.CHART_RT_DURATION,
+							parentActivity.getChartTimeDuration());
+				} else if (parentActivity.getChartType() == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
+					intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
+							parentActivity.getChartGranularity());
+					if (parentActivity.getChartStartTime() != null) {
+						intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME,
+								parentActivity.getChartStartTime().getTime());
 					}
-					if(parentActivity.getChartEndTime() != null){
-						intent.putExtra(Constants.ActivityResult.CHART_AGGR_ENDTIME, parentActivity.getChartEndTime().getTime());
+					if (parentActivity.getChartEndTime() != null) {
+						intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME,
+								parentActivity.getChartEndTime().getTime());
 					}
 				}
 				getActivity().startActivityForResult(intent, Constants.ResultCode.CHART_SETTINGS);
 			}
-			
+
 		});
-		
-		
+
 	}
 
-	private void createChart(View parentView) {
+	private void createChart() {
 		chartDataset.clear();
 		chartRenderer.removeAllRenderers();
 
 		Resources resources = getActivity().getResources();
-		
+
 		chartRenderer.setApplyBackgroundColor(true);// 设置是否显示背景色
 		chartRenderer.setBackgroundColor(resources.getColor(R.color.white));// 设置背景色
 		chartRenderer.setMargins(new int[] { 20, 50, 20, 30 });// 设置图表的外边框(上/左/下/右)
 		chartRenderer.setMarginsColor(resources.getColor(R.color.white));
-		
+
 		chartRenderer.setChartTitleTextSize(0);// ?设置整个图表标题文字大小
-		//chartRenderer.setChartTitle("2015/07/20 15:00:00 - 2015/07/20 16:00:00");
-		
+		// chartRenderer.setChartTitle("2015/07/20 15:00:00 - 2015/07/20
+		// 16:00:00");
+
 		chartRenderer.setAxesColor(resources.getColor(R.color.dark_gray));
 		chartRenderer.setAxisTitleTextSize(16); // 设置轴标题文字的大小
 		chartRenderer.setLabelsColor(resources.getColor(R.color.dark_gray));
-		
+
 		chartRenderer.setLabelsTextSize(15);// 设置刻度显示文字的大小(XY轴都会被设置)
 		chartRenderer.setLegendTextSize(18);// 图例文字大小
 		chartRenderer.setFitLegend(true);
 		chartRenderer.setTextTypeface("sans_serif", Typeface.BOLD);
-	  
+
 		chartRenderer.setXLabelsColor(resources.getColor(R.color.dark_gray));
 		chartRenderer.setXLabels(5);
 		chartRenderer.setYLabels(5);
-		
+
 		chartRenderer.setYLabelsColor(0, resources.getColor(R.color.title_bk_green));
 		chartRenderer.setYTitle("ppm", 0);
 		chartRenderer.setYAxisAlign(Align.LEFT, 0);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 0);
-		chartRenderer.setYAxisMax(1200,0);
-		chartRenderer.setYAxisMin(0, 0);
+		// chartRenderer.setYAxisMax(600, 0);
+		// chartRenderer.setYAxisMin(500, 0);
 		chartRenderer.setYLabelsColor(1, resources.getColor(R.color.title_bk_brown));
-		chartRenderer.setYTitle("℃", 1);
+		chartRenderer.setYTitle("          ℃", 1);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 1);
-		chartRenderer.setYAxisMax(40, 1);
-		chartRenderer.setYAxisMin(0, 1);
-		
+		// chartRenderer.setYAxisMax(40, 1);
+		// chartRenderer.setYAxisMin(0, 1);
+
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
-		chartRenderer.setYTitle("%", 2);
+		chartRenderer.setYTitle("%         ", 2);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
 		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
-		chartRenderer.setYAxisMax(100,2);
-		chartRenderer.setYAxisMin(0, 2);
-		
-		
-		
+		// chartRenderer.setYAxisMax(100, 2);
+		// chartRenderer.setYAxisMin(0, 2);
+
 		chartRenderer.setZoomButtonsVisible(false);// 是否显示放大缩小按钮
 		chartRenderer.setPointSize(3);// 设置点的大小(图上显示的点的大小和图例中点的大小都会被设置)
-		chartRenderer.setPanEnabled(true);
-		//chartRenderer.setClickEnabled(true);
-	
-		
-		
-		
-		
-		co2Series = new XYSeries(resources.getString(R.string.co2),0);// 定义XYSeries
+		chartRenderer.setPanEnabled(false);
+		chartRenderer.setClickEnabled(true);
+
+		co2Series = new XYSeries(resources.getString(R.string.co2), 0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
 		co2Renderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
-		
+
 		chartRenderer.addSeriesRenderer(co2Renderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
 		co2Renderer.setPointStyle(PointStyle.CIRCLE);// 点的类型是圆形
 		co2Renderer.setFillPoints(true);// 设置点是否实心
 		co2Renderer.setColor(resources.getColor(R.color.title_bk_green));
 		co2Renderer.setLineWidth(3);
-		//co2Renderer.setDisplayChartValues(true);
-		
+		// co2Renderer.setDisplayChartValues(true);
+
 		temperatureSeries = new XYSeries(resources.getString(R.string.temperature), 1);// 定义XYSeries
 		chartDataset.addSeries(temperatureSeries);// 在XYMultipleSeriesDataset中添加XYSeries
 		temperatureRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
@@ -422,8 +531,8 @@ public class UserSiteHomePageFragment extends Fragment {
 		humidityRenderer.setFillPoints(true);// 设置点是否实心
 		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
 		humidityRenderer.setLineWidth(3);
-		
-		co2AlarmSeries = new XYSeries("",0);// 定义XYSeries
+
+		co2AlarmSeries = new XYSeries("", 0);// 定义XYSeries
 		chartDataset.addSeries(co2AlarmSeries);// 在XYMultipleSeriesDataset中添加XYSeries
 		co2AlarmRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
 		chartRenderer.addSeriesRenderer(co2AlarmRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
@@ -433,11 +542,12 @@ public class UserSiteHomePageFragment extends Fragment {
 		co2AlarmRenderer.setLineWidth(2);
 		co2AlarmRenderer.setStroke(BasicStroke.DOTTED);
 		co2AlarmRenderer.setShowLegendItem(false);
-		//FillOutsideLine fill2 = new FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
-        //fill2.setColor(Color.argb(60, 255, 255, 255));
-        //co2AlarmRenderer.addFillOutsideLine(fill2);
-		
-        co2WarningSeries = new XYSeries("",0);// 定义XYSeries
+		// FillOutsideLine fill2 = new
+		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
+		// fill2.setColor(Color.argb(60, 255, 255, 255));
+		// co2AlarmRenderer.addFillOutsideLine(fill2);
+
+		co2WarningSeries = new XYSeries("", 0);// 定义XYSeries
 		chartDataset.addSeries(co2WarningSeries);// 在XYMultipleSeriesDataset中添加XYSeries
 		co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
 		chartRenderer.addSeriesRenderer(co2WarningRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
@@ -447,40 +557,75 @@ public class UserSiteHomePageFragment extends Fragment {
 		co2WarningRenderer.setLineWidth(2);
 		co2WarningRenderer.setStroke(BasicStroke.DOTTED);
 		co2WarningRenderer.setShowLegendItem(false);
-		//FillOutsideLine fill = new FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
-        //fill.setColor(Color.argb(60, 0, 255, 0));
-        //co2WarningRenderer.addFillOutsideLine(fill);
 
-		
+		// FillOutsideLine fill = new
+		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
+		// fill.setColor(Color.argb(60, 0, 255, 0));
+		// co2WarningRenderer.addFillOutsideLine(fill);
+
 		/*
-		Calendar now = Calendar.getInstance();
-		Calendar lastHour = Calendar.getInstance();
-		lastHour.add(Calendar.HOUR, -1);
+		 * Calendar now = Calendar.getInstance(); Calendar lastHour =
+		 * Calendar.getInstance(); lastHour.add(Calendar.HOUR, -1);
+		 * 
+		 * Random r = new Random();
+		 * 
+		 * for (int i = 0; i < 60; i++) { Calendar c = Calendar.getInstance();
+		 * c.add(Calendar.HOUR, -1); c.add(Calendar.MINUTE, i);
+		 * co2WarningSeries.add(c.getTime().getTime() , 800);
+		 * co2Series.add(c.getTime().getTime() , Math.abs(r.nextInt() % 2000));
+		 * temperatureSeries.add(c.getTime().getTime(),
+		 * Math.abs(r.nextInt(4000)) / 100.0f);
+		 * humiditySeries.add(c.getTime().getTime(), Math.abs(r.nextInt(10000))
+		 * / 100.0f); }
+		 */
 
-		Random r = new Random();
+		UserMainActivity parent = (UserMainActivity) getActivity();
 
-		for (int i = 0; i < 60; i++) {
-			Calendar c = Calendar.getInstance();
-			c.add(Calendar.HOUR, -1);
-			c.add(Calendar.MINUTE, i);
-			co2WarningSeries.add(c.getTime().getTime() , 800);
-			co2Series.add(c.getTime().getTime() , Math.abs(r.nextInt() % 2000));
-			temperatureSeries.add(c.getTime().getTime(), Math.abs(r.nextInt(4000)) / 100.0f);
-			humiditySeries.add(c.getTime().getTime(), Math.abs(r.nextInt(10000)) / 100.0f);
+		if (parent.getChartType() == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
+			if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_HOUR) {
+				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer,
+						"yyyy/MM/dd-HH:mm:ss");
+			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_HOURS) {
+				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer,
+						"yyyy/MM/dd-HH:mm:ss");
+			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_DAY) {
+				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy/MM/dd");
+			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_WEEK) {
+				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy/MM/dd");
+			} else {
+				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy/MM");
+
+			}
+		} else {
+			chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "HH:mm:ss");
 		}
-		*/
-		
-		updateChartData();
-		chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "HH:mm:ss");
-		chartRenderer.setClickEnabled(true);// 设置图表是否允许点击
-		chartRenderer.setSelectableBuffer(100);// 设置点的缓冲半径值(在某点附件点击时,多大范围内都算点击这个点)
-		
+
 		chartLayout.removeAllViews();
 		chartLayout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		chartLayout.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				UserMainActivity parent = (UserMainActivity) getActivity();
+
+				Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_CHARTDETAIL);
+
+				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE, site);
+				intent.putExtra(Constants.ActivityPassValue.CHART_TYPE, parent.getChartType());
+				intent.putExtra(Constants.ActivityPassValue.CHART_DATA, (Serializable) chartData);
+				intent.putExtra(Constants.ActivityPassValue.CHART_RT_DURATION, parent.getChartTimeDuration());
+				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY, parent.getChartGranularity());
+				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, parent.getChartStartTime()==null?0: parent.getChartStartTime().getTime());
+				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME, parent.getChartEndTime()==null?0:parent.getChartEndTime().getTime());
+
+				startActivity(intent);
+
+			}
+		});
 	}
 
-
-	private void destroyChart(){
+	private void destroyChart() {
 		chartDataset.clear();
 		chartRenderer.removeAllRenderers();
 	}

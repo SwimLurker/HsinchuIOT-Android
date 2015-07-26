@@ -18,6 +18,10 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "User")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User implements Serializable {
+	
+	public static final String PERMISSION_USER="0,33,0,0";
+	public static final String PERMISSION_ADMINUSER="65664,65705,65664,0";
+	
 
 	@DatabaseField(id = true)
 	@JsonProperty("user_id")
@@ -97,9 +101,7 @@ public class User implements Serializable {
 	}
 
 	public boolean isSuperUser() {
-		//return superUser;
-		//hack for testing
-		return false;
+		return superUser;
 	}
 
 	public void setSuperUser(boolean superUser) {
@@ -179,6 +181,15 @@ public class User implements Serializable {
 		this.licenseCount = licenseCount;
 	}
 
+	public boolean isAdminUser(){
+		return PERMISSION_ADMINUSER.equals(permission);
+	}
+	
+	public boolean isNormalUser(){
+		return PERMISSION_USER.equals(permission);
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "User [uid=" + userID + "]";

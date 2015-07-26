@@ -102,13 +102,13 @@ public class LoginActivity extends BaseActivity {
 
 	}
 
-	protected void gotoUserMainScreen() {
+	protected void gotoNormalUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);
 		finish();
 	}
 
-	protected void gotoSuperUserMainScreen() {
+	protected void gotoAdminUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_SUPERUSER_MAIN);
 		startActivity(intent);
 		finish();
@@ -202,7 +202,7 @@ public class LoginActivity extends BaseActivity {
 			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
 					LoginService.getBreachThreshold(LoginActivity.this));
 
-			if(!loginUser.isSuperUser()){
+			if(loginUser.isNormalUser()){
 				int refreshTime = 10;
 				String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(LoginActivity.this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
 				if(!"".equals(refreshTimeStr)){
@@ -221,10 +221,14 @@ public class LoginActivity extends BaseActivity {
 					 * .getPerferenceService()
 					 * .getSessionId(LoginActivity.this));
 					 */
-					if (loginUser.isSuperUser()) {
-						gotoSuperUserMainScreen();
-					} else {
-						gotoUserMainScreen();
+					if (loginUser.isAdminUser()) {
+						gotoAdminUserMainScreen();
+					} else if (loginUser.isNormalUser()){
+						gotoNormalUserMainScreen();
+					}else{
+						setException(new IOTException(-1, getString(R.string.error_message_user_permission_wrong)));
+						showDialog(DIALOG_ERROR);
+						return;
 					}
 				}
 			});

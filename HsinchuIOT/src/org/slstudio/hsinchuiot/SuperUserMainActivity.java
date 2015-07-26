@@ -46,7 +46,6 @@ import com.mobeta.android.dslv.DragSortController;
 import com.mobeta.android.dslv.DragSortListView;
 
 public class SuperUserMainActivity extends BaseActivity {
-	public static final String SELECTED_SITE = "org.slstudio.hsinchuiot.SELECTED_SITE";
 	
 	private PullToRefreshSlideListView siteListView;
 	private TextView tv8hr;
@@ -168,7 +167,7 @@ public class SuperUserMainActivity extends BaseActivity {
 					siteListViewAdatper.notifyDataSetChanged();
 					Intent intent = new Intent(
 							Constants.Action.HSINCHUIOT_SUPERUSER_SITEDETAIL);
-					intent.putExtra(SELECTED_SITE,
+					intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE,
 							(Site) siteListViewAdatper.getItem(position - 1));
 					
 					startActivity(intent);
@@ -199,7 +198,7 @@ public class SuperUserMainActivity extends BaseActivity {
 				siteListViewAdatper.notifyDataSetChanged();
 				Intent intent = new Intent(
 						Constants.Action.HSINCHUIOT_SUPERUSER_SITEDETAIL);
-				intent.putExtra(SELECTED_SITE,
+				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE,
 						(Site) siteListViewAdatper.getItem(position));
 
 				startActivity(intent);
@@ -440,11 +439,11 @@ public class SuperUserMainActivity extends BaseActivity {
 			final Calendar c8[] = ReportUtil.get8HoursTimePeriod();
 			final Calendar c1[] = ReportUtil.get1HourTimePeriod();
 
-			String time8hFrom = ReportUtil.getServerTimeString(c8[0]);
-			String time8hTo = ReportUtil.getServerTimeString(c8[1]);
+			String time8hFrom = ReportUtil.getServerTimeHourString(c8[0]);
+			String time8hTo = ReportUtil.getServerTimeHourString(c8[1]);
 
-			String time1hFrom = ReportUtil.getServerTimeString(c1[0]);
-			String time1hTo = ReportUtil.getServerTimeString(c1[1]);
+			String time1hFrom = ReportUtil.getServerTimeHourString(c1[0]);
+			String time1hTo = ReportUtil.getServerTimeHourString(c1[1]);
 
 			for (Device d : deviceList) {
 

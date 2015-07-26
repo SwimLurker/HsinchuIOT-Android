@@ -39,6 +39,8 @@ public class Constants {
 	public static class MessageKey{
 		public static final int MESSAGE_GET_REALTIME_DATA = 1;
 		public static final int MESSAGE_GET_CHART_DATA = 2;
+		public static final int MESSAGE_UPDATE_CHART_DATA = 3;
+		public static final int MESSAGE_UPDATE_MONITOR_DATA = 4;
 	}
 
 	public static class SessionKey{
@@ -91,6 +93,8 @@ public class Constants {
 		public static String HSINCHUIOT_USER_MAIN = "org.slstudio.hsinchuiot.user_main";
 		public static String HSINCHUIOT_USER_SETTINGS = "org.slstudio.hsinchuiot.user_settings";
 		public static String HSINCHUIOT_USER_CHART_SETTINGS = "org.slstudio.hsinchuiot.user_chart_settings";
+		public static String HSINCHUIOT_USER_SITEDETAIL = "org.slstudio.hsinchuiot.user_sitedetail";
+		public static String HSINCHUIOT_USER_CHARTDETAIL = "org.slstudio.hsinchuiot.user_chartdetail";
 		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
 	 
 	}
@@ -99,12 +103,14 @@ public class Constants {
 		public static final int CHART_SETTINGS = 1;
 	}
 
-	public static class ActivityResult{
+	public static class ActivityPassValue{
+		public static final String SELECTED_SITE = "SELECTED_SITE";
 		public static final String CHART_TYPE = "CHART_TYPE";
 		public static final String CHART_RT_DURATION = "CHART_RT_DURATION";
 		public static final String CHART_AGGR_GRANULARITY = "CHART_AGGR_GRANULARITY";
 		public static final String CHART_AGGR_STARTTIME = "CHART_AGGR_STARTTIME";
 		public static final String CHART_AGGR_ENDTIME = "CHART_AGGR_ENDTIME";
+		public static final String CHART_DATA = "CHART_DATA";
 	}
 	
 	public static class ChartSettings{

@@ -114,12 +114,31 @@ public class ReportUtil {
 		}
 	}
 
-	public static String getServerTimeString(final Calendar cal) {
-		Calendar result = Calendar.getInstance();
-		result.setTime(cal.getTime());
-		result.add(Calendar.HOUR, -8);
-		
-		return sdfHour2.format(result.getTime()) + ":00:00";
+	public static String getServerTimeHourString(final Calendar cal) {
+		Date d = getServerTime(cal.getTime());
+		return sdfHour2.format(d) + ":00:00";
+	}
+	
+	public static String getServerTimeHourString(final Date date) {
+		Date d = getServerTime(date);
+		return sdfHour2.format(d) + ":00:00";
+	}
+	
+	public static String getServerTimeDayString(final Calendar cal) {
+		Date d = getServerTime(cal.getTime());
+		return sdfDate2.format(d) + " 00:00:00";
+	}
+	
+	public static String getServerTimeDayString(final Date date) {
+		Date d = getServerTime(date);
+		return sdfDate2.format(d) + " 00:00:00";
+	}
+
+	public static Date getServerTime(Date localTime){
+		Calendar c = Calendar.getInstance();
+		c.setTime(localTime);
+		c.add(Calendar.HOUR, -8);
+		return c.getTime();
 	}
 	
 	public static Date getLocalTime(Date utcTime){

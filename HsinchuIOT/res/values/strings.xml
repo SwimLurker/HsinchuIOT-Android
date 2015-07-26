@@ -8,6 +8,7 @@
     <string name="action_cancel">取消</string>
     <string name="action_input">請輸入</string>
     <string name="action_select">請選擇</string>
+    <string name="action_close">關閉</string>
     <string name="yes">是</string>
     <string name="no">否</string>
 	
@@ -28,6 +29,7 @@
 	<string name="error_message_chart_settings_require_starttime">需要填寫開始時間</string>
 	<string name="error_message_chart_settings_require_endtime">需要填寫結束時間</string>
 	<string name="error_message_chart_settings_invalid_starttime">開始時間應早於結束時間</string>
+	<string name="error_message_user_permission_wrong">用戶權限錯誤，禁止登錄</string>
 	<!-- login -->
     <string name="common_login_hint_username">請輸入您的帳號</string>
     <string name="common_login_hint_password">請輸入您的密碼</string>

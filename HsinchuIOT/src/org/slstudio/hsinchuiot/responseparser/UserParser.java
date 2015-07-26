@@ -49,7 +49,11 @@ public class UserParser extends XmlResponseParser<User>{
 		result.setFirstLogin(isFirstLogin);
 		result.setAdminDomain(adminDomain);
 		result.setChangePWDDate(changePwdDate);
-		result.setPermission(permission);
+		
+		//for debug purpose
+		//result.setPermission(permission);
+		result.setPermission(User.PERMISSION_USER);
+		
 		result.setPasswordExpiryDays(pwdExpiredDays);
 		result.setServerTime(serverTime);
 		result.setStatus(status);

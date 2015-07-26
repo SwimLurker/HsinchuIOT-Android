@@ -216,6 +216,25 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+         <activity
+            android:name="org.slstudio.hsinchuiot.UserSiteDetailActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="org.slstudio.hsinchuiot.user_sitedetail" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.slstudio.hsinchuiot.UserChartDetailActivity"
+            android:screenOrientation="portrait"
+            >
+            <intent-filter>
+                <action android:name="org.slstudio.hsinchuiot.user_chartdetail" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+       
     </application>
 
 </manifest>

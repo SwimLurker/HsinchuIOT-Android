@@ -43,7 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-public class SuperUserSiteDetailActivity extends BaseActivity {
+public class UserSiteDetailActivity extends BaseActivity {
 	public static final int REPORTTYPE_CO2 = 1;
 	public static final int REPORTTYPE_TEMPERATURE = 2;
 	public static final int REPORTTYPE_HUMIDITY = 3;
@@ -120,7 +120,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_superuser_sitedetail);
+		setContentView(R.layout.activity_user_sitedetail);
 
 		currentSite = (Site) getIntent().getSerializableExtra(Constants.ActivityPassValue.SELECTED_SITE);
 		warningThreshold = (IOTMonitorThreshold)ServiceContainer.getInstance().getSessionService().getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
@@ -158,7 +158,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 	}
 
 	private void initViews() {
-		ivSiteImage = (ImageView) findViewById(R.id.iv_site_image_superuser);
+		ivSiteImage = (ImageView) findViewById(R.id.iv_site_image_user);
 		String uri = "file://" + Constants.ImageLoader.IMAGE_ENGINE_CACHE + "/" + currentSite.getSiteImageFilename();
 		ImageLoader.getInstance().displayImage(uri, ivSiteImage);
 
@@ -170,40 +170,40 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		ivSiteImage.setLayoutParams(para);
 
-		tvCO2Title = (TextView) findViewById(R.id.tv_co2_title_superuser);
+		tvCO2Title = (TextView) findViewById(R.id.tv_co2_title_user);
 		tvCO2Title.setText(
 				resources.getString(R.string.co2) + ": " + ReportUtil.get8HoursTimePeriodString(co2From, co2To));
 
-		tvTemperatureTitle = (TextView) findViewById(R.id.tv_temperature_title_superuser);
+		tvTemperatureTitle = (TextView) findViewById(R.id.tv_temperature_title_user);
 		tvTemperatureTitle.setText(resources.getString(R.string.temperature) + ": "
 				+ ReportUtil.get1HourTimePeriodString(temperatureFrom, temperatureTo));
 
-		tvHumidityTitle = (TextView) findViewById(R.id.tv_humidity_title_superuser);
+		tvHumidityTitle = (TextView) findViewById(R.id.tv_humidity_title_user);
 		tvHumidityTitle.setText(resources.getString(R.string.humidity) + ": "
 				+ ReportUtil.get1HourTimePeriodString(humidityFrom, humidityTo));
 
-		tvCO2AverageValue = (TextView) findViewById(R.id.tv_co2_averagevalue_superuser);
+		tvCO2AverageValue = (TextView) findViewById(R.id.tv_co2_averagevalue_user);
 		tvCO2AverageValue.setText("");
-		tvCO2MaxValue = (TextView) findViewById(R.id.tv_co2_maxvalue_superuser);
+		tvCO2MaxValue = (TextView) findViewById(R.id.tv_co2_maxvalue_user);
 		tvCO2MaxValue.setText("");
-		tvCO2MinValue = (TextView) findViewById(R.id.tv_co2_minvalue_superuser);
+		tvCO2MinValue = (TextView) findViewById(R.id.tv_co2_minvalue_user);
 		tvCO2MinValue.setText("");
 
-		tvTemperatureAverageValue = (TextView) findViewById(R.id.tv_temperature_averagevalue_superuser);
+		tvTemperatureAverageValue = (TextView) findViewById(R.id.tv_temperature_averagevalue_user);
 		tvTemperatureAverageValue.setText("");
-		tvTemperatureMaxValue = (TextView) findViewById(R.id.tv_temperature_maxvalue_superuser);
+		tvTemperatureMaxValue = (TextView) findViewById(R.id.tv_temperature_maxvalue_user);
 		tvTemperatureMaxValue.setText("");
-		tvTemperatureMinValue = (TextView) findViewById(R.id.tv_temperature_minvalue_superuser);
+		tvTemperatureMinValue = (TextView) findViewById(R.id.tv_temperature_minvalue_user);
 		tvTemperatureMinValue.setText("");
 
-		tvHumidityAverageValue = (TextView) findViewById(R.id.tv_humidity_averagevalue_superuser);
+		tvHumidityAverageValue = (TextView) findViewById(R.id.tv_humidity_averagevalue_user);
 		tvHumidityAverageValue.setText("");
-		tvHumidityMaxValue = (TextView) findViewById(R.id.tv_humidity_maxvalue_superuser);
+		tvHumidityMaxValue = (TextView) findViewById(R.id.tv_humidity_maxvalue_user);
 		tvHumidityMaxValue.setText("");
-		tvHumidityMinValue = (TextView) findViewById(R.id.tv_humidity_minvalue_superuser);
+		tvHumidityMinValue = (TextView) findViewById(R.id.tv_humidity_minvalue_user);
 		tvHumidityMinValue.setText("");
 
-		vfCO2 = (ViewFlipper) findViewById(R.id.vf_co2_superuser);
+		vfCO2 = (ViewFlipper) findViewById(R.id.vf_co2_user);
 		vfCO2.setOnTouchListener(new MyViewFlipperOnTouchListener(vfCO2) {
 
 			@Override
@@ -219,7 +219,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		vfTemperature = (ViewFlipper) findViewById(R.id.vf_temperature_superuser);
+		vfTemperature = (ViewFlipper) findViewById(R.id.vf_temperature_user);
 		vfTemperature.setOnTouchListener(new MyViewFlipperOnTouchListener(vfTemperature) {
 
 			@Override
@@ -235,7 +235,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		vfHumidity = (ViewFlipper) findViewById(R.id.vf_humidity_superuser);
+		vfHumidity = (ViewFlipper) findViewById(R.id.vf_humidity_user);
 		vfHumidity.setOnTouchListener(new MyViewFlipperOnTouchListener(vfHumidity) {
 
 			@Override
@@ -251,16 +251,16 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		btnCO2Pre = (ImageButton) findViewById(R.id.btn_co2_pre_superuser);
+		btnCO2Pre = (ImageButton) findViewById(R.id.btn_co2_pre_user);
 		btnCO2Pre.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				vfCO2.setInAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_in_right));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_in_right));
 				vfCO2.setOutAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_out_left));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_out_left));
 
 				if (showPreviousCO2()) {
 					vfCO2.showPrevious();
@@ -269,16 +269,16 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		btnCO2Next = (ImageButton) findViewById(R.id.btn_co2_next_superuser);
+		btnCO2Next = (ImageButton) findViewById(R.id.btn_co2_next_user);
 		btnCO2Next.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				vfCO2.setInAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, android.R.anim.slide_in_left));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, android.R.anim.slide_in_left));
 				vfCO2.setOutAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, android.R.anim.slide_out_right));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, android.R.anim.slide_out_right));
 
 				if (showNextCO2()) {
 					vfCO2.showNext();
@@ -287,16 +287,16 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		btnTemperaturePre = (ImageButton) findViewById(R.id.btn_temperature_pre_superuser);
+		btnTemperaturePre = (ImageButton) findViewById(R.id.btn_temperature_pre_user);
 		btnTemperaturePre.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				vfTemperature.setInAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_in_right));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_in_right));
 				vfTemperature.setOutAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_out_left));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_out_left));
 				if (showPreviousTemperature()) {
 					vfTemperature.showPrevious();
 				}
@@ -304,16 +304,16 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		btnTemperatureNext = (ImageButton) findViewById(R.id.btn_temperature_next_superuser);
+		btnTemperatureNext = (ImageButton) findViewById(R.id.btn_temperature_next_user);
 		btnTemperatureNext.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				vfTemperature.setInAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, android.R.anim.slide_in_left));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, android.R.anim.slide_in_left));
 				vfTemperature.setOutAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, android.R.anim.slide_out_right));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, android.R.anim.slide_out_right));
 				if (showNextTemperature()) {
 					vfTemperature.showNext();
 				}
@@ -321,16 +321,16 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		btnHumidityPre = (ImageButton) findViewById(R.id.btn_humidity_pre_superuser);
+		btnHumidityPre = (ImageButton) findViewById(R.id.btn_humidity_pre_user);
 		btnHumidityPre.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				vfHumidity.setInAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_in_right));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_in_right));
 				vfHumidity.setOutAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_out_left));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_out_left));
 				if (showPreviousHumidity()) {
 					vfHumidity.showPrevious();
 				}
@@ -338,16 +338,16 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		btnHumidityNext = (ImageButton) findViewById(R.id.btn_humidity_next_superuser);
+		btnHumidityNext = (ImageButton) findViewById(R.id.btn_humidity_next_user);
 		btnHumidityNext.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				vfHumidity.setInAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, android.R.anim.slide_in_left));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, android.R.anim.slide_in_left));
 				vfHumidity.setOutAnimation(
-						AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, android.R.anim.slide_out_right));
+						AnimationUtils.loadAnimation(UserSiteDetailActivity.this, android.R.anim.slide_out_right));
 				if (showNextHumidity()) {
 					vfHumidity.showNext();
 				}
@@ -355,7 +355,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 
 		});
 
-		refreshScrollView = (PullToRefreshScrollView) findViewById(R.id.pull_refresh_scrollview_superuser);
+		refreshScrollView = (PullToRefreshScrollView) findViewById(R.id.pull_refresh_scrollview_user);
 		refreshScrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
 
 			@Override
@@ -395,7 +395,7 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 					titleTextView.setTextSize(15);
 				}
 			}
-		}
+		}		
 		super.setupActionBar();
 	}
 
@@ -554,9 +554,9 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 				// 从左往右，看前一个View
 				if (touchUpX - touchDownX > 100) {
 					// 设置View切换的动画
-					vf.setInAnimation(AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this,
+					vf.setInAnimation(AnimationUtils.loadAnimation(UserSiteDetailActivity.this,
 							android.R.anim.slide_in_left));
-					vf.setOutAnimation(AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this,
+					vf.setOutAnimation(AnimationUtils.loadAnimation(UserSiteDetailActivity.this,
 							android.R.anim.slide_out_right));
 					// 显示下一个View
 					if (onPreviousAction()) {
@@ -568,9 +568,9 @@ public class SuperUserSiteDetailActivity extends BaseActivity {
 					// 由于Android没有提供slide_out_left和slide_in_right，所以仿照slide_in_left和slide_out_right编写了slide_out_left和slide_in_right
 
 					vf.setInAnimation(
-							AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_in_right));
+							AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_in_right));
 					vf.setOutAnimation(
-							AnimationUtils.loadAnimation(SuperUserSiteDetailActivity.this, R.anim.slide_out_left));
+							AnimationUtils.loadAnimation(UserSiteDetailActivity.this, R.anim.slide_out_left));
 					// 显示前一个View
 					if (onNextAction()) {
 						vf.showNext();
