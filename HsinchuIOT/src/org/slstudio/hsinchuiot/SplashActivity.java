@@ -117,6 +117,7 @@ public class SplashActivity extends BaseActivity {
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(i);
+		progressDialog.dismiss();
 		finish();
 
 	}
@@ -124,18 +125,21 @@ public class SplashActivity extends BaseActivity {
 	protected void gotoNormalUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);
+		progressDialog.dismiss();
 		finish();
 	}
 
 	protected void gotoAdminUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_SUPERUSER_MAIN);
 		startActivity(intent);
+		progressDialog.dismiss();
 		finish();
 	}
 	
 	private void showDebugActivity(String action){
 		Intent intent = new Intent(action);
 		startActivity(intent);
+		progressDialog.dismiss();
 		finish();
 	}
 

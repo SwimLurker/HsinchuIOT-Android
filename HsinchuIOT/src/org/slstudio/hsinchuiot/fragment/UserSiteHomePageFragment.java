@@ -29,6 +29,8 @@ import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.IOTSampleData;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.ui.LableTimeChart;
+import org.slstudio.hsinchuiot.ui.chart.IOTChartFactory;
 import org.slstudio.hsinchuiot.util.IOTLog;
 
 import android.annotation.SuppressLint;
@@ -266,6 +268,8 @@ public class UserSiteHomePageFragment extends Fragment {
 		Date minTime = new Date();
 		Date maxTime = new Date();
 
+		Collections.sort(chartData);
+		
 		for (IOTSampleData sample : chartData) {
 			if (minTime.after(sample.getTime())) {
 				minTime = sample.getTime();
@@ -274,11 +278,14 @@ public class UserSiteHomePageFragment extends Fragment {
 				maxTime = sample.getTime();
 			}
 			if (sample.getType() == IOTSampleData.IOTSampleDataType.CO2) {
-				co2Series.add(sample.getTime().getTime(), sample.getValue());
+				double dvalue = (double) (Math.round(sample.getValue() * 100.0) / 100.0);
+				co2Series.add(sample.getTime().getTime(), dvalue);
 			} else if (sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE) {
-				temperatureSeries.add(sample.getTime().getTime(), sample.getValue());
+				double dvalue = (double) (Math.round(sample.getValue() * 100.0) / 100.0);
+				temperatureSeries.add(sample.getTime().getTime(), dvalue);
 			} else if (sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY) {
-				humiditySeries.add(sample.getTime().getTime(), sample.getValue());
+				double dvalue = (double) (Math.round(sample.getValue() * 100.0) / 100.0);
+				humiditySeries.add(sample.getTime().getTime(), dvalue);
 			}
 
 		}
@@ -292,6 +299,9 @@ public class UserSiteHomePageFragment extends Fragment {
 				co2WarningSeries.add(x, warningThreshold.getCo2UpperBound());
 				co2AlarmSeries.add(x, breachThreshold.getCo2UpperBound());
 			}
+			
+			chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),"warning",0);
+			chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),"breach",0);
 
 			double maxY0 = co2Series.getMaxY();
 			double minY0 = co2Series.getMinY();
@@ -457,7 +467,7 @@ public class UserSiteHomePageFragment extends Fragment {
 
 		chartRenderer.setApplyBackgroundColor(true);// 设置是否显示背景色
 		chartRenderer.setBackgroundColor(resources.getColor(R.color.white));// 设置背景色
-		chartRenderer.setMargins(new int[] { 20, 50, 20, 30 });// 设置图表的外边框(上/左/下/右)
+		chartRenderer.setMargins(new int[] { 20, 60, 20, 30 });// 设置图表的外边框(上/左/下/右)
 		chartRenderer.setMarginsColor(resources.getColor(R.color.white));
 
 		chartRenderer.setChartTitleTextSize(0);// ?设置整个图表标题文字大小
@@ -478,20 +488,17 @@ public class UserSiteHomePageFragment extends Fragment {
 		chartRenderer.setYLabels(5);
 
 		chartRenderer.setYLabelsColor(0, resources.getColor(R.color.title_bk_green));
-		chartRenderer.setYTitle("ppm", 0);
 		chartRenderer.setYAxisAlign(Align.LEFT, 0);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 0);
 		// chartRenderer.setYAxisMax(600, 0);
 		// chartRenderer.setYAxisMin(500, 0);
 		chartRenderer.setYLabelsColor(1, resources.getColor(R.color.title_bk_brown));
-		chartRenderer.setYTitle("          ℃", 1);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 1);
 		// chartRenderer.setYAxisMax(40, 1);
 		// chartRenderer.setYAxisMin(0, 1);
 
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
-		chartRenderer.setYTitle("%         ", 2);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
 		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
 		// chartRenderer.setYAxisMax(100, 2);
@@ -511,7 +518,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		co2Renderer.setFillPoints(true);// 设置点是否实心
 		co2Renderer.setColor(resources.getColor(R.color.title_bk_green));
 		co2Renderer.setLineWidth(3);
-		// co2Renderer.setDisplayChartValues(true);
+		co2Renderer.setDisplayChartValues(true);
 
 		temperatureSeries = new XYSeries(resources.getString(R.string.temperature), 1);// 定义XYSeries
 		chartDataset.addSeries(temperatureSeries);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -521,6 +528,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		temperatureRenderer.setFillPoints(true);// 设置点是否实心
 		temperatureRenderer.setColor(resources.getColor(R.color.title_bk_brown));
 		temperatureRenderer.setLineWidth(3);
+		temperatureRenderer.setDisplayChartValues(true);
 
 		humiditySeries = new XYSeries(resources.getString(R.string.humidity), 2);// 定义XYSeries
 		chartDataset.addSeries(humiditySeries);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -531,6 +539,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		humidityRenderer.setFillPoints(true);// 设置点是否实心
 		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
 		humidityRenderer.setLineWidth(3);
+		humidityRenderer.setDisplayChartValues(true);
 
 		co2AlarmSeries = new XYSeries("", 0);// 定义XYSeries
 		chartDataset.addSeries(co2AlarmSeries);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -581,25 +590,26 @@ public class UserSiteHomePageFragment extends Fragment {
 
 		UserMainActivity parent = (UserMainActivity) getActivity();
 
+		String dateFormat = null;
+		
 		if (parent.getChartType() == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
 			if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_HOUR) {
-				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer,
-						"yyyy/MM/dd-HH:mm:ss");
+				dateFormat = "yyyy/MM/dd-HH:mm:ss";
 			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_HOURS) {
-				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer,
-						"yyyy/MM/dd-HH:mm:ss");
+				dateFormat = "yyyy/MM/dd-HH:mm:ss";
 			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_DAY) {
-				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy/MM/dd");
+				dateFormat = "yyyy/MM/dd";
 			} else if (parent.getChartGranularity() == Constants.ChartSettings.GRANULARITY_WEEK) {
-				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy/MM/dd");
+				dateFormat = "yyyy/MM/dd";
 			} else {
-				chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "yyyy/MM");
-
+				dateFormat = "yyyy/MM";
 			}
 		} else {
-			chartView = ChartFactory.getTimeChartView(getActivity(), chartDataset, chartRenderer, "HH:mm:ss");
+			dateFormat = "HH:mm:ss";
 		}
-
+		
+		chartView = IOTChartFactory.getIOTChartView(getActivity(), chartDataset, chartRenderer, dateFormat, new String[]{"ppm","℃", "%"});
+		
 		chartLayout.removeAllViews();
 		chartLayout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		chartLayout.setOnClickListener(new View.OnClickListener() {

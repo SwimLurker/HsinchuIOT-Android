@@ -19,24 +19,28 @@ import org.slstudio.hsinchuiot.service.http.HttpRequest;
 import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
 import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
-
 import org.slstudio.hsinchuiot.ui.adapter.SiteListViewAdapter;
 import org.slstudio.hsinchuiot.util.ImageUtil;
 import org.slstudio.hsinchuiot.util.ReportUtil;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
+
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.State;
@@ -90,6 +94,38 @@ public class SuperUserMainActivity extends BaseActivity {
 		super.onResume();
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			new AlertDialog.Builder(this)
+					.setTitle("系統提示")
+					.setMessage("確定要退出嗎?")
+					.setPositiveButton(getResources().getString(R.string.yes),
+							new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									finish();
+								}
+
+							})
+					.setNegativeButton(getResources().getString(R.string.no),
+							new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
+
+							}).create().show();
+
+		}
+
+		return false;
+
+	}
+	
 	private void getDeviceList() {
 		String sessionID = ServiceContainer.getInstance().getSessionService()
 				.getSessionID();
