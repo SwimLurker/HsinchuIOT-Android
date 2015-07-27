@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -26,6 +27,8 @@ public class BaseActivity extends FragmentActivity {
 	
 	private AlertDialog errordia;
 	private Exception exception;
+	
+	private long lastClickTime;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -134,4 +137,26 @@ public class BaseActivity extends FragmentActivity {
 		}
 		super.onPrepareDialog(id, dialog);
 	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+            if (isFastDoubleClick()) {
+                return true;
+            }
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+	
+	private boolean isFastDoubleClick() {
+        long time = System.currentTimeMillis();
+        long timeD = time - lastClickTime;
+        if (timeD >= 0 && timeD <= 1000) {
+            return true;
+        } else {
+            lastClickTime = time;
+            return false;
+        }
+    }
+	
 }

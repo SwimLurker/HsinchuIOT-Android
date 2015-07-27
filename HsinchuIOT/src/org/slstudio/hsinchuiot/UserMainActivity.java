@@ -27,7 +27,10 @@ import org.slstudio.hsinchuiot.util.IOTLog;
 import org.slstudio.hsinchuiot.util.ReportUtil;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +39,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -64,35 +68,50 @@ public class UserMainActivity extends BaseActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case Constants.MessageKey.MESSAGE_GET_REALTIME_DATA:
-				IOTLog.d("Handler", "debuginfo(REALTIME_DATA) - handleMessage: receive msg MESSAGE_GET_REALTIME_DATA");
-				UserSiteHomePageFragment currentFragment = fragments.get(currentIndex);
-				if (currentFragment != null && !isPaused && !isRTRequestHandling) {
-					sendQueryRealtimeDataRequest(currentFragment.getSite().getDevice().getDeviceID());
+				IOTLog.d(
+						"Handler",
+						"debuginfo(REALTIME_DATA) - handleMessage: receive msg MESSAGE_GET_REALTIME_DATA");
+				UserSiteHomePageFragment currentFragment = fragments
+						.get(currentIndex);
+				if (currentFragment != null && !isPaused
+						&& !isRTRequestHandling) {
+					sendQueryRealtimeDataRequest(currentFragment.getSite()
+							.getDevice().getDeviceID());
 				}
 				break;
 			case Constants.MessageKey.MESSAGE_GET_CHART_DATA:
-				IOTLog.d("Handler", "debuginfo(CHART_DATA) - handleMessage: receive msg MESSAGE_GET_CHART_DATA");
-				UserSiteHomePageFragment currentFragment2 = fragments.get(currentIndex);
+				IOTLog.d("Handler",
+						"debuginfo(CHART_DATA) - handleMessage: receive msg MESSAGE_GET_CHART_DATA");
+				UserSiteHomePageFragment currentFragment2 = fragments
+						.get(currentIndex);
 				if (currentFragment2 != null && !isPaused) {
-					if (sendQueryChartDataRequest(currentFragment2.getSite().getDevice().getDeviceID())) {
+					if (sendQueryChartDataRequest(currentFragment2.getSite()
+							.getDevice().getDeviceID())) {
 						currentFragment2.updateChartDataInProcessing();
 					}
 				}
 				break;
 			case Constants.MessageKey.MESSAGE_UPDATE_CHART_DATA:
-				IOTLog.d("Handler", "debuginfo(CHART_DATA) - handleMessage: receive msg MESSAGE_UPDATE_CHART_DATA");
-				UserSiteHomePageFragment currentFragment3 = fragments.get(currentIndex);
+				IOTLog.d("Handler",
+						"debuginfo(CHART_DATA) - handleMessage: receive msg MESSAGE_UPDATE_CHART_DATA");
+				UserSiteHomePageFragment currentFragment3 = fragments
+						.get(currentIndex);
 				if (currentFragment3 != null && !isPaused) {
-					if (currentFragment3.updateChartData((List<IOTSampleData>) msg.obj)) {
+					if (currentFragment3
+							.updateChartData((List<IOTSampleData>) msg.obj)) {
 						currentFragment3.updateChartDataFinished();
 					}
 				}
 				break;
 			case Constants.MessageKey.MESSAGE_UPDATE_MONITOR_DATA:
-				IOTLog.d("Handler", "debuginfo(CHART_DATA) - handleMessage: receive msg MESSAGE_UPDATE_MONITOR_DATA");
-				UserSiteHomePageFragment currentFragment4 = fragments.get(currentIndex);
+				IOTLog.d(
+						"Handler",
+						"debuginfo(CHART_DATA) - handleMessage: receive msg MESSAGE_UPDATE_MONITOR_DATA");
+				UserSiteHomePageFragment currentFragment4 = fragments
+						.get(currentIndex);
 				if (currentFragment4 != null && !isPaused) {
-					if (currentFragment4.updateMonitorData((IOTMonitorData) msg.obj)) {
+					if (currentFragment4
+							.updateMonitorData((IOTMonitorData) msg.obj)) {
 					}
 				}
 				break;
@@ -129,8 +148,6 @@ public class UserMainActivity extends BaseActivity {
 	public Date getChartEndTime() {
 		return chartEndTime;
 	}
-	
-	
 
 	@SuppressLint("NewApi")
 	@Override
@@ -165,18 +182,22 @@ public class UserMainActivity extends BaseActivity {
 	@Override
 	protected void onPause() {
 		isPaused = true;
-		IOTLog.d("UserMainActivity", "debuginfo(REALTIME_DATA) - onPause: remove msgs from queue");
+		IOTLog.d("UserMainActivity",
+				"debuginfo(REALTIME_DATA) - onPause: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
-		IOTLog.d("UserMainActivity", "debuginfo(CHART_DATA) - onPause: remove msgs from queue");
+		IOTLog.d("UserMainActivity",
+				"debuginfo(CHART_DATA) - onPause: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 		super.onPause();
 	}
 
 	@Override
 	protected void onDestroy() {
-		IOTLog.d("UserMainActivity", "debuginfo(REALTIME_DATA) - onDestroy: remove msgs from queue");
+		IOTLog.d("UserMainActivity",
+				"debuginfo(REALTIME_DATA) - onDestroy: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
-		IOTLog.d("UserMainActivity", "debuginfo(CHART_DATA) - onDestroy: remove msgs from queue");
+		IOTLog.d("UserMainActivity",
+				"debuginfo(CHART_DATA) - onDestroy: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 		super.onDestroy();
 	}
@@ -185,19 +206,26 @@ public class UserMainActivity extends BaseActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == Constants.ResultCode.CHART_SETTINGS) {
 			if (resultCode == RESULT_OK) {
-				chartType = data.getIntExtra(Constants.ActivityPassValue.CHART_TYPE,
+				chartType = data.getIntExtra(
+						Constants.ActivityPassValue.CHART_TYPE,
 						Constants.ChartSettings.CHART_TYPE_REALTIME);
 				if (chartType == Constants.ChartSettings.CHART_TYPE_REALTIME) {
-					chartTimeDuration = data.getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 1);
+					chartTimeDuration = data.getIntExtra(
+							Constants.ActivityPassValue.CHART_RT_DURATION, 1);
 				} else if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
-					chartGranularity = data.getIntExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
+					chartGranularity = data.getIntExtra(
+							Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
 							Constants.ChartSettings.GRANULARITY_HOUR);
-					long startTimeLong = data.getLongExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, 0);
+					long startTimeLong = data
+							.getLongExtra(
+									Constants.ActivityPassValue.CHART_AGGR_STARTTIME,
+									0);
 					if (startTimeLong != 0) {
 						chartStartTime = new Date();
 						chartStartTime.setTime(startTimeLong);
 					}
-					long endTimeLong = data.getLongExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME, 0);
+					long endTimeLong = data.getLongExtra(
+							Constants.ActivityPassValue.CHART_AGGR_ENDTIME, 0);
 					if (endTimeLong != 0) {
 						chartEndTime = new Date();
 						chartEndTime.setTime(endTimeLong);
@@ -218,17 +246,26 @@ public class UserMainActivity extends BaseActivity {
 		case android.R.id.home:
 			break;
 		case R.id.menu_user_main_settings:
-			Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_SETTINGS);
+			Intent intent = new Intent(
+					Constants.Action.HSINCHUIOT_USER_SETTINGS);
 			startActivity(intent);
 			break;
 		case R.id.menu_user_main_logoff:
 
-			ServiceContainer.getInstance().getSessionService().setLoginUser(null);
-			ServiceContainer.getInstance().getSessionService().setSessionID(null);
-			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
-					null);
-			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
-					null);
+			ServiceContainer.getInstance().getSessionService()
+					.setLoginUser(null);
+			ServiceContainer.getInstance().getSessionService()
+					.setSessionID(null);
+			ServiceContainer
+					.getInstance()
+					.getSessionService()
+					.setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
+							null);
+			ServiceContainer
+					.getInstance()
+					.getSessionService()
+					.setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
+							null);
 
 			Intent loginIntent = new Intent(Constants.Action.HSINCHUIOT_LOGIN);
 			startActivity(loginIntent);
@@ -243,6 +280,38 @@ public class UserMainActivity extends BaseActivity {
 		getMenuInflater().inflate(R.menu.activity_user_main, menu);
 		setIconEnable(menu, true);
 		return true;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			new AlertDialog.Builder(this)
+					.setTitle("系統提示")
+					.setMessage("確定要退出嗎?")
+					.setPositiveButton(getResources().getString(R.string.yes),
+							new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									finish();
+								}
+
+							})
+					.setNegativeButton(getResources().getString(R.string.no),
+							new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
+
+							}).create().show();
+
+		}
+
+		return false;
+
 	}
 
 	public void moveToPreSite() {
@@ -260,20 +329,24 @@ public class UserMainActivity extends BaseActivity {
 	}
 
 	public void resendMessage() {
-		IOTLog.d("UserMainActivity", "debuginfo(REALTIME_DATA) - resendMessage, remove msgs in queue");
+		IOTLog.d("UserMainActivity",
+				"debuginfo(REALTIME_DATA) - resendMessage, remove msgs in queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
-		IOTLog.d("UserMainActivity", "debuginfo(CHART_DATA) - resendMessage, remove msgs in queue");
+		IOTLog.d("UserMainActivity",
+				"debuginfo(CHART_DATA) - resendMessage, remove msgs in queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 
 		if (currentIndex != -1) {
 
-			IOTLog.d("UserMainActivity",
+			IOTLog.d(
+					"UserMainActivity",
 					"debuginfo(REALTIME_DATA) - resendMessage, send message MESSAGE_GET_REALTIME_DATA");
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 			handler.sendMessageDelayed(msg, 2000);
 
-			IOTLog.d("UserMainActivity", "debuginfo(CHART_DATA) - resendMessage, send message MESSAGE_GET_CHART_DATA");
+			IOTLog.d("UserMainActivity",
+					"debuginfo(CHART_DATA) - resendMessage, send message MESSAGE_GET_CHART_DATA");
 			Message msg2 = new Message();
 			msg2.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
 			handler.sendMessageDelayed(msg2, 2000);
@@ -289,8 +362,10 @@ public class UserMainActivity extends BaseActivity {
 
 	private void setIconEnable(Menu menu, boolean enable) {
 		try {
-			Class<?> clazz = Class.forName("com.android.internal.view.menu.MenuBuilder");
-			Method m = clazz.getDeclaredMethod("setOptionalIconsVisible", boolean.class);
+			Class<?> clazz = Class
+					.forName("com.android.internal.view.menu.MenuBuilder");
+			Method m = clazz.getDeclaredMethod("setOptionalIconsVisible",
+					boolean.class);
 			m.setAccessible(true);
 
 			// MenuBuilder实现Menu接口，创建菜单时，传进来的menu其实就是MenuBuilder对象(java的多态特征)
@@ -338,9 +413,11 @@ public class UserMainActivity extends BaseActivity {
 	}
 
 	private void getDeviceList() {
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.DEVICE_LIST);
 
 		request.addParameter("dataType", "xml");
@@ -349,9 +426,11 @@ public class UserMainActivity extends BaseActivity {
 		request.addParameter("__page_size", "1000");
 		request.addParameter("__sort", "-id");
 
-		GetDeviceListListener listener = new GetDeviceListListener(this, true, getString(R.string.common_please_wait));
+		GetDeviceListListener listener = new GetDeviceListListener(this, true,
+				getString(R.string.common_please_wait));
 
-		ServiceContainer.getInstance().getHttpHandler().doRequest(request, listener);
+		ServiceContainer.getInstance().getHttpHandler()
+				.doRequest(request, listener);
 
 	}
 
@@ -377,15 +456,20 @@ public class UserMainActivity extends BaseActivity {
 	}
 
 	private void sendQueryRealtimeDataRequest(String deviceID) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(REALTIME_DATA) - sendQueryRealtimeDataRequest: send request for site:" + deviceID);
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(REALTIME_DATA) - sendQueryRealtimeDataRequest: send request for site:"
+						+ deviceID);
 		isRTRequestHandling = true;
-		IOTLog.d("UserMainActivity",
+		IOTLog.d(
+				"UserMainActivity",
 				"debuginfo(REALTIME_DATA) - sendQueryRealtimeDataRequest: set isRTRequestHandling is true");
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_SAMPLE_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
@@ -411,15 +495,20 @@ public class UserMainActivity extends BaseActivity {
 			}
 		} else if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
 			if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOUR) {
-				sendQuery1HourAggrChartDataRequest(deviceID, chartStartTime, chartEndTime);
+				sendQuery1HourAggrChartDataRequest(deviceID, chartStartTime,
+						chartEndTime);
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOURS) {
-				sendQuery8HoursAggrChartDataRequest(deviceID, chartStartTime, chartEndTime);
+				sendQuery8HoursAggrChartDataRequest(deviceID, chartStartTime,
+						chartEndTime);
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_DAY) {
-				sendQueryDayAggrChartDataRequest(deviceID, chartStartTime, chartEndTime);
+				sendQueryDayAggrChartDataRequest(deviceID, chartStartTime,
+						chartEndTime);
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_WEEK) {
-				sendQueryWeekAggrChartDataRequest(deviceID, chartStartTime, chartEndTime);
+				sendQueryWeekAggrChartDataRequest(deviceID, chartStartTime,
+						chartEndTime);
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_MONTH) {
-				sendQueryMonthAggrChartDataRequest(deviceID, chartStartTime, chartEndTime);
+				sendQueryMonthAggrChartDataRequest(deviceID, chartStartTime,
+						chartEndTime);
 			} else {
 				return false;
 			}
@@ -428,15 +517,20 @@ public class UserMainActivity extends BaseActivity {
 	}
 
 	private void sendQueryRealtimeChartDataRequest(String deviceID, int pageSize) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(CHART_DATA) - sendQueryRealtimeChartDataRequest: send request for site:" + deviceID);
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(CHART_DATA) - sendQueryRealtimeChartDataRequest: send request for site:"
+						+ deviceID);
 		isChartRequestHandling = true;
-		IOTLog.d("UserMainActivity",
+		IOTLog.d(
+				"UserMainActivity",
 				"debuginfo(CHART_DATA) - sendQueryRealtimeChartDataRequest: set isChartRequestHandling is true");
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_SAMPLE_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
@@ -445,14 +539,18 @@ public class UserMainActivity extends BaseActivity {
 		request.addParameter("__group_by", "did,name");
 		request.addParameter("__sort", "-id");
 		request.addParameter("did[0]", deviceID);
-		GetRealtimeChartDataListener l = new GetRealtimeChartDataListener(deviceID);
+		GetRealtimeChartDataListener l = new GetRealtimeChartDataListener(
+				deviceID);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
-	private void sendQuery1HourAggrChartDataRequest(String deviceID, Date startTime, Date endTime) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(CHART_DATA) - sendQuery1HourAggrChartDataRequest: send request for site:" + deviceID);
+	private void sendQuery1HourAggrChartDataRequest(String deviceID,
+			Date startTime, Date endTime) {
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(CHART_DATA) - sendQuery1HourAggrChartDataRequest: send request for site:"
+						+ deviceID);
 		// isChartRequestHandling = true;
 		// IOTLog.d("UserMainActivity",
 		// "debuginfo(CHART_DATA) - sendQuery1HourAggrChartDataRequest: set
@@ -461,27 +559,35 @@ public class UserMainActivity extends BaseActivity {
 		String from = ReportUtil.getServerTimeHourString(startTime);
 		String to = ReportUtil.getServerTimeHourString(endTime);
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_HOUR_AGG_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
 		request.addParameter("__page_size", "10000");
-		request.addParameter("__column", "did%2Csensor%2Cname%2Cvalue%2Chour_in_epoch");
-		request.addParameter("__group_by", "did%2Csensor%2Cname%2Chour_in_epoch");
+		request.addParameter("__column",
+				"did%2Csensor%2Cname%2Cvalue%2Chour_in_epoch");
+		request.addParameter("__group_by",
+				"did%2Csensor%2Cname%2Chour_in_epoch");
 		request.addParameter("__sort", "-id");
 		request.addParameter("hour_in_epoch__from", from);
 		request.addParameter("hour_in_epoch__to", to);
 		request.addParameter("did%5B0%5D", deviceID);
-		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID, from, to);
+		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID,
+				from, to);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
-	private void sendQuery8HoursAggrChartDataRequest(String deviceID, Date startTime, Date endTime) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(CHART_DATA) - sendQuery8HoursAggrChartDataRequest: send request for site:" + deviceID);
+	private void sendQuery8HoursAggrChartDataRequest(String deviceID,
+			Date startTime, Date endTime) {
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(CHART_DATA) - sendQuery8HoursAggrChartDataRequest: send request for site:"
+						+ deviceID);
 		// isChartRequestHandling = true;
 		// IOTLog.d("UserMainActivity",
 		// "debuginfo(CHART_DATA) - sendQuery8HoursAggrChartDataRequest: set
@@ -490,27 +596,35 @@ public class UserMainActivity extends BaseActivity {
 		String from = ReportUtil.getServerTimeHourString(startTime);
 		String to = ReportUtil.getServerTimeHourString(endTime);
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_HOURS_AGG_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
 		request.addParameter("__page_size", "10000");
-		request.addParameter("__column", "did%2Csensor%2Cname%2Cvalue%2Chours_in_epoch");
-		request.addParameter("__group_by", "did%2Csensor%2Cname%2Chours_in_epoch");
+		request.addParameter("__column",
+				"did%2Csensor%2Cname%2Cvalue%2Chours_in_epoch");
+		request.addParameter("__group_by",
+				"did%2Csensor%2Cname%2Chours_in_epoch");
 		request.addParameter("__sort", "-id");
 		request.addParameter("hours_in_epoch__from", from);
 		request.addParameter("hours_in_epoch__to", to);
 		request.addParameter("did%5B0%5D", deviceID);
-		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID, from, to);
+		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID,
+				from, to);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
-	private void sendQueryDayAggrChartDataRequest(String deviceID, Date startTime, Date endTime) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(CHART_DATA) - sendQueryDayAggrChartDataRequest: send request for site:" + deviceID);
+	private void sendQueryDayAggrChartDataRequest(String deviceID,
+			Date startTime, Date endTime) {
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(CHART_DATA) - sendQueryDayAggrChartDataRequest: send request for site:"
+						+ deviceID);
 		// isChartRequestHandling = true;
 		// IOTLog.d("UserMainActivity",
 		// "debuginfo(CHART_DATA) - sendQueryDayAggrChartDataRequest: set
@@ -519,27 +633,34 @@ public class UserMainActivity extends BaseActivity {
 		String from = ReportUtil.getServerTimeDayString(startTime);
 		String to = ReportUtil.getServerTimeDayString(endTime);
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_DAY_AGG_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
 		request.addParameter("__page_size", "10000");
-		request.addParameter("__column", "did%2Csensor%2Cname%2Cvalue%2Cday_in_epoch");
+		request.addParameter("__column",
+				"did%2Csensor%2Cname%2Cvalue%2Cday_in_epoch");
 		request.addParameter("__group_by", "did%2Csensor%2Cname%2Cday_in_epoch");
 		request.addParameter("__sort", "-id");
 		request.addParameter("day_in_epoch__from", from);
 		request.addParameter("day_in_epoch__to", to);
 		request.addParameter("did%5B0%5D", deviceID);
-		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID, from, to);
+		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID,
+				from, to);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
-	private void sendQueryWeekAggrChartDataRequest(String deviceID, Date startTime, Date endTime) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(CHART_DATA) - sendQueryWeekAggrChartDataRequest: send request for site:" + deviceID);
+	private void sendQueryWeekAggrChartDataRequest(String deviceID,
+			Date startTime, Date endTime) {
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(CHART_DATA) - sendQueryWeekAggrChartDataRequest: send request for site:"
+						+ deviceID);
 		// isChartRequestHandling = true;
 		// IOTLog.d("UserMainActivity",
 		// "debuginfo(CHART_DATA) - sendQueryWeekAggrChartDataRequest: set
@@ -548,27 +669,35 @@ public class UserMainActivity extends BaseActivity {
 		String from = ReportUtil.getServerTimeDayString(startTime);
 		String to = ReportUtil.getServerTimeDayString(endTime);
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_WEEK_AGG_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
 		request.addParameter("__page_size", "10000");
-		request.addParameter("__column", "did%2Csensor%2Cname%2Cvalue%2Cweek_in_epoch");
-		request.addParameter("__group_by", "did%2Csensor%2Cname%2Cweek_in_epoch");
+		request.addParameter("__column",
+				"did%2Csensor%2Cname%2Cvalue%2Cweek_in_epoch");
+		request.addParameter("__group_by",
+				"did%2Csensor%2Cname%2Cweek_in_epoch");
 		request.addParameter("__sort", "-id");
 		request.addParameter("week_in_epoch__from", from);
 		request.addParameter("week_in_epoch__to", to);
 		request.addParameter("did%5B0%5D", deviceID);
-		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID, from, to);
+		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID,
+				from, to);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
-	private void sendQueryMonthAggrChartDataRequest(String deviceID, Date startTime, Date endTime) {
-		IOTLog.d("UserMainActivity",
-				"debuginfo(CHART_DATA) - sendQueryMonthAggrChartDataRequest: send request for site:" + deviceID);
+	private void sendQueryMonthAggrChartDataRequest(String deviceID,
+			Date startTime, Date endTime) {
+		IOTLog.d(
+				"UserMainActivity",
+				"debuginfo(CHART_DATA) - sendQueryMonthAggrChartDataRequest: send request for site:"
+						+ deviceID);
 		// isChartRequestHandling = true;
 		// IOTLog.d("UserMainActivity",
 		// "debuginfo(CHART_DATA) - sendQueryMonthAggrChartDataRequest: set
@@ -577,25 +706,31 @@ public class UserMainActivity extends BaseActivity {
 		String from = ReportUtil.getServerTimeDayString(startTime);
 		String to = ReportUtil.getServerTimeDayString(endTime);
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_MONTH_AGG_DATA);
-		String sessionID = ServiceContainer.getInstance().getSessionService().getSessionID();
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 		request.addParameter("dataType", "xml");
 		request.addParameter("__session_id", sessionID);
 		request.addParameter("__page_no", "1");
 		request.addParameter("__page_size", "10000");
-		request.addParameter("__column", "did%2Csensor%2Cname%2Cvalue%2Cmonth_in_epoch");
-		request.addParameter("__group_by", "did%2Csensor%2Cname%2Cmonth_in_epoch");
+		request.addParameter("__column",
+				"did%2Csensor%2Cname%2Cvalue%2Cmonth_in_epoch");
+		request.addParameter("__group_by",
+				"did%2Csensor%2Cname%2Cmonth_in_epoch");
 		request.addParameter("__sort", "-id");
 		request.addParameter("month_in_epoch__from", from);
 		request.addParameter("month_in_epoch__to", to);
 		request.addParameter("did%5B0%5D", deviceID);
-		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID, from, to);
+		GetAggrChartDataListener l = new GetAggrChartDataListener(deviceID,
+				from, to);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
-	private List<IOTSampleData> convertToChartData(Map<String, IOTMonitorData> result) {
+	private List<IOTSampleData> convertToChartData(
+			Map<String, IOTMonitorData> result) {
 		List<IOTSampleData> chartData = new ArrayList<IOTSampleData>();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -614,10 +749,14 @@ public class UserMainActivity extends BaseActivity {
 				e.printStackTrace();
 			}
 			if (time != null) {
-				IOTSampleData sample1 = new IOTSampleData(IOTSampleData.IOTSampleDataType.CO2, time, co2);
-				IOTSampleData sample2 = new IOTSampleData(IOTSampleData.IOTSampleDataType.TEMPERATURE, time,
+				IOTSampleData sample1 = new IOTSampleData(
+						IOTSampleData.IOTSampleDataType.CO2, time, co2);
+				IOTSampleData sample2 = new IOTSampleData(
+						IOTSampleData.IOTSampleDataType.TEMPERATURE, time,
 						temperature);
-				IOTSampleData sample3 = new IOTSampleData(IOTSampleData.IOTSampleDataType.HUMIDITY, time, humidity);
+				IOTSampleData sample3 = new IOTSampleData(
+						IOTSampleData.IOTSampleDataType.HUMIDITY, time,
+						humidity);
 
 				chartData.add(sample1);
 				chartData.add(sample2);
@@ -628,7 +767,8 @@ public class UserMainActivity extends BaseActivity {
 		return chartData;
 	}
 
-	private class GetRealtimeDataListener implements RequestListener<List<IOTSampleData>> {
+	private class GetRealtimeDataListener implements
+			RequestListener<List<IOTSampleData>> {
 		private RequestControl control;
 		private String deviceID;
 
@@ -646,7 +786,8 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestResult(final List<IOTSampleData> result) {
 			IOTLog.d("GetRealtimeDataListener",
-					"debuginfo(REATTIME_DATA) - onRequestResult: receive response for request:" + deviceID);
+					"debuginfo(REATTIME_DATA) - onRequestResult: receive response for request:"
+							+ deviceID);
 			// IOTLog.d("UserMainActivity", "receive result size:" +
 			// result.size());
 
@@ -661,14 +802,17 @@ public class UserMainActivity extends BaseActivity {
 				}
 			}
 
-			final UserSiteHomePageFragment fragment = fragments.get(currentIndex);
+			final UserSiteHomePageFragment fragment = fragments
+					.get(currentIndex);
 
-			if (fragment != null && fragment.getSite().getDevice().getDeviceID().equals(deviceID)) {
-				
+			if (fragment != null
+					&& fragment.getSite().getDevice().getDeviceID()
+							.equals(deviceID)) {
+
 				Message msg = new Message();
 				msg.what = Constants.MessageKey.MESSAGE_UPDATE_MONITOR_DATA;
 				msg.obj = data;
-				
+
 				handler.sendMessage(msg);
 			}
 
@@ -696,21 +840,31 @@ public class UserMainActivity extends BaseActivity {
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 
-			int refreshTime = (Integer) ServiceContainer.getInstance().getSessionService()
-					.getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
+			int refreshTime = (Integer) ServiceContainer
+					.getInstance()
+					.getSessionService()
+					.getSessionValue(
+							Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME,
+							10);
 
-			IOTLog.d("GetRealtimeDataListener",
+			IOTLog.d(
+					"GetRealtimeDataListener",
 					"debuginfo(REALTIME_DATA) - onRequestComplete: send message MESSAGE_GET_REALTIME_DATA for "
-							+ deviceID + " with deplay time:" + refreshTime + "s");
+							+ deviceID
+							+ " with deplay time:"
+							+ refreshTime
+							+ "s");
 			handler.sendMessageDelayed(msg, refreshTime * 1000);
 			isRTRequestHandling = false;
-			IOTLog.d("GetRealtimeDataListener",
+			IOTLog.d(
+					"GetRealtimeDataListener",
 					"debuginfo(REALTIME_DATA) - onRequestComplete: set isRTRequestHandling is false");
 
 		}
 	}
 
-	private class GetRealtimeChartDataListener implements RequestListener<List<IOTSampleData>> {
+	private class GetRealtimeChartDataListener implements
+			RequestListener<List<IOTSampleData>> {
 		private RequestControl control;
 		private String deviceID;
 
@@ -728,13 +882,17 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestResult(final List<IOTSampleData> result) {
 			IOTLog.d("GetRealtimeChartDataListener",
-					"debuginfo(CHART_DATA) - onRequestResult: receive response for request:" + deviceID);
+					"debuginfo(CHART_DATA) - onRequestResult: receive response for request:"
+							+ deviceID);
 			// IOTLog.d("UserMainActivity", "receive chart result size:" +
 			// result.size());
 
-			final UserSiteHomePageFragment fragment = fragments.get(currentIndex);
+			final UserSiteHomePageFragment fragment = fragments
+					.get(currentIndex);
 
-			if (fragment != null && fragment.getSite().getDevice().getDeviceID().equals(deviceID)) {
+			if (fragment != null
+					&& fragment.getSite().getDevice().getDeviceID()
+							.equals(deviceID)) {
 				Message msg = new Message();
 				msg.what = Constants.MessageKey.MESSAGE_UPDATE_CHART_DATA;
 				msg.obj = result;
@@ -763,23 +921,33 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestComplete() {
 			isChartRequestHandling = false;
-			IOTLog.d("GetRealtimeChartDataListener",
+			IOTLog.d(
+					"GetRealtimeChartDataListener",
 					"debuginfo(CHART_DATA) - onRequestComplete: set isChartRequestHandling is false");
 
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
 
-			int refreshTime = (Integer) ServiceContainer.getInstance().getSessionService()
-					.getSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, 10);
-			IOTLog.d("GetRealtimeChartDataListener",
-					"debuginfo(CHART_DATA) - onRequestComplete: send message MESSAGE_GET_CHART_DATA for " + deviceID
-							+ " with deplay time:" + refreshTime + "s");
+			int refreshTime = (Integer) ServiceContainer
+					.getInstance()
+					.getSessionService()
+					.getSessionValue(
+							Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME,
+							10);
+			IOTLog.d(
+					"GetRealtimeChartDataListener",
+					"debuginfo(CHART_DATA) - onRequestComplete: send message MESSAGE_GET_CHART_DATA for "
+							+ deviceID
+							+ " with deplay time:"
+							+ refreshTime
+							+ "s");
 			handler.sendMessageDelayed(msg, refreshTime * 1000);
 
 		}
 	}
 
-	private class GetAggrChartDataListener implements RequestListener<Map<String, IOTMonitorData>> {
+	private class GetAggrChartDataListener implements
+			RequestListener<Map<String, IOTMonitorData>> {
 		private RequestControl control;
 		private String deviceID;
 		private String from;
@@ -801,12 +969,16 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestResult(final Map<String, IOTMonitorData> result) {
 			IOTLog.d("GetAggrChartDataListener",
-					"debuginfo(CHART_DATA) - onRequestResult: receive response for request:" + deviceID);
+					"debuginfo(CHART_DATA) - onRequestResult: receive response for request:"
+							+ deviceID);
 			final List<IOTSampleData> chartData = convertToChartData(result);
 
-			final UserSiteHomePageFragment fragment = fragments.get(currentIndex);
+			final UserSiteHomePageFragment fragment = fragments
+					.get(currentIndex);
 
-			if (fragment != null && fragment.getSite().getDevice().getDeviceID().equals(deviceID)) {
+			if (fragment != null
+					&& fragment.getSite().getDevice().getDeviceID()
+							.equals(deviceID)) {
 				Message msg = new Message();
 				msg.what = Constants.MessageKey.MESSAGE_UPDATE_CHART_DATA;
 				msg.obj = chartData;
@@ -842,9 +1014,11 @@ public class UserMainActivity extends BaseActivity {
 		}
 	}
 
-	private class GetDeviceListListener extends ForgroundRequestListener<List<Device>> {
+	private class GetDeviceListListener extends
+			ForgroundRequestListener<List<Device>> {
 
-		public GetDeviceListListener(Context context, boolean isShowProgressDialog, String content) {
+		public GetDeviceListListener(Context context,
+				boolean isShowProgressDialog, String content) {
 			super(context, isShowProgressDialog, content);
 		}
 

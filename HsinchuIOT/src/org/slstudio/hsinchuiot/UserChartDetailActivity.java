@@ -20,6 +20,8 @@ import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.IOTSampleData;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.ui.LableTimeChart;
+import org.slstudio.hsinchuiot.ui.chart.IOTChartFactory;
 import org.slstudio.hsinchuiot.util.IOTLog;
 
 import android.app.ActionBar;
@@ -152,7 +154,7 @@ public class UserChartDetailActivity extends BaseActivity {
 
 		chartRenderer.setApplyBackgroundColor(true);// 设置是否显示背景色
 		chartRenderer.setBackgroundColor(resources.getColor(R.color.white));// 设置背景色
-		chartRenderer.setMargins(new int[] { 20, 50, 30, 50 });// 设置图表的外边框(上/左/下/右)
+		chartRenderer.setMargins(new int[] { 20, 60, 35, 30 });// 设置图表的外边框(上/左/下/右)
 		chartRenderer.setMarginsColor(resources.getColor(R.color.white));
 
 		chartRenderer.setChartTitleTextSize(0);// ?设置整个图表标题文字大小
@@ -171,17 +173,14 @@ public class UserChartDetailActivity extends BaseActivity {
 		chartRenderer.setYLabels(5);
 
 		chartRenderer.setYLabelsColor(0, resources.getColor(R.color.title_bk_green));
-		chartRenderer.setYTitle("ppm", 0);
 		chartRenderer.setYAxisAlign(Align.LEFT, 0);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 0);
 	
 		chartRenderer.setYLabelsColor(1, resources.getColor(R.color.title_bk_brown));
-		chartRenderer.setYTitle("          ℃", 1);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 1);
 		
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
-		chartRenderer.setYTitle("%         ", 2);
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
 		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
 		
@@ -256,28 +255,26 @@ public class UserChartDetailActivity extends BaseActivity {
 		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
 		// fill.setColor(Color.argb(60, 0, 255, 0));
 		// co2WarningRenderer.addFillOutsideLine(fill);
+		String dateFormat = null;
 		
 		if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
-			if (chartGranularity== Constants.ChartSettings.GRANULARITY_HOUR) {
-				chartView = ChartFactory.getTimeChartView(this, chartDataset, chartRenderer,
-						"yyyy/MM/dd-HH:mm:ss");
+			if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOUR) {
+				dateFormat = "yyyy/MM/dd-HH:mm:ss";
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOURS) {
-				chartView = ChartFactory.getTimeChartView(this, chartDataset, chartRenderer,
-						"yyyy/MM/dd-HH:mm:ss");
+				dateFormat = "yyyy/MM/dd-HH:mm:ss";
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_DAY) {
-				chartView = ChartFactory.getTimeChartView(this, chartDataset, chartRenderer, "yyyy/MM/dd");
+				dateFormat = "yyyy/MM/dd";
 			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_WEEK) {
-				chartView = ChartFactory.getTimeChartView(this, chartDataset, chartRenderer, "yyyy/MM/dd");
+				dateFormat = "yyyy/MM/dd";
 			} else {
-				chartView = ChartFactory.getTimeChartView(this, chartDataset, chartRenderer, "yyyy/MM");
-
+				dateFormat = "yyyy/MM";
 			}
 		} else {
-			chartView = ChartFactory.getTimeChartView(this, chartDataset, chartRenderer, "HH:mm:ss");
+			dateFormat = "HH:mm:ss";
 		}
-		//chartRenderer.setClickEnabled(true);// 设置图表是否允许点击
-		//chartRenderer.setSelectableBuffer(100);// 设置点的缓冲半径值(在某点附件点击时,多大范围内都算点击这个点)
 
+		chartView = IOTChartFactory.getIOTChartView(this, chartDataset, chartRenderer, dateFormat, new String[]{"ppm","℃", "%"});
+		
 		chartLayout.removeAllViews();
 		chartLayout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
@@ -311,14 +308,14 @@ public class UserChartDetailActivity extends BaseActivity {
 				maxTime = sample.getTime();
 			}
 			if (sample.getType() == IOTSampleData.IOTSampleDataType.CO2) {
-				float fvalue = (float) (Math.round(sample.getValue() * 100.0) / 100.0);
-				co2Series.add(sample.getTime().getTime(), fvalue);
+				double dvalue = (double) (Math.round(sample.getValue() * 100.0) / 100.0);
+				co2Series.add(sample.getTime().getTime(), dvalue);
 			} else if (sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE) {
-				float fvalue = (float) (Math.round(sample.getValue() * 100.0) / 100.0);
-				temperatureSeries.add(sample.getTime().getTime(), fvalue);
+				double dvalue = (double) (Math.round(sample.getValue() * 100.0) / 100.0);
+				temperatureSeries.add(sample.getTime().getTime(), dvalue);
 			} else if (sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY) {
-				float fvalue = (float) (Math.round(sample.getValue() * 100.0) / 100.0);
-				humiditySeries.add(sample.getTime().getTime(), fvalue);
+				double dvalue = (double) (Math.round(sample.getValue() * 100.0) / 100.0);
+				humiditySeries.add(sample.getTime().getTime(), dvalue);
 			}
 
 		}
