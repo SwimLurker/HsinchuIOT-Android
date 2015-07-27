@@ -144,6 +144,10 @@ public class IOTChart extends TimeChart {
 		} else {
 			text = label + "";
 		}
-		return text + unitLable[scale];
+		if (scale > unitLable.length - 1) {
+			return text;
+		} else {
+			return text + unitLable[scale];
+		}
 	}
 }
