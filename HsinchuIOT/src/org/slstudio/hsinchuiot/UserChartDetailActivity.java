@@ -62,11 +62,6 @@ public class UserChartDetailActivity extends BaseActivity {
 	private XYSeries humiditySeries;
 	private XYSeriesRenderer humidityRenderer;
 
-	private XYSeries co2WarningSeries;
-	private XYSeriesRenderer co2WarningRenderer;
-	private XYSeries co2AlarmSeries;
-	private XYSeriesRenderer co2AlarmRenderer;
-
 	private GraphicalView chartView;
 	private LinearLayout chartLayout;
 	private TextView tvChartTitle;
@@ -147,6 +142,11 @@ public class UserChartDetailActivity extends BaseActivity {
 	}
 	
 	private void createChart() {
+		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+		
 		chartDataset.clear();
 		chartRenderer.removeAllRenderers();
 
@@ -189,7 +189,10 @@ public class UserChartDetailActivity extends BaseActivity {
 		chartRenderer.setPanEnabled(true);
 		chartRenderer.setClickEnabled(false);
 		
-
+		chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),"warning",0, resources.getColor(R.color.status_warning));
+		chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),"breach",0, resources.getColor(R.color.status_alarm));
+		chartRenderer.setShowCustomTextTargetLineY(true);
+		
 		co2Series = new XYSeries(resources.getString(R.string.co2), 0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
 		co2Renderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
@@ -223,32 +226,13 @@ public class UserChartDetailActivity extends BaseActivity {
 		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
 		humidityRenderer.setLineWidth(3);
 		humidityRenderer.setDisplayChartValues(true);
-
-		co2AlarmSeries = new XYSeries("", 0);// 定义XYSeries
-		chartDataset.addSeries(co2AlarmSeries);// 在XYMultipleSeriesDataset中添加XYSeries
-		co2AlarmRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
-		chartRenderer.addSeriesRenderer(co2AlarmRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
-		co2AlarmRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
-		co2AlarmRenderer.setFillPoints(true);// 设置点是否实心
-		co2AlarmRenderer.setColor(resources.getColor(R.color.status_alarm));
-		co2AlarmRenderer.setLineWidth(2);
-		co2AlarmRenderer.setStroke(BasicStroke.DOTTED);
-		co2AlarmRenderer.setShowLegendItem(false);
+		
+		
+		
 		// FillOutsideLine fill2 = new
 		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
 		// fill2.setColor(Color.argb(60, 255, 255, 255));
 		// co2AlarmRenderer.addFillOutsideLine(fill2);
-
-		co2WarningSeries = new XYSeries("", 0);// 定义XYSeries
-		chartDataset.addSeries(co2WarningSeries);// 在XYMultipleSeriesDataset中添加XYSeries
-		co2WarningRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
-		chartRenderer.addSeriesRenderer(co2WarningRenderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
-		co2WarningRenderer.setPointStyle(PointStyle.POINT);// 点的类型是圆形
-		co2WarningRenderer.setFillPoints(true);// 设置点是否实心
-		co2WarningRenderer.setColor(resources.getColor(R.color.status_warning));
-		co2WarningRenderer.setLineWidth(2);
-		co2WarningRenderer.setStroke(BasicStroke.DOTTED);
-		co2WarningRenderer.setShowLegendItem(false);
 
 		
 		// FillOutsideLine fill = new
@@ -281,17 +265,10 @@ public class UserChartDetailActivity extends BaseActivity {
 	
 	private void updateChartData() {
 
-		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
-		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
-
 		co2Series.clear();
 		temperatureSeries.clear();
 		humiditySeries.clear();
-		co2WarningSeries.clear();
-		co2AlarmSeries.clear();
-
+		
 		Date minTime = new Date();
 		Date maxTime = new Date();
 		
@@ -324,15 +301,6 @@ public class UserChartDetailActivity extends BaseActivity {
 			double maxX = co2Series.getMaxX();
 			double minX = co2Series.getMinX();
 
-			double interval = (maxX - minX) / 80;
-			for (double x = minX; x < maxX; x = x + interval) {
-				co2WarningSeries.add(x, warningThreshold.getCo2UpperBound());
-				co2AlarmSeries.add(x, breachThreshold.getCo2UpperBound());
-			}
-			
-			chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),"warning",0);
-			chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),"breach",0);
-			
 			double maxY0 = co2Series.getMaxY();
 			double minY0 = co2Series.getMinY();
 
@@ -340,6 +308,10 @@ public class UserChartDetailActivity extends BaseActivity {
 				maxY0 += 10;
 				minY0 = minY0 - 10 < 0 ? 0 : minY0 - 10;
 			}
+			IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+					.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+			IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+					.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
 			
 			if(maxY0 < breachThreshold.getCo2UpperBound()){
 				maxY0 = breachThreshold.getCo2UpperBound();

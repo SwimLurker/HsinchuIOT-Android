@@ -19,5 +19,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DatePicker"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/AChartEngine"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

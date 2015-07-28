@@ -53,6 +53,10 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
   private Map<Double, String> mXTextLabels = new HashMap<Double, String>();
   /** The Y axis text labels. */
   private Map<Integer, Map<Double, String>> mYTextLabels = new LinkedHashMap<Integer, Map<Double, String>>();
+  
+  /** The Y axis text lables colors. */
+  private Map<Integer, Map<Double, Integer>> mYTextLabelColors = new LinkedHashMap<Integer, Map<Double, Integer>>(); 
+  
   /** A flag for enabling or not the pan on the X axis. */
   private boolean mPanXEnabled = true;
   /** A flag for enabling or not the pan on the Y axis. */
@@ -97,6 +101,7 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
   private int mXLabelsColor = TEXT_COLOR;
   /** The Y axis labels color. */
   private int[] mYLabelsColor = new int[] { TEXT_COLOR };
+ 
   /**
    * If X axis value selection algorithm to be used. Only used by the time
    * charts.
@@ -168,6 +173,7 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
     initialRange.put(i, range);
     mYTitle[i] = "";
     mYTextLabels.put(i, new HashMap<Double, String>());
+    mYTextLabelColors.put(i, new HashMap<Double, Integer>());
     yLabelsAlign[i] = Align.CENTER;
     yAxisAlign[i] = Align.LEFT;
   }
@@ -634,6 +640,19 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
   public synchronized void addYTextLabel(double y, String text, int scale) {
     mYTextLabels.get(scale).put(y, text);
   }
+  
+  /**
+   * Adds a new text label for the specified Y axis value with given color.
+   * 
+   * @param y the Y axis value
+   * @param text the text label
+   * @param scale the renderer scale
+   */
+  public synchronized void addYTextLabel(double y, String text, int scale, int color) {
+    mYTextLabels.get(scale).put(y, text);
+    mYTextLabelColors.get(scale).put(y, color);
+    
+  }
 
   /**
    * Removes text label for the specified Y axis value.
@@ -643,6 +662,7 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
    */
   public synchronized void removeYTextLabel(double y, int scale) {
     mYTextLabels.get(scale).remove(y);
+    mYTextLabelColors.get(scale).remove(y);
   }
 
   /**
@@ -654,6 +674,16 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
   public String getYTextLabel(Double y) {
     return getYTextLabel(y, 0);
   }
+  
+  /**
+   * Returns the Y axis text label color at the specified Y axis value.
+   * 
+   * @param y the Y axis value
+   * @return the Y axis text label color
+   */
+  public int getYTextLabelColor(Double y) {
+    return getYTextLabelColor(y, 0);
+  }
 
   /**
    * Returns the Y axis text label at the specified Y axis value.
@@ -664,6 +694,22 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
    */
   public synchronized String getYTextLabel(Double y, int scale) {
     return mYTextLabels.get(scale).get(y);
+  }
+  
+  /**
+   * Returns the Y axis text label color at the specified Y axis value.
+   * 
+   * @param y the Y axis value
+   * @param scale the renderer scale
+   * @return the Y axis text label color
+   */
+  public synchronized int getYTextLabelColor(Double y, int scale) {
+    if (mYTextLabelColors.get(scale).get(y) == null){
+      return mYLabelsColor[scale];
+    }else{
+      return mYTextLabelColors.get(scale).get(y);
+    }
+    
   }
 
   /**
@@ -1083,6 +1129,8 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
     return mYLabelsColor[scale];
   }
 
+  
+  
   /**
    * Sets the X axis labels color.
    * 
@@ -1102,6 +1150,7 @@ public class XYMultipleSeriesRenderer extends DefaultRenderer {
     mYLabelsColor[scale] = color;
   }
 
+  
   /**
    * Returns the X axis labels alignment.
    * 
