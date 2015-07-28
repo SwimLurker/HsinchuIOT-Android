@@ -73,6 +73,10 @@ public class DefaultRenderer implements Serializable {
   private boolean mShowCustomTextGridX = false;
   /** If the custom text grid should be displayed on the Y axis. */
   private boolean mShowCustomTextGridY = false;
+  
+  /** If the customer text lable show target line on the Y axis. */
+  private boolean mShowCustomTextTargetLineY = false;
+  
   /** The simple renderers that are included in this multiple series renderer. */
   private List<SimpleSeriesRenderer> mRenderers = new ArrayList<SimpleSeriesRenderer>();
   /** The antialiasing flag. */
@@ -399,6 +403,15 @@ public class DefaultRenderer implements Serializable {
   public boolean isShowCustomTextGridY() {
     return mShowCustomTextGridY;
   }
+  
+  /**
+   * Returns if the Y axis custom text target line should be visible.
+   * 
+   * @return the visibility flag for the custom text Y axis target line
+   */
+  public boolean isShowCustomTextTargetLineY() {
+    return mShowCustomTextTargetLineY;
+  }
 
   /**
    * Sets if the X axis custom text grid should be visible.
@@ -416,6 +429,15 @@ public class DefaultRenderer implements Serializable {
    */
   public void setShowCustomTextGridY(boolean showGrid) {
     mShowCustomTextGridY = showGrid;
+  }
+  
+  /**
+   * Sets if the Y axis custom text target line should be visible.
+   * 
+   * @param showTargetLine the visibility flag for the Y axis custom text target line
+   */
+  public void setShowCustomTextTargetLineY(boolean showTargetLine) {
+    mShowCustomTextTargetLineY = showTargetLine;
   }
 
   /**

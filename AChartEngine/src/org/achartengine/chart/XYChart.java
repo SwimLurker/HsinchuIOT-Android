@@ -345,6 +345,7 @@ public abstract class XYChart extends AbstractChart {
     boolean showGridX = mRenderer.isShowGridX();
     // boolean showCustomTextGridX = mRenderer.isShowCustomTextGridX();
     boolean showCustomTextGridY = mRenderer.isShowCustomTextGridY();
+    boolean showCustomTextTargetLineY = mRenderer.isShowCustomTextTargetLineY();
     if (showLabels || showGridX) {
       List<Double> xLabels = getValidLabels(getXLabels(minX[0], maxX[0], mRenderer.getXLabels()));
       Map<Integer, List<Double>> allYLabels = getYLabels(minY, maxY, maxScaleNumber);
@@ -373,8 +374,9 @@ public abstract class XYChart extends AbstractChart {
               float yLabel = (float) (bottom - yPixelsPerUnit[i]
                   * (location.doubleValue() - minY[i]));
               String label = mRenderer.getYTextLabel(location, i);
-              paint.setColor(mRenderer.getYLabelsColor(i));
-              paint.setTextAlign(mRenderer.getYLabelsAlign(i));
+              paint.setColor(mRenderer.getYTextLabelColor(location, i));
+              
+               paint.setTextAlign(mRenderer.getYLabelsAlign(i));
               if (or == Orientation.HORIZONTAL) {
                 if (axisAlign == Align.LEFT) {
                   canvas.drawLine(left + getLabelLinePos(axisAlign), yLabel, left, yLabel, paint);
@@ -388,7 +390,26 @@ public abstract class XYChart extends AbstractChart {
 
                 if (showCustomTextGridY) {
                   paint.setColor(mRenderer.getGridColor(i));
+                  
                   canvas.drawLine(left, yLabel, right, yLabel, paint);
+                }
+                
+                if (showCustomTextTargetLineY) {
+                  paint.setColor(mRenderer.getYTextLabelColor(location, i));
+                  
+                  Cap cap = paint.getStrokeCap();
+                  Join join = paint.getStrokeJoin();
+                  float miter = paint.getStrokeMiter();
+                  PathEffect pathEffect = paint.getPathEffect();
+                  Style style = paint.getStyle();
+                  
+                  PathEffect effect = new DashPathEffect(BasicStroke.DASHED.getIntervals(), BasicStroke.DASHED.getPhase());
+                  setStroke(BasicStroke.DASHED.getCap(), BasicStroke.DASHED.getJoin(), BasicStroke.DOTTED.getMiter(), Style.STROKE,
+                        effect, paint);
+                  
+                  canvas.drawLine(left, yLabel, right, yLabel, paint);
+       
+                  setStroke(cap, join, miter, style, pathEffect, paint);
                 }
               } else {
                 canvas.drawLine(right - getLabelLinePos(axisAlign), yLabel, right, yLabel, paint);
@@ -397,6 +418,24 @@ public abstract class XYChart extends AbstractChart {
                 if (showCustomTextGridY) {
                   paint.setColor(mRenderer.getGridColor(i));
                   canvas.drawLine(right, yLabel, left, yLabel, paint);
+                }
+                
+                if (showCustomTextTargetLineY) {
+                  paint.setColor(mRenderer.getYTextLabelColor(location, i));
+                  
+                  Cap cap = paint.getStrokeCap();
+                  Join join = paint.getStrokeJoin();
+                  float miter = paint.getStrokeMiter();
+                  PathEffect pathEffect = paint.getPathEffect();
+                  Style style = paint.getStyle();
+                  
+                  PathEffect effect = new DashPathEffect(BasicStroke.DASHED.getIntervals(), BasicStroke.DASHED.getPhase());
+                  setStroke(BasicStroke.DASHED.getCap(), BasicStroke.DASHED.getJoin(), BasicStroke.DASHED.getMiter(), Style.STROKE,
+                        effect, paint);
+                  
+                  canvas.drawLine(right, yLabel, left, yLabel, paint);
+       
+                  setStroke(cap, join, miter, style, pathEffect, paint);
                 }
               }
             }
