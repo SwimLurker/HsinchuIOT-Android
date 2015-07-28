@@ -77,6 +77,9 @@ public class DefaultRenderer implements Serializable {
   /** If the customer text lable show target line on the Y axis. */
   private boolean mShowCustomTextTargetLineY = false;
   
+  /** If fill the target line with color **/
+  private boolean mFillTargetLineWithColor = false;
+  
   /** The simple renderers that are included in this multiple series renderer. */
   private List<SimpleSeriesRenderer> mRenderers = new ArrayList<SimpleSeriesRenderer>();
   /** The antialiasing flag. */
@@ -412,6 +415,10 @@ public class DefaultRenderer implements Serializable {
   public boolean isShowCustomTextTargetLineY() {
     return mShowCustomTextTargetLineY;
   }
+  
+  public boolean isFillTargetLineWithColor(){
+	  return mFillTargetLineWithColor;
+  }
 
   /**
    * Sets if the X axis custom text grid should be visible.
@@ -421,6 +428,7 @@ public class DefaultRenderer implements Serializable {
   public void setShowCustomTextGridX(boolean showGrid) {
     mShowCustomTextGridX = showGrid;
   }
+  
 
   /**
    * Sets if the Y axis custom text grid should be visible.
@@ -438,6 +446,10 @@ public class DefaultRenderer implements Serializable {
    */
   public void setShowCustomTextTargetLineY(boolean showTargetLine) {
     mShowCustomTextTargetLineY = showTargetLine;
+  }
+  
+  public void setFillTargetLineWithColor(boolean fillTargetLineWithColor){
+	mFillTargetLineWithColor = fillTargetLineWithColor;
   }
 
   /**

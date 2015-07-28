@@ -254,6 +254,10 @@ public class UserSiteHomePageFragment extends Fragment {
 		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
 				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
 
+		chartRenderer.clearYTextLabels();
+		chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),"warning",0, getActivity().getResources().getColor(R.color.status_warning));
+		chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),"breach",0, getActivity().getResources().getColor(R.color.status_alarm));
+		
 		co2Series.clear();
 		temperatureSeries.clear();
 		humiditySeries.clear();
@@ -303,11 +307,11 @@ public class UserSiteHomePageFragment extends Fragment {
 			}
 
 			if (maxY0 < breachThreshold.getCo2UpperBound()) {
-				maxY0 = breachThreshold.getCo2UpperBound();
+				maxY0 = breachThreshold.getCo2UpperBound() + 10;
 			}
 
 			if (minY0 > warningThreshold.getCo2UpperBound()) {
-				minY0 = warningThreshold.getCo2UpperBound();
+				minY0 = warningThreshold.getCo2UpperBound() - 10;
 			}
 
 			chartRenderer.setYAxisMax(maxY0, 0);
@@ -388,6 +392,8 @@ public class UserSiteHomePageFragment extends Fragment {
 				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE, site);
 
 				startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.zoom_in2,
+						R.anim.zoom_out2);
 			}
 		});
 
@@ -400,6 +406,8 @@ public class UserSiteHomePageFragment extends Fragment {
 				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE, site);
 
 				startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.zoom_in2,
+						R.anim.zoom_out2);
 			}
 		});
 
@@ -451,13 +459,6 @@ public class UserSiteHomePageFragment extends Fragment {
 	}
 
 	private void createChart() {
-		
-		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
-		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
-
-		
 		chartDataset.clear();
 		chartRenderer.removeAllRenderers();
 
@@ -499,8 +500,6 @@ public class UserSiteHomePageFragment extends Fragment {
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
 		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
-		chartRenderer.setShowCustomTextTargetLineY(true);
-		
 		
 		// chartRenderer.setYAxisMax(100, 2);
 		// chartRenderer.setYAxisMin(0, 2);
@@ -509,6 +508,10 @@ public class UserSiteHomePageFragment extends Fragment {
 		chartRenderer.setPointSize(3);// 设置点的大小(图上显示的点的大小和图例中点的大小都会被设置)
 		chartRenderer.setPanEnabled(false);
 		chartRenderer.setClickEnabled(true);
+		
+		chartRenderer.setShowCustomTextTargetLineY(true);
+		chartRenderer.setFillTargetLineWithColor(true);
+		
 
 		co2Series = new XYSeries(resources.getString(R.string.co2), 0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -521,9 +524,6 @@ public class UserSiteHomePageFragment extends Fragment {
 		co2Renderer.setLineWidth(3);
 		co2Renderer.setDisplayChartValues(true);
 		
-		chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),"warning",0, getActivity().getResources().getColor(R.color.status_warning));
-		chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),"breach",0, getActivity().getResources().getColor(R.color.status_alarm));
-
 
 		temperatureSeries = new XYSeries(resources.getString(R.string.temperature), 1);// 定义XYSeries
 		chartDataset.addSeries(temperatureSeries);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -607,6 +607,8 @@ public class UserSiteHomePageFragment extends Fragment {
 				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME, parent.getChartEndTime()==null?0:parent.getChartEndTime().getTime());
 
 				startActivity(intent);
+				getActivity().overridePendingTransition(R.anim.zoom_in,
+						R.anim.zoom_out);
 
 			}
 		});

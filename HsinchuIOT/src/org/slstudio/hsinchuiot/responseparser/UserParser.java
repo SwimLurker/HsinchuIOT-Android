@@ -51,8 +51,8 @@ public class UserParser extends XmlResponseParser<User>{
 		result.setChangePWDDate(changePwdDate);
 		
 		//for debug purpose
-		//result.setPermission(permission);
-		result.setPermission(User.PERMISSION_USER);
+		result.setPermission(permission);
+		//result.setPermission(User.PERMISSION_USER);
 		
 		result.setPasswordExpiryDays(pwdExpiredDays);
 		result.setServerTime(serverTime);

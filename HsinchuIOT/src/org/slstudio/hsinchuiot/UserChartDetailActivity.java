@@ -41,11 +41,11 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 public class UserChartDetailActivity extends BaseActivity {
-	
+
 	private Handler handler;
 
 	private ActionBar actionBar;
-	
+
 	private Site currentSite;
 	private int chartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
 	private int chartTimeDuration = 1;
@@ -66,45 +66,44 @@ public class UserChartDetailActivity extends BaseActivity {
 	private LinearLayout chartLayout;
 	private TextView tvChartTitle;
 	private TextView tvChartTitleBottom;
-	
+
 	private List<IOTSampleData> chartData = new ArrayList<IOTSampleData>();
 
-	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		currentSite = (Site) getIntent().getSerializableExtra(Constants.ActivityPassValue.SELECTED_SITE);
-		chartType = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_TYPE, Constants.ChartSettings.CHART_TYPE_REALTIME);
+		chartType = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_TYPE,
+				Constants.ChartSettings.CHART_TYPE_REALTIME);
 		chartTimeDuration = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 1);
-		chartGranularity = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY, Constants.ChartSettings.GRANULARITY_HOUR);
+		chartGranularity = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
+				Constants.ChartSettings.GRANULARITY_HOUR);
 		long startTimeLong = getIntent().getLongExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, 0);
 		chartStartTime = new Date();
 		chartStartTime.setTime(startTimeLong);
 		long endTimeLong = getIntent().getLongExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME, 0);
 		chartEndTime = new Date();
 		chartEndTime.setTime(endTimeLong);
-		
-		chartData = (List<IOTSampleData>)getIntent().getSerializableExtra(Constants.ActivityPassValue.CHART_DATA);
-		
-		
+
+		chartData = (List<IOTSampleData>) getIntent().getSerializableExtra(Constants.ActivityPassValue.CHART_DATA);
+
 		setContentView(R.layout.activity_user_chartdetail);
 		initViews();
 		createChart();
 		updateChartData();
-		
+
 		chartView.repaint();
 	}
-	
+
 	@Override
 	protected void onResume() {
 
-		//resendMessage();
+		// resendMessage();
 		super.onResume();
 	}
-	
+
 	@Override
 	protected void onPause() {
-		
-		
+
 		super.onPause();
 	}
 
@@ -112,7 +111,6 @@ public class UserChartDetailActivity extends BaseActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 	}
-	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -123,30 +121,25 @@ public class UserChartDetailActivity extends BaseActivity {
 		case R.id.menu_close:
 			finish();
 			break;
-			
+
 		}
 		return true;
 	}
-	
+
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_user_chartdetail, menu);
 		return true;
 	}
-	
+
 	private void initViews() {
 		chartLayout = (LinearLayout) findViewById(R.id.id_chart_chartdetail);
 		tvChartTitle = (TextView) findViewById(R.id.tv_chart_title_chartdetail);
 		tvChartTitleBottom = (TextView) findViewById(R.id.tv_chart_bottom_title_chartdetail);
-		
+
 		setupActionBar();
 	}
-	
+
 	private void createChart() {
-		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
-		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
-		
 		chartDataset.clear();
 		chartRenderer.removeAllRenderers();
 
@@ -175,24 +168,23 @@ public class UserChartDetailActivity extends BaseActivity {
 		chartRenderer.setYLabelsColor(0, resources.getColor(R.color.title_bk_green));
 		chartRenderer.setYAxisAlign(Align.LEFT, 0);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 0);
-	
+
 		chartRenderer.setYLabelsColor(1, resources.getColor(R.color.title_bk_brown));
 		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 1);
-		
+
 		chartRenderer.setYLabelsColor(2, resources.getColor(R.color.title_bk_purple));
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
 		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
-		
+
 		chartRenderer.setZoomButtonsVisible(true);// 是否显示放大缩小按钮
 		chartRenderer.setPointSize(3);// 设置点的大小(图上显示的点的大小和图例中点的大小都会被设置)
 		chartRenderer.setPanEnabled(true);
 		chartRenderer.setClickEnabled(false);
-		
-		chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),"warning",0, resources.getColor(R.color.status_warning));
-		chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),"breach",0, resources.getColor(R.color.status_alarm));
+
 		chartRenderer.setShowCustomTextTargetLineY(true);
-		
+		chartRenderer.setFillTargetLineWithColor(true);
+
 		co2Series = new XYSeries(resources.getString(R.string.co2), 0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
 		co2Renderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
@@ -203,8 +195,7 @@ public class UserChartDetailActivity extends BaseActivity {
 		co2Renderer.setColor(resources.getColor(R.color.title_bk_green));
 		co2Renderer.setLineWidth(3);
 		co2Renderer.setDisplayChartValues(true);
-		
-		
+
 		temperatureSeries = new XYSeries(resources.getString(R.string.temperature), 1);// 定义XYSeries
 		chartDataset.addSeries(temperatureSeries);// 在XYMultipleSeriesDataset中添加XYSeries
 		temperatureRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
@@ -215,7 +206,7 @@ public class UserChartDetailActivity extends BaseActivity {
 		temperatureRenderer.setLineWidth(3);
 
 		temperatureRenderer.setDisplayChartValues(true);
-		
+
 		humiditySeries = new XYSeries(resources.getString(R.string.humidity), 2);// 定义XYSeries
 		chartDataset.addSeries(humiditySeries);// 在XYMultipleSeriesDataset中添加XYSeries
 		humidityRenderer = new XYSeriesRenderer();// 定义XYSeriesRenderer
@@ -226,21 +217,18 @@ public class UserChartDetailActivity extends BaseActivity {
 		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
 		humidityRenderer.setLineWidth(3);
 		humidityRenderer.setDisplayChartValues(true);
-		
-		
-		
+
 		// FillOutsideLine fill2 = new
 		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
 		// fill2.setColor(Color.argb(60, 255, 255, 255));
 		// co2AlarmRenderer.addFillOutsideLine(fill2);
 
-		
 		// FillOutsideLine fill = new
 		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
 		// fill.setColor(Color.argb(60, 0, 255, 0));
 		// co2WarningRenderer.addFillOutsideLine(fill);
 		String dateFormat = null;
-		
+
 		if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
 			if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOUR) {
 				dateFormat = "yyyy/MM/dd-HH:mm:ss";
@@ -257,26 +245,35 @@ public class UserChartDetailActivity extends BaseActivity {
 			dateFormat = "HH:mm:ss";
 		}
 
-		chartView = IOTChartFactory.getIOTChartView(this, chartDataset, chartRenderer, dateFormat, new String[]{"ppm","℃", "%"});
-		
+		chartView = IOTChartFactory.getIOTChartView(this, chartDataset, chartRenderer, dateFormat,
+				new String[] { "ppm", "℃", "%" });
+
 		chartLayout.removeAllViews();
 		chartLayout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
-	
+
 	private void updateChartData() {
+		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
+				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+
+		// reset target line
+		chartRenderer.clearYTextLabels();
+		chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(), "warning", 0,
+				getResources().getColor(R.color.status_warning));
+		chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(), "breach", 0,
+				getResources().getColor(R.color.status_alarm));
 
 		co2Series.clear();
 		temperatureSeries.clear();
 		humiditySeries.clear();
-		
+
 		Date minTime = new Date();
 		Date maxTime = new Date();
-		
-		
+
 		Collections.sort(chartData);
-		
-		
-		
+
 		for (IOTSampleData sample : chartData) {
 			if (minTime.after(sample.getTime())) {
 				minTime = sample.getTime();
@@ -296,7 +293,7 @@ public class UserChartDetailActivity extends BaseActivity {
 			}
 
 		}
-		
+
 		if (co2Series.getItemCount() > 0) {
 			double maxX = co2Series.getMaxX();
 			double minX = co2Series.getMinX();
@@ -308,17 +305,13 @@ public class UserChartDetailActivity extends BaseActivity {
 				maxY0 += 10;
 				minY0 = minY0 - 10 < 0 ? 0 : minY0 - 10;
 			}
-			IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-					.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
-			IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer.getInstance().getSessionService()
-					.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
-			
-			if(maxY0 < breachThreshold.getCo2UpperBound()){
-				maxY0 = breachThreshold.getCo2UpperBound();
+
+			if (maxY0 < breachThreshold.getCo2UpperBound()) {
+				maxY0 = breachThreshold.getCo2UpperBound() + 10;
 			}
-			
-			if(minY0 > warningThreshold.getCo2UpperBound()){
-				minY0 = warningThreshold.getCo2UpperBound();
+
+			if (minY0 > warningThreshold.getCo2UpperBound()) {
+				minY0 = warningThreshold.getCo2UpperBound() - 10;
 			}
 
 			chartRenderer.setYAxisMax(maxY0, 0);
@@ -350,12 +343,12 @@ public class UserChartDetailActivity extends BaseActivity {
 			chartRenderer.setYAxisMin(minY2, 2);
 
 		}
-		
+
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		tvChartTitleBottom.setText(sdf.format(minTime) + " - " + sdf.format(maxTime));
 		tvChartTitle.setText(getChartTitle());
 	}
-	
+
 	private String getChartTitle() {
 		if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
 			if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOUR) {
@@ -373,7 +366,7 @@ public class UserChartDetailActivity extends BaseActivity {
 			return "即時資料(資料範圍:" + chartTimeDuration + "小時)";
 		}
 	}
-	
+
 	protected void setupActionBar() {
 		actionBar = getActionBar();
 		actionBar.setTitle(currentSite.getSiteName());
@@ -384,7 +377,7 @@ public class UserChartDetailActivity extends BaseActivity {
 			titleId = getResources().getIdentifier("action_bar_title", "id", "android");
 			if (titleId > 0) {
 				TextView titleTextView = (TextView) findViewById(titleId);
-				if(titleTextView != null){
+				if (titleTextView != null) {
 					titleTextView.setTextSize(15);
 				}
 			}

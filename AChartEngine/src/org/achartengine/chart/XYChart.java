@@ -17,6 +17,8 @@ package org.achartengine.chart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,12 +39,14 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import org.achartengine.util.MathHelper;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Paint.Join;
 import android.graphics.Paint.Style;
+import android.graphics.Path;
 import android.graphics.PathEffect;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -346,6 +350,8 @@ public abstract class XYChart extends AbstractChart {
     // boolean showCustomTextGridX = mRenderer.isShowCustomTextGridX();
     boolean showCustomTextGridY = mRenderer.isShowCustomTextGridY();
     boolean showCustomTextTargetLineY = mRenderer.isShowCustomTextTargetLineY();
+    boolean fillTargetLine = mRenderer.isFillTargetLineWithColor();
+    
     if (showLabels || showGridX) {
       List<Double> xLabels = getValidLabels(getXLabels(minX[0], maxX[0], mRenderer.getXLabels()));
       Map<Integer, List<Double>> allYLabels = getYLabels(minY, maxY, maxScaleNumber);
@@ -369,7 +375,17 @@ public abstract class XYChart extends AbstractChart {
         for (int i = 0; i < maxScaleNumber; i++) {
           Align axisAlign = mRenderer.getYAxisAlign(i);
           Double[] yTextLabelLocations = mRenderer.getYTextLabelLocations(i);
-          for (Double location : yTextLabelLocations) {
+          List<Double> ySortedLocations = Arrays.asList(yTextLabelLocations);
+          Collections.sort(ySortedLocations, new Comparator<Double>(){
+
+			@Override
+			public int compare(Double lhs, Double rhs) {
+				return rhs.compareTo(lhs);
+			}
+        	  
+          });
+          float preYLabel = top;
+          for (Double location : ySortedLocations) {
             if (minY[i] <= location && location <= maxY[i]) {
               float yLabel = (float) (bottom - yPixelsPerUnit[i]
                   * (location.doubleValue() - minY[i]));
@@ -397,19 +413,34 @@ public abstract class XYChart extends AbstractChart {
                 if (showCustomTextTargetLineY) {
                   paint.setColor(mRenderer.getYTextLabelColor(location, i));
                   
-                  Cap cap = paint.getStrokeCap();
-                  Join join = paint.getStrokeJoin();
-                  float miter = paint.getStrokeMiter();
-                  PathEffect pathEffect = paint.getPathEffect();
-                  Style style = paint.getStyle();
+                  PathEffect preEffect = paint.getPathEffect();
+                  Style preStyle = paint.getStyle();
                   
-                  PathEffect effect = new DashPathEffect(BasicStroke.DASHED.getIntervals(), BasicStroke.DASHED.getPhase());
-                  setStroke(BasicStroke.DASHED.getCap(), BasicStroke.DASHED.getJoin(), BasicStroke.DOTTED.getMiter(), Style.STROKE,
-                        effect, paint);
+                  PathEffect effect = new DashPathEffect(new float[]{5,5,5,5},1); 
                   
-                  canvas.drawLine(left, yLabel, right, yLabel, paint);
-       
-                  setStroke(cap, join, miter, style, pathEffect, paint);
+                  paint.setPathEffect(effect);
+                  paint.setStyle(Style.STROKE);
+                  paint.setStrokeWidth(2);
+                  
+                  Path path = new Path();
+                  path.moveTo(left, yLabel);
+                  path.lineTo(right, yLabel);
+                  
+                  canvas.drawPath(path, paint);
+                            
+                  paint.setPathEffect(preEffect);
+                  
+                  if(fillTargetLine){
+                	  paint.setStyle(Style.FILL);
+                	  int preAlpha = paint.getAlpha();
+                	  paint.setAlpha(64);
+                	  canvas.drawRect(new Rect(left, (int)preYLabel, right, (int)yLabel), paint);
+                	  paint.setAlpha(preAlpha);
+                  }
+                  
+                  paint.setStyle(preStyle);
+                  preYLabel = yLabel;
+                  
                 }
               } else {
                 canvas.drawLine(right - getLabelLinePos(axisAlign), yLabel, right, yLabel, paint);
@@ -422,22 +453,63 @@ public abstract class XYChart extends AbstractChart {
                 
                 if (showCustomTextTargetLineY) {
                   paint.setColor(mRenderer.getYTextLabelColor(location, i));
+                  PathEffect preEffect = paint.getPathEffect();
+                  Style preStyle = paint.getStyle();
                   
-                  Cap cap = paint.getStrokeCap();
-                  Join join = paint.getStrokeJoin();
-                  float miter = paint.getStrokeMiter();
-                  PathEffect pathEffect = paint.getPathEffect();
-                  Style style = paint.getStyle();
+                  PathEffect effect = new DashPathEffect(new float[]{5,5,5,5},1); 
                   
-                  PathEffect effect = new DashPathEffect(BasicStroke.DASHED.getIntervals(), BasicStroke.DASHED.getPhase());
-                  setStroke(BasicStroke.DASHED.getCap(), BasicStroke.DASHED.getJoin(), BasicStroke.DASHED.getMiter(), Style.STROKE,
-                        effect, paint);
+                  paint.setPathEffect(effect);
+                  paint.setStyle(Style.STROKE);
+                  paint.setStrokeWidth(2);
                   
-                  canvas.drawLine(right, yLabel, left, yLabel, paint);
-       
-                  setStroke(cap, join, miter, style, pathEffect, paint);
+                  Path path = new Path();
+                  path.moveTo(right, yLabel);
+                  path.lineTo(left, yLabel);
+                  
+                  canvas.drawPath(path, paint);
+                  
+                  paint.setPathEffect(preEffect);
+                  
+                  if(fillTargetLine){
+                	  paint.setStyle(Style.FILL);
+                	  int preAlpha = paint.getAlpha();
+                	  paint.setAlpha(64);
+                	  canvas.drawRect(new Rect(right, (int)preYLabel, left, (int)yLabel), paint);
+                	  paint.setAlpha(preAlpha);
+                  }
+                  
+                  paint.setStyle(preStyle);
+                  preYLabel = yLabel;
                 }
               }
+            }else if(location< minY[i]){
+            	if (or == Orientation.HORIZONTAL) {
+            		if(showCustomTextTargetLineY &&fillTargetLine){
+            		  Style preStyle = paint.getStyle();
+            		  int preAlpha = paint.getAlpha(); 
+            		  paint.setColor(mRenderer.getYTextLabelColor(location, i));
+            		  paint.setStyle(Style.FILL);
+                   	  paint.setAlpha(64);
+                   	  canvas.drawRect(new Rect(left, (int)preYLabel, right, (int)bottom), paint);
+                   	  paint.setStyle(preStyle);
+                   	  paint.setAlpha(preAlpha);
+            		}
+            		preYLabel = bottom;
+            	}else{
+            		if(showCustomTextTargetLineY &&fillTargetLine){
+              		  Style preStyle = paint.getStyle();
+              		  int preAlpha = paint.getAlpha(); 
+              		  paint.setColor(mRenderer.getYTextLabelColor(location, i));
+              		  paint.setStyle(Style.FILL);
+                     	  paint.setAlpha(64);
+                     	  canvas.drawRect(new Rect(right, (int)preYLabel, left, (int)bottom), paint);
+                     	  paint.setStyle(preStyle);
+                     	  paint.setAlpha(preAlpha);
+              		}
+              		preYLabel = bottom;
+            	}
+            }else{
+            	preYLabel = top;
             }
           }
         }

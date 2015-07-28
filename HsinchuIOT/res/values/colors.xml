@@ -35,7 +35,7 @@
     <color name="text_color_gray_1">#666</color>
     <color name="text_color_gray_2">#999</color>
     <color name="title_bk_green">#4fcb44</color>
-    <color name="title_bk_brown">#e5a02a</color>
+    <color name="title_bk_brown">#AA7942</color>
     <color name="title_bk_purple">#8739d5</color>
     <color name="status_ok">#00ff00</color>
 	<color name="status_warning">#fcae00</color>
