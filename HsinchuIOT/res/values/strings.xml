@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">HsinchuIOT</string>
+    <string name="app_name">新竹IOT</string>
     <string name="action_settings">&#160;&#160;設&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;定</string>
     <string name="action_logoff">&#160;&#160;退出登錄</string>
     <string name="action_ok">確定</string>
