@@ -12,11 +12,7 @@
         android:scaleType="fitXY"
         android:src="@drawable/site_unknown" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="@drawable/divider_horizontal" />
-
+   
     <com.handmark.pulltorefresh.library.PullToRefreshScrollView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
         android:id="@+id/pull_refresh_scrollview_user"
@@ -160,11 +156,7 @@
                 </LinearLayout>
             </ViewFlipper>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="@drawable/divider_horizontal" />
-
+            
             <ViewFlipper
                 android:id="@+id/vf_temperature_user"
                 android:layout_width="fill_parent"
@@ -292,11 +284,7 @@
                 </LinearLayout>
             </ViewFlipper>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dip"
-                android:background="@drawable/divider_horizontal" />
-
+         
             <ViewFlipper
                 android:id="@+id/vf_humidity_user"
                 android:layout_width="fill_parent"

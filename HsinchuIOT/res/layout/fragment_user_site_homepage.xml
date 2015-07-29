@@ -41,7 +41,7 @@
 
     <com.handmark.pulltorefresh.library.PullToRefreshScrollView
         xmlns:ptr="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/pull_refresh_scrollview_user"
+        android:id="@+id/pull_refresh_scrollview_user_main"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -272,7 +272,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="-"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="@color/text_blue"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -290,7 +290,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="2015/07/21 15:00:00 - 2015/07/21 16:00:00"
-                    android:textColor="@color/dark_gray"
+                    android:textColor="@color/text_blue"
                     android:textSize="15sp" />
 
                 <Button

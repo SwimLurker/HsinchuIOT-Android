@@ -32,6 +32,11 @@ import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.ui.LableTimeChart;
 import org.slstudio.hsinchuiot.ui.chart.IOTChartFactory;
 import org.slstudio.hsinchuiot.util.IOTLog;
+import org.slstudio.hsinchuiot.util.ReportUtil;
+
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -52,6 +57,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +67,8 @@ public class UserSiteHomePageFragment extends Fragment {
 	private Site site;
 	private int index;
 
+	private PullToRefreshScrollView refreshScrollView;
+	
 	private ImageButton btnPreSite;
 	private ImageButton btnNextSite;
 	private Button btnTitle;
@@ -149,6 +157,11 @@ public class UserSiteHomePageFragment extends Fragment {
 			site.setMonitorData(data);
 		}
 		updateMonitorData();
+		
+		if (refreshScrollView.isRefreshing()) {
+			refreshScrollView.onRefreshComplete();
+		}
+		
 		return true;
 	}
 
@@ -246,6 +259,7 @@ public class UserSiteHomePageFragment extends Fragment {
 		updateChartData();
 		chartView.repaint();
 	}
+	
 
 	private void updateChartData() {
 
@@ -454,6 +468,16 @@ public class UserSiteHomePageFragment extends Fragment {
 				getActivity().startActivityForResult(intent, Constants.ResultCode.CHART_SETTINGS);
 			}
 
+		});
+		
+		refreshScrollView = (PullToRefreshScrollView) parentView.findViewById(R.id.pull_refresh_scrollview_user_main);
+		refreshScrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
+
+			@Override
+			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+				parentActivity.resendMessage();
+
+			}
 		});
 
 	}
