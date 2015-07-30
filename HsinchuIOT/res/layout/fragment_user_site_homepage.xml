@@ -94,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom"
                         android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
+                        android:paddingLeft="25dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/icon_tree" />
 
