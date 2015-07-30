@@ -282,35 +282,43 @@ public class UserMainActivity extends BaseActivity{
 		case android.R.id.home:
 			break;
 		case R.id.menu_user_main_settings:
-			Intent intent = new Intent(
-					Constants.Action.HSINCHUIOT_USER_SETTINGS);
-			startActivity(intent);
+			showSettingsActivity();
 			break;
 		case R.id.menu_user_main_logoff:
-
-			ServiceContainer.getInstance().getSessionService()
-					.setLoginUser(null);
-			ServiceContainer.getInstance().getSessionService()
-					.setSessionID(null);
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
-							null);
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
-							null);
-
-			Intent loginIntent = new Intent(Constants.Action.HSINCHUIOT_LOGIN);
-			startActivity(loginIntent);
-			finish();
+			logoff();
 			break;
 		}
 		return true;
 	}
 
+	public void showSettingsActivity(){
+		Intent intent = new Intent(
+				Constants.Action.HSINCHUIOT_USER_SETTINGS);
+		startActivity(intent);
+	}
+	
+	public void logoff(){
+
+		ServiceContainer.getInstance().getSessionService()
+				.setLoginUser(null);
+		ServiceContainer.getInstance().getSessionService()
+				.setSessionID(null);
+		ServiceContainer
+				.getInstance()
+				.getSessionService()
+				.setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
+						null);
+		ServiceContainer
+				.getInstance()
+				.getSessionService()
+				.setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
+						null);
+
+		Intent loginIntent = new Intent(Constants.Action.HSINCHUIOT_LOGIN);
+		startActivity(loginIntent);
+		finish();
+
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_user_main, menu);
@@ -354,6 +362,14 @@ public class UserMainActivity extends BaseActivity{
 
 							}).create().show();
 
+		}else if(keyCode ==KeyEvent.KEYCODE_MENU){
+			UserSiteHomePageFragment currentFragment = fragments
+					.get(currentIndex);
+			if (currentFragment != null){
+				currentFragment.onMenuRopeClick();
+				return true;
+			}
+			return true;
 		}
 
 		return false;

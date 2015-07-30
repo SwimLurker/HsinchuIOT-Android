@@ -33,6 +33,7 @@ import org.slstudio.hsinchuiot.ui.LableTimeChart;
 import org.slstudio.hsinchuiot.ui.chart.IOTChartFactory;
 import org.slstudio.hsinchuiot.util.IOTLog;
 import org.slstudio.hsinchuiot.util.ReportUtil;
+import org.slstudio.hsinchuiot.widget.CurtainMenu;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
@@ -66,6 +67,11 @@ public class UserSiteHomePageFragment extends Fragment {
 
 	private Site site;
 	private int index;
+
+	private Button btnSettings;
+	private Button btnLogoff;
+	
+	private CurtainMenu menu;
 
 	private PullToRefreshScrollView refreshScrollView;
 	
@@ -258,6 +264,10 @@ public class UserSiteHomePageFragment extends Fragment {
 		createChart();
 		updateChartData();
 		chartView.repaint();
+	}
+	
+	public void onMenuRopeClick(){
+		menu.onRopeClick();
 	}
 	
 
@@ -477,6 +487,29 @@ public class UserSiteHomePageFragment extends Fragment {
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
 				parentActivity.resendMessage();
 
+			}
+		});
+		
+		menu = (CurtainMenu)parentView.findViewById(R.id.layout_curtain_user_main);
+		
+		
+		btnSettings = (Button)parentView.findViewById(R.id.curtainmenu_btn_settings_user_main);
+		btnSettings.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				((UserMainActivity)getActivity()).showSettingsActivity();
+			}
+			
+		});
+		
+		btnLogoff = (Button)parentView.findViewById(R.id.curtainmenu_btn_logoff_user_main);
+		btnLogoff.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				((UserMainActivity)getActivity()).logoff();
 			}
 		});
 
