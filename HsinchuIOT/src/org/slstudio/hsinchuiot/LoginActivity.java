@@ -290,7 +290,6 @@ public class LoginActivity extends BaseActivity {
 	protected void setupActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
-		actionBar.setIcon(R.drawable.icon_back);
 		actionBar.setTitle(R.string.common_sign_in);
 		super.setupActionBar();
 	}

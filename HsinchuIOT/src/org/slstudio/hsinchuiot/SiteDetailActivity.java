@@ -178,7 +178,6 @@ public class SiteDetailActivity extends BaseActivity {
 		actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setTitle("");
-		actionBar.setIcon(R.drawable.icon_back);
 		super.setupActionBar();
 	}
 }

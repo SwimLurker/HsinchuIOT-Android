@@ -48,7 +48,7 @@
         android:layout_below="@id/layout_title_user_main"
         android:background="@color/white"
         android:fillViewport="true"
-        ptr:ptrAnimationStyle="flip"
+        ptr:ptrAnimationStyle="rotate"
         ptr:ptrMode="pullFromStart" >
 
         <LinearLayout

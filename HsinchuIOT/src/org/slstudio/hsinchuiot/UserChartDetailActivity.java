@@ -368,11 +368,11 @@ public class UserChartDetailActivity extends BaseActivity {
 	}
 
 	protected void setupActionBar() {
+		setActionBarTextSize(15);
 		actionBar = getActionBar();
 		actionBar.setTitle(currentSite.getSiteName());
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setIcon(R.drawable.icon_back);
 		super.setupActionBar();
 	}
 

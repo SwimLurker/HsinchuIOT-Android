@@ -15,16 +15,27 @@
             android:layout_height="match_parent"
             android:gravity="left|center_vertical"
             android:orientation="horizontal" >
-
+            <RelativeLayout 
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp">
+                
             <ImageView
                 android:id="@+id/li_iv_site"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_centerInParent="true"
+                android:scaleType="centerCrop"
+                android:src="@color/red" />
+            <ImageView
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_margin="5dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/site_unknown_thumbnail" />
-
-            <LinearLayout
+                android:src="@drawable/thumbnail_frame" />
+            
+            </RelativeLayout>
+			
+			<LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -69,7 +80,7 @@
                             android:gravity="right"
                             android:text="1623 ppm"
                             android:textColor="@color/black"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -78,7 +89,7 @@
                         android:layout_weight="2"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingLeft="25dp" >
+                        android:paddingLeft="15dp" >
 
                         <ImageView
                             android:id="@+id/li_iv_icon_temperature"
@@ -93,7 +104,7 @@
                             android:gravity="right"
                             android:text="30 ℃ "
                             android:textColor="@color/black"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -102,7 +113,7 @@
                         android:layout_weight="2"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingLeft="25dp" >
+                        android:paddingLeft="15dp" >
 
                         <ImageView
                             android:id="@+id/li_iv_icon_humidity"
@@ -117,7 +128,7 @@
                             android:gravity="right"
                             android:text="70 %"
                             android:textColor="@color/black"
-                            android:textSize="13sp" />
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

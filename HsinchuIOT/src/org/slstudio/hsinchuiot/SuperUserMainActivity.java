@@ -19,6 +19,7 @@ import org.slstudio.hsinchuiot.service.http.HttpRequest;
 import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
 import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
+import org.slstudio.hsinchuiot.ui.TVOffAnimation;
 import org.slstudio.hsinchuiot.ui.adapter.SiteListViewAdapter;
 import org.slstudio.hsinchuiot.util.ImageUtil;
 import org.slstudio.hsinchuiot.util.ReportUtil;
@@ -31,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
@@ -113,7 +115,18 @@ public class SuperUserMainActivity extends BaseActivity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									finish();
+									View v = SuperUserMainActivity.this.findViewById(R.id.view_main_bg_superuser);
+									v.setBackgroundColor(Color.BLACK);
+									new Handler().postDelayed(new Runnable() {
+
+										@Override
+										public void run() {
+											finish();
+										}
+									}, 1000);
+									
+									View v2 = SuperUserMainActivity.this.findViewById(R.id.view_main_layout_superuser);
+									v2.startAnimation(new TVOffAnimation());
 								}
 
 							})

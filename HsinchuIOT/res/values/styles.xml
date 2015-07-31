@@ -12,6 +12,7 @@
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:screenOrientation">portrait</item>
+        <item name="android:homeAsUpIndicator">@drawable/btn_pre_white</item>
         <item name="android:actionBarStyle">@style/my_actionbar_style</item>
          <item name="android:actionMenuTextColor">@android:color/white</item>
     </style>
@@ -23,7 +24,7 @@
 
     <style name="AcBar_titleStyle">
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">20.0dip</item>
+        <item name="android:textSize">18.0dip</item>
     </style>
 
     <style name="tab_button">

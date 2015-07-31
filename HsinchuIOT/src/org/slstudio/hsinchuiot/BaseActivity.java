@@ -84,7 +84,6 @@ public class BaseActivity extends FragmentActivity {
 			if(titleTextView == null){
 				return;
 			}
-			titleTextView.setTextSize(15);
 			DisplayMetrics metrics = getResources().getDisplayMetrics();
 
 			LinearLayout.LayoutParams txvPars = (LayoutParams) titleTextView.getLayoutParams();
@@ -94,6 +93,24 @@ public class BaseActivity extends FragmentActivity {
 			titleTextView.setGravity(Gravity.CENTER);
 		}
 	}
+	
+	protected void setActionBarTextSize(float textSize){
+		int titleId = 0;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+		} else {
+			return;
+		}
+
+		if (titleId > 0) {
+			TextView titleTextView = (TextView) findViewById(titleId);
+			if(titleTextView == null){
+				return;
+			}
+			titleTextView.setTextSize(textSize);
+		}
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		super.onOptionsItemSelected(item);

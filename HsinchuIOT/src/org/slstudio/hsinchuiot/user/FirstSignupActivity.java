@@ -251,7 +251,6 @@ public class FirstSignupActivity extends BaseActivity {
 	protected void setupActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
-		actionBar.setIcon(R.drawable.icon_back);
 		actionBar.setTitle(R.string.common_signup);
 		super.setupActionBar();
 	}

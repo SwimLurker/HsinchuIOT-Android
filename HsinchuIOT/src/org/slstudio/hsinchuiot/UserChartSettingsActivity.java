@@ -175,7 +175,6 @@ public class UserChartSettingsActivity extends BaseActivity {
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setIcon(R.drawable.icon_back);
 		actionBar.setTitle(R.string.chart_settings);
 		super.setupActionBar();
 	}
