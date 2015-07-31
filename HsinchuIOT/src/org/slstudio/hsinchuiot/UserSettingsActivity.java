@@ -234,9 +234,11 @@ public class UserSettingsActivity extends BaseActivity {
 	protected void setupActionBar() {
 		ActionBar actionBar = getActionBar();
 		actionBar.setHomeButtonEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 		actionBar.setIcon(R.drawable.icon_back);
 		actionBar.setTitle(R.string.action_settings);
 		super.setupActionBar();
+		
 	}
 
 	private void initViews() {

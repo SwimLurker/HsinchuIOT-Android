@@ -52,7 +52,7 @@ public class UserParser extends XmlResponseParser<User>{
 		
 		//for debug purpose
 		result.setPermission(permission);
-		result.setPermission(User.PERMISSION_USER);
+		//result.setPermission(User.PERMISSION_USER);
 		//result.setPermission(User.PERMISSION_ADMINUSER);
 		
 		result.setPasswordExpiryDays(pwdExpiredDays);

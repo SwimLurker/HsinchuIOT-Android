@@ -84,6 +84,7 @@ public class BaseActivity extends FragmentActivity {
 			if(titleTextView == null){
 				return;
 			}
+			titleTextView.setTextSize(15);
 			DisplayMetrics metrics = getResources().getDisplayMetrics();
 
 			LinearLayout.LayoutParams txvPars = (LayoutParams) titleTextView.getLayoutParams();

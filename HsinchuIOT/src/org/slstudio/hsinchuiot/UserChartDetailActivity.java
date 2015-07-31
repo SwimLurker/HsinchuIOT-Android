@@ -372,16 +372,7 @@ public class UserChartDetailActivity extends BaseActivity {
 		actionBar.setTitle(currentSite.getSiteName());
 		actionBar.setHomeButtonEnabled(true);
 		actionBar.setDisplayHomeAsUpEnabled(true);
-		int titleId = 0;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-			if (titleId > 0) {
-				TextView titleTextView = (TextView) findViewById(titleId);
-				if (titleTextView != null) {
-					titleTextView.setTextSize(15);
-				}
-			}
-		}
+		actionBar.setIcon(R.drawable.icon_back);
 		super.setupActionBar();
 	}
 
