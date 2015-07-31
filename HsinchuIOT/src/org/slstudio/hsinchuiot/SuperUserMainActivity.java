@@ -22,6 +22,7 @@ import org.slstudio.hsinchuiot.service.http.RequestListener;
 import org.slstudio.hsinchuiot.ui.adapter.SiteListViewAdapter;
 import org.slstudio.hsinchuiot.util.ImageUtil;
 import org.slstudio.hsinchuiot.util.ReportUtil;
+import org.slstudio.hsinchuiot.widget.CurtainMenu;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -39,6 +40,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -54,6 +56,11 @@ public class SuperUserMainActivity extends BaseActivity {
 	private PullToRefreshSlideListView siteListView;
 	private TextView tv8hr;
 	private TextView tv1hr;
+	
+	private Button btnSettings;
+	private Button btnLogoff;
+	
+	private CurtainMenu menu;
 
 	private SiteListViewAdapter siteListViewAdatper = new SiteListViewAdapter(
 			this, new ArrayList<Site>());
@@ -120,6 +127,9 @@ public class SuperUserMainActivity extends BaseActivity {
 
 							}).create().show();
 
+		}else if(keyCode ==KeyEvent.KEYCODE_MENU){
+			menu.onRopeClick();
+			return true;
 		}
 
 		return false;
@@ -282,6 +292,28 @@ public class SuperUserMainActivity extends BaseActivity {
 		soundListener.addSoundEvent(State.REFRESHING, R.raw.refreshing_sound);
 		siteListView.setOnPullEventListener(soundListener);
 
+		menu = (CurtainMenu)findViewById(R.id.layout_curtain);
+		
+		btnSettings = (Button)findViewById(R.id.curtainmenu_btn_settings);
+		btnSettings.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				showSettingsActivity();
+			}
+			
+		});
+		
+		btnLogoff = (Button)findViewById(R.id.curtainmenu_btn_logoff);
+		btnLogoff.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				logoff();
+			}
+		});
+		
 	}
 
 	@Override
@@ -290,21 +322,10 @@ public class SuperUserMainActivity extends BaseActivity {
 		case android.R.id.home:
 			break;
 		case R.id.menu_superuser_main_settings:
-			Intent intent = new Intent(
-					Constants.Action.HSINCHUIOT_SUPERUSER_SETTINGS);
-			startActivity(intent);
+			showSettingsActivity();
 			break;
 		case R.id.menu_superuser_main_logoff:
-			
-			ServiceContainer.getInstance().getSessionService().setLoginUser(null);
-			ServiceContainer.getInstance().getSessionService().setSessionID(null);
-			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH, null);
-			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING, null);
-			
-			Intent loginIntent = new Intent(
-					Constants.Action.HSINCHUIOT_LOGIN);
-			startActivity(loginIntent);
-			finish();
+			logoff();
 			break;
 		}
 		return true;
@@ -331,6 +352,23 @@ public class SuperUserMainActivity extends BaseActivity {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	private void showSettingsActivity(){
+		Intent intent = new Intent(
+				Constants.Action.HSINCHUIOT_SUPERUSER_SETTINGS);
+		startActivity(intent);
+	}
+	
+	private void logoff(){
+		ServiceContainer.getInstance().getSessionService().setLoginUser(null);
+		ServiceContainer.getInstance().getSessionService().setSessionID(null);
+		ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH, null);
+		ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING, null);
+		
+		Intent loginIntent = new Intent(
+				Constants.Action.HSINCHUIOT_LOGIN);
+		startActivity(loginIntent);
+		finish();
 	}
 
 	private void updateListView() {

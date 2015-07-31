@@ -64,23 +64,15 @@ public class CurtainMenu extends RelativeLayout implements OnTouchListener{
 		//RelativeLayout curtainLayout = new RelativeLayout(context, attrs);
 		//curtainLayout.setId(R.id.curtain_layout);
 		
-		layout_menu = new RelativeLayout(context);
-		layout_menu.setId(R.id.curtain_menu_layout);
-		layout_menu.setBackgroundColor(Color.RED);
+		View view = LayoutInflater.from(mContext).inflate(R.layout.curtainmenu, null);  
+        
+		layout_menu =(RelativeLayout) view.findViewById(R.id.layout_curtain_menu);
+		
+		img_curtain_rope = (ImageView)view.findViewById(R.id.img_curtain_rope);
+		
 		RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		
-		addViewInternal(layout_menu, params);
-		
-		img_curtain_rope = new ImageView(context);
-		img_curtain_rope.setId(R.id.curtain_rope);
-		img_curtain_rope.setImageResource(R.drawable.rope);
-		img_curtain_rope.setPadding(5, 5, 5, 5);
-		
-		RelativeLayout.LayoutParams params2 = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-		params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-		params2.addRule(RelativeLayout.BELOW, R.id.curtain_menu_layout);
-		
-		addViewInternal(img_curtain_rope, params2);
+			
+		addViewInternal(view, params);
 		
 		
 		layout_menu.post(new Runnable() {
@@ -94,10 +86,21 @@ public class CurtainMenu extends RelativeLayout implements OnTouchListener{
 		});
 		img_curtain_rope.setOnTouchListener(this);
 	}
-
+	
+	
 	@Override
 	public void addView(View child, int index, ViewGroup.LayoutParams params) {
 		layout_menu.addView(child, index, params);
+	}
+	
+	@Override
+	public void addView(View child, ViewGroup.LayoutParams params) {
+		layout_menu.addView(child, params);
+	}
+	
+	@Override
+	public void addView(View child) {
+		layout_menu.addView(child);
 	}
 	
 	/**
@@ -116,6 +119,9 @@ public class CurtainMenu extends RelativeLayout implements OnTouchListener{
 		super.addView(child, -1, params);
 	}
 	
+	protected final void addViewInternal(View child){
+		super.addView(child);
+	}
 	
 	public void startMoveAnim(int startY, int dy, int duration) {
 		isMove = true;

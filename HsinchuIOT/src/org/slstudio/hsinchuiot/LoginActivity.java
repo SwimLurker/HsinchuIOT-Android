@@ -54,7 +54,8 @@ public class LoginActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.common_login);
-		// setupActionBar();
+		
+		
 		usernameET = (EditText) findViewById(R.id.login_username);
 
 		passwordET = (EditText) findViewById(R.id.login_password);

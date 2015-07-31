@@ -77,20 +77,67 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/layout_title_superuser_main" >
 
-        
-        <Button
-            android:id="@+id/btn_settings_superuser_main2"
-            android:layout_width="wrap_content"
-            android:layout_height="300dip"
-            android:layout_gravity="center_horizontal|center_vertical"
-            android:layout_marginLeft="30dip"
-            android:layout_marginRight="30dip"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
-            android:padding="20dp"
-            android:background="@drawable/com_button_blue"
-            android:text="@string/action_settings"
-            android:textColor="@color/white" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="20dp"
+            android:paddingBottom="40dp" 
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:background="@color/curtainmenu_bg">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_settings"/>
+                <Button 
+                    android:id ="@+id/curtainmenu_btn_settings"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_settings"
+                    android:textColor="@drawable/curtainmenu_button_blue"
+                    android:textSize="16dp"
+                    android:paddingLeft="30dp"
+                    android:gravity="left|center_vertical"
+                    android:background="@color/transparent"/>
+            </LinearLayout>
+            <View 
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/white"/>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <ImageView 
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/menu_logoff"/>
+                <Button 
+                    android:id ="@+id/curtainmenu_btn_logoff"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/action_logoff"
+                    android:textColor="@drawable/curtainmenu_button_blue"
+                    android:textSize="16dp"
+                    android:paddingLeft="30dp"
+                    android:gravity="left|center_vertical"
+                    android:background="@color/transparent"/>
+          		
+            </LinearLayout>
+            <View 
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/white"/>
+        </LinearLayout>
+			
     </org.slstudio.hsinchuiot.widget.CurtainMenu>
 
 </RelativeLayout>

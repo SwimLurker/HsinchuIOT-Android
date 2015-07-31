@@ -30,6 +30,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -397,6 +399,25 @@ public class UserSiteDetailActivity extends BaseActivity {
 			}
 		}		
 		super.setupActionBar();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			finish();
+			break;
+		case R.id.menu_close:
+			finish();
+			break;
+
+		}
+		return true;
+	}
+
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.activity_user_sitedetail, menu);
+		return true;
 	}
 
 	private void updateUI() {

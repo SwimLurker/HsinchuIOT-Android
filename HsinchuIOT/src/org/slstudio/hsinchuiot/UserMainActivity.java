@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import org.slstudio.hsinchuiot.fragment.UserSiteHomePageFragment;
 import org.slstudio.hsinchuiot.model.Device;
@@ -23,6 +24,7 @@ import org.slstudio.hsinchuiot.service.http.HttpRequest;
 import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
 import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
+import org.slstudio.hsinchuiot.ui.TVOffAnimation;
 import org.slstudio.hsinchuiot.util.IOTLog;
 import org.slstudio.hsinchuiot.util.ReportUtil;
 
@@ -31,6 +33,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.graphics.Color;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,9 +45,10 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-public class UserMainActivity extends BaseActivity {
+public class UserMainActivity extends BaseActivity{
 
 	private ViewPager viewPager;
 	private FragmentPagerAdapter pagerAdapter;
@@ -55,7 +59,10 @@ public class UserMainActivity extends BaseActivity {
 	private boolean isPaused = false;
 	private boolean isRTRequestHandling = false;
 	private boolean isChartRequestHandling = false;
-
+	
+	private Vector<RequestControl> monitorRCList = new Vector<RequestControl>();
+	private Vector<RequestControl> chartRCList = new Vector<RequestControl>();
+	
 	private int chartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
 	private int chartTimeDuration = 1;
 	private int chartGranularity = Constants.ChartSettings.GRANULARITY_HOUR;
@@ -185,9 +192,23 @@ public class UserMainActivity extends BaseActivity {
 		IOTLog.d("UserMainActivity",
 				"debuginfo(REALTIME_DATA) - onPause: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		
+		IOTLog.d("UserMainActivity",
+				"debuginfo(REALTIME_DATA) - onPause: cancel http request");
+		
+		for(RequestControl rc: monitorRCList){
+			rc.cancel();
+		}
 		IOTLog.d("UserMainActivity",
 				"debuginfo(CHART_DATA) - onPause: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
+		
+		IOTLog.d("UserMainActivity",
+				"debuginfo(CHART_DATA) - onPause: cancel http request");
+		
+		for(RequestControl rc: chartRCList){
+			rc.cancel();
+		}
 		super.onPause();
 	}
 
@@ -196,9 +217,24 @@ public class UserMainActivity extends BaseActivity {
 		IOTLog.d("UserMainActivity",
 				"debuginfo(REALTIME_DATA) - onDestroy: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		
+		IOTLog.d("UserMainActivity",
+				"debuginfo(REALTIME_DATA) - onDestroy: cancel http request");
+		
+		for(RequestControl rc: monitorRCList){
+			rc.cancel();
+		}
+		
 		IOTLog.d("UserMainActivity",
 				"debuginfo(CHART_DATA) - onDestroy: remove msgs from queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
+		
+		IOTLog.d("UserMainActivity",
+				"debuginfo(CHART_DATA) - onDestroy: cancel http request");
+		
+		for(RequestControl rc: chartRCList){
+			rc.cancel();
+		}
 		super.onDestroy();
 	}
 
@@ -246,35 +282,43 @@ public class UserMainActivity extends BaseActivity {
 		case android.R.id.home:
 			break;
 		case R.id.menu_user_main_settings:
-			Intent intent = new Intent(
-					Constants.Action.HSINCHUIOT_USER_SETTINGS);
-			startActivity(intent);
+			showSettingsActivity();
 			break;
 		case R.id.menu_user_main_logoff:
-
-			ServiceContainer.getInstance().getSessionService()
-					.setLoginUser(null);
-			ServiceContainer.getInstance().getSessionService()
-					.setSessionID(null);
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
-							null);
-			ServiceContainer
-					.getInstance()
-					.getSessionService()
-					.setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
-							null);
-
-			Intent loginIntent = new Intent(Constants.Action.HSINCHUIOT_LOGIN);
-			startActivity(loginIntent);
-			finish();
+			logoff();
 			break;
 		}
 		return true;
 	}
 
+	public void showSettingsActivity(){
+		Intent intent = new Intent(
+				Constants.Action.HSINCHUIOT_USER_SETTINGS);
+		startActivity(intent);
+	}
+	
+	public void logoff(){
+
+		ServiceContainer.getInstance().getSessionService()
+				.setLoginUser(null);
+		ServiceContainer.getInstance().getSessionService()
+				.setSessionID(null);
+		ServiceContainer
+				.getInstance()
+				.getSessionService()
+				.setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
+						null);
+		ServiceContainer
+				.getInstance()
+				.getSessionService()
+				.setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
+						null);
+
+		Intent loginIntent = new Intent(Constants.Action.HSINCHUIOT_LOGIN);
+		startActivity(loginIntent);
+		finish();
+
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_user_main, menu);
@@ -294,7 +338,17 @@ public class UserMainActivity extends BaseActivity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									finish();
+									View v = UserMainActivity.this.findViewById(R.id.view_main_bg);
+									v.setBackgroundColor(Color.BLACK);
+									new Handler().postDelayed(new Runnable() {
+
+										@Override
+										public void run() {
+											finish();
+										}
+									}, 1000);
+									viewPager.startAnimation(new TVOffAnimation());
+									
 								}
 
 							})
@@ -308,6 +362,14 @@ public class UserMainActivity extends BaseActivity {
 
 							}).create().show();
 
+		}else if(keyCode ==KeyEvent.KEYCODE_MENU){
+			UserSiteHomePageFragment currentFragment = fragments
+					.get(currentIndex);
+			if (currentFragment != null){
+				currentFragment.onMenuRopeClick();
+				return true;
+			}
+			return true;
 		}
 
 		return false;
@@ -332,10 +394,23 @@ public class UserMainActivity extends BaseActivity {
 		IOTLog.d("UserMainActivity",
 				"debuginfo(REALTIME_DATA) - resendMessage, remove msgs in queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
+		
+		IOTLog.d("UserMainActivity",
+				"debuginfo(REALTIME_DATA) - resendMessage: cancel http request");
+		
+		for(RequestControl rc: monitorRCList){
+			rc.cancel();
+		}
 		IOTLog.d("UserMainActivity",
 				"debuginfo(CHART_DATA) - resendMessage, remove msgs in queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 
+		IOTLog.d("UserMainActivity",
+				"debuginfo(CHART_DATA) - resendMessage: cancel http request");
+		
+		for(RequestControl rc: chartRCList){
+			rc.cancel();
+		}
 		if (currentIndex != -1) {
 
 			IOTLog.d(
@@ -352,6 +427,7 @@ public class UserMainActivity extends BaseActivity {
 			handler.sendMessageDelayed(msg2, 2000);
 		}
 	}
+	
 
 	private void generateChart() {
 		if (currentIndex >= 0 && currentIndex < fragments.size() - 1) {
@@ -359,7 +435,7 @@ public class UserMainActivity extends BaseActivity {
 			fragment.generateChart();
 		}
 	}
-
+	
 	private void setIconEnable(Menu menu, boolean enable) {
 		try {
 			Class<?> clazz = Class
@@ -821,6 +897,7 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestGetControl(RequestControl control) {
 			this.control = control;
+			UserMainActivity.this.monitorRCList.add(control);
 		}
 
 		@Override
@@ -837,6 +914,8 @@ public class UserMainActivity extends BaseActivity {
 
 		@Override
 		public void onRequestComplete() {
+			UserMainActivity.this.monitorRCList.remove(control);
+			
 			Message msg = new Message();
 			msg.what = Constants.MessageKey.MESSAGE_GET_REALTIME_DATA;
 
@@ -904,6 +983,7 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestGetControl(RequestControl control) {
 			this.control = control;
+			UserMainActivity.this.chartRCList.add(control);
 		}
 
 		@Override
@@ -921,6 +1001,8 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestComplete() {
 			isChartRequestHandling = false;
+			UserMainActivity.this.chartRCList.remove(control);
+			
 			IOTLog.d(
 					"GetRealtimeChartDataListener",
 					"debuginfo(CHART_DATA) - onRequestComplete: set isChartRequestHandling is false");
@@ -990,6 +1072,7 @@ public class UserMainActivity extends BaseActivity {
 		@Override
 		public void onRequestGetControl(RequestControl control) {
 			this.control = control;
+			UserMainActivity.this.chartRCList.add(control);
 		}
 
 		@Override
@@ -1006,6 +1089,7 @@ public class UserMainActivity extends BaseActivity {
 
 		@Override
 		public void onRequestComplete() {
+			UserMainActivity.this.chartRCList.remove(control);
 			// isChartRequestHandling = false;
 			// IOTLog.d("GetAggrChartDataListener",
 			// "debuginfo(CHART_DATA) - onRequestComplete: set

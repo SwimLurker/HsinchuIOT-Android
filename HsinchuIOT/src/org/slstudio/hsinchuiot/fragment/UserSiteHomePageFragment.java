@@ -32,6 +32,12 @@ import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.ui.LableTimeChart;
 import org.slstudio.hsinchuiot.ui.chart.IOTChartFactory;
 import org.slstudio.hsinchuiot.util.IOTLog;
+import org.slstudio.hsinchuiot.util.ReportUtil;
+import org.slstudio.hsinchuiot.widget.CurtainMenu;
+
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -52,6 +58,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +68,13 @@ public class UserSiteHomePageFragment extends Fragment {
 	private Site site;
 	private int index;
 
+	private Button btnSettings;
+	private Button btnLogoff;
+	
+	private CurtainMenu menu;
+
+	private PullToRefreshScrollView refreshScrollView;
+	
 	private ImageButton btnPreSite;
 	private ImageButton btnNextSite;
 	private Button btnTitle;
@@ -149,6 +163,11 @@ public class UserSiteHomePageFragment extends Fragment {
 			site.setMonitorData(data);
 		}
 		updateMonitorData();
+		
+		if (refreshScrollView.isRefreshing()) {
+			refreshScrollView.onRefreshComplete();
+		}
+		
 		return true;
 	}
 
@@ -246,6 +265,11 @@ public class UserSiteHomePageFragment extends Fragment {
 		updateChartData();
 		chartView.repaint();
 	}
+	
+	public void onMenuRopeClick(){
+		menu.onRopeClick();
+	}
+	
 
 	private void updateChartData() {
 
@@ -454,6 +478,39 @@ public class UserSiteHomePageFragment extends Fragment {
 				getActivity().startActivityForResult(intent, Constants.ResultCode.CHART_SETTINGS);
 			}
 
+		});
+		
+		refreshScrollView = (PullToRefreshScrollView) parentView.findViewById(R.id.pull_refresh_scrollview_user_main);
+		refreshScrollView.setOnRefreshListener(new OnRefreshListener<ScrollView>() {
+
+			@Override
+			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
+				parentActivity.resendMessage();
+
+			}
+		});
+		
+		menu = (CurtainMenu)parentView.findViewById(R.id.layout_curtain_user_main);
+		
+		
+		btnSettings = (Button)parentView.findViewById(R.id.curtainmenu_btn_settings_user_main);
+		btnSettings.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				((UserMainActivity)getActivity()).showSettingsActivity();
+			}
+			
+		});
+		
+		btnLogoff = (Button)parentView.findViewById(R.id.curtainmenu_btn_logoff_user_main);
+		btnLogoff.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				((UserMainActivity)getActivity()).logoff();
+			}
 		});
 
 	}
