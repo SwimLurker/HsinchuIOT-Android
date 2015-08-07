@@ -248,7 +248,7 @@ public class UserSiteHomePageFragment extends Fragment {
 				return "歷史統計(單位:每月)";
 			}
 		} else {
-			return "即時資料(資料範圍:" + parent.getChartTimeDuration() + "小時)";
+			return "即時資料(資料範圍:" + parent.getChartTimeDuration() + "分鐘)";
 		}
 	}
 

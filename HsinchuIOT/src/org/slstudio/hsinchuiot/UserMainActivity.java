@@ -64,7 +64,7 @@ public class UserMainActivity extends BaseActivity{
 	private Vector<RequestControl> chartRCList = new Vector<RequestControl>();
 	
 	private int chartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
-	private int chartTimeDuration = 1;
+	private int chartTimeDuration = 5;
 	private int chartGranularity = Constants.ChartSettings.GRANULARITY_HOUR;
 	private Date chartStartTime;
 	private Date chartEndTime;
@@ -247,7 +247,7 @@ public class UserMainActivity extends BaseActivity{
 						Constants.ChartSettings.CHART_TYPE_REALTIME);
 				if (chartType == Constants.ChartSettings.CHART_TYPE_REALTIME) {
 					chartTimeDuration = data.getIntExtra(
-							Constants.ActivityPassValue.CHART_RT_DURATION, 1);
+							Constants.ActivityPassValue.CHART_RT_DURATION, 5);
 				} else if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
 					chartGranularity = data.getIntExtra(
 							Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
@@ -561,9 +561,9 @@ public class UserMainActivity extends BaseActivity{
 
 	private boolean sendQueryChartDataRequest(String deviceID) {
 		if (chartType == Constants.ChartSettings.CHART_TYPE_REALTIME) {
-			int pageSize = 720 * chartTimeDuration; // 15s for each type sample,
-													// so 720 samples for 3
-													// types in 1 hour
+			int pageSize = 12 * chartTimeDuration; // 15s for each type sample,
+													// so 12 samples for 3
+													// types in 1 min
 			if (!isChartRequestHandling) {
 				sendQueryRealtimeChartDataRequest(deviceID, pageSize);
 			} else {

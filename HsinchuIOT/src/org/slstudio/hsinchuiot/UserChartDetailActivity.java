@@ -48,7 +48,7 @@ public class UserChartDetailActivity extends BaseActivity {
 
 	private Site currentSite;
 	private int chartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
-	private int chartTimeDuration = 1;
+	private int chartTimeDuration = 5;
 	private int chartGranularity = Constants.ChartSettings.GRANULARITY_HOUR;
 	private Date chartStartTime;
 	private Date chartEndTime;
@@ -74,7 +74,7 @@ public class UserChartDetailActivity extends BaseActivity {
 		currentSite = (Site) getIntent().getSerializableExtra(Constants.ActivityPassValue.SELECTED_SITE);
 		chartType = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_TYPE,
 				Constants.ChartSettings.CHART_TYPE_REALTIME);
-		chartTimeDuration = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 1);
+		chartTimeDuration = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 5);
 		chartGranularity = getIntent().getIntExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
 				Constants.ChartSettings.GRANULARITY_HOUR);
 		long startTimeLong = getIntent().getLongExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, 0);
@@ -363,7 +363,7 @@ public class UserChartDetailActivity extends BaseActivity {
 				return "歷史統計(單位:每月)";
 			}
 		} else {
-			return "即時資料(資料範圍:" + chartTimeDuration + "小時)";
+			return "即時資料(資料範圍:" + chartTimeDuration + "分鐘)";
 		}
 	}
 

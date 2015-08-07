@@ -73,7 +73,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 	
 	private int currentChartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
 
-	private int currentTimeDuration = 1;
+	private int currentTimeDuration = 5;
 
 	private int currentGranularityType = Constants.ChartSettings.GRANULARITY_HOUR;
 	
@@ -182,7 +182,7 @@ public class UserChartSettingsActivity extends BaseActivity {
 	private void getPassedData(Intent data){
 		currentChartType = data.getIntExtra(Constants.ActivityPassValue.CHART_TYPE, Constants.ChartSettings.CHART_TYPE_REALTIME);
 		if(currentChartType == Constants.ChartSettings.CHART_TYPE_REALTIME){
-			currentTimeDuration = data.getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 1);
+			currentTimeDuration = data.getIntExtra(Constants.ActivityPassValue.CHART_RT_DURATION, 5);
 		}else if(currentChartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION){
 			currentGranularityType = data.getIntExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY, Constants.ChartSettings.GRANULARITY_HOUR);
 			long startTimeLong = data.getLongExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME, 0);

@@ -82,7 +82,7 @@
                         style="@style/FillForm.Item.TextView.Right"
                         android:layout_width="wrap_content"
                         android:layout_marginLeft="20dip"
-                        android:text="小時" />
+                        android:text="分鐘" />
                 </LinearLayout>
 
                 <View

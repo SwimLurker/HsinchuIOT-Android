@@ -18,6 +18,7 @@ import org.slstudio.hsinchuiot.service.SessionService;
 import org.slstudio.hsinchuiot.util.ImageUtil;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.readystatesoftware.viewbadger.BadgeView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -101,10 +102,21 @@ public class SiteListViewAdapter extends BaseAdapter {
 		IOTMonitorData data = site.getMonitorData();
 		final Resources resources = context.getResources();
 
+		ViewHolder holder;
 		if (convertView == null) {
 			convertView = mInflater.inflate(R.layout.listitem_site, parent,
 					false);
+			holder = new ViewHolder();
+            holder.imageView = (ImageView) convertView
+    				.findViewById(R.id.li_iv_site);
+            holder.badge = new BadgeView(context, holder.imageView);
+            holder.badge.hide();
+            //holder.badge.setTextColor(Color.BLACK);
+            convertView.setTag(holder);
+		}else{
+			 holder = (ViewHolder) convertView.getTag();
 		}
+		
 
 		// site image
 		ImageView ivSiteImage = (ImageView) convertView
@@ -145,6 +157,7 @@ public class SiteListViewAdapter extends BaseAdapter {
 			}
 		}
 
+		//int alarmCount = 0;
 		// site name
 		TextView tvSiteName = (TextView) convertView
 				.findViewById(R.id.li_tv_sitename);
@@ -166,6 +179,7 @@ public class SiteListViewAdapter extends BaseAdapter {
 		if (breachThreshold != null && data.isCO2Breach(breachThreshold)) {
 			tvCO2.setTextColor(alarm);
 			ivCO2.setImageResource(R.drawable.co2_alarm);
+			//alarmCount++;
 		}else if (warningThreshold != null && data.isCO2Breach(warningThreshold)) {
 			tvCO2.setTextColor(warning);
 			ivCO2.setImageResource(R.drawable.co2_warning);
@@ -185,6 +199,7 @@ public class SiteListViewAdapter extends BaseAdapter {
 		if (breachThreshold != null && data.isTemperatureBreach(breachThreshold)) {
 			tvTemperature.setTextColor(alarm);
 			ivTemperature.setImageResource(R.drawable.temperature_alarm);
+			//alarmCount++;
 		}else if (warningThreshold != null && data.isTemperatureBreach(warningThreshold)) {
 			tvTemperature.setTextColor(warning);
 			ivTemperature.setImageResource(R.drawable.temperature_warning);
@@ -204,6 +219,7 @@ public class SiteListViewAdapter extends BaseAdapter {
 		if (breachThreshold != null && data.isHumidityBreach(breachThreshold)) {
 			tvHumidity.setTextColor(alarm);
 			ivHumidity.setImageResource(R.drawable.humidity_alarm);
+			//alarmCount++;
 		}else if (warningThreshold != null && data.isHumidityBreach(warningThreshold)) {
 			tvHumidity.setTextColor(warning);
 			ivHumidity.setImageResource(R.drawable.humidity_warning);
@@ -212,8 +228,13 @@ public class SiteListViewAdapter extends BaseAdapter {
 			ivHumidity.setImageResource(R.drawable.humidity);
 		}
 		
-		
-		
+		/*
+		if(alarmCount > 0 ){
+			addBadge(holder, alarmCount);
+		}else{
+			holder.badge.hide();
+		}
+		*/
 		if(position == selectedPosition){
 			convertView.setBackgroundColor(context.getResources().getColor(R.color.light_blue_hilight));
 		}else{
@@ -250,5 +271,15 @@ public class SiteListViewAdapter extends BaseAdapter {
 		
 		return convertView;
 	}
+	
+	private void addBadge(ViewHolder holder, int alarmCount){
+		holder.badge.setText(Integer.toString(alarmCount));
+		holder.badge.show();
+	}
 
+	
+	 static class ViewHolder {
+         ImageView imageView;
+         BadgeView badge;
+     }
 }
