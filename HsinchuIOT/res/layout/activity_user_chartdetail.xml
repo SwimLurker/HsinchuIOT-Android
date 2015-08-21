@@ -13,7 +13,7 @@
             android:gravity="center"
             android:text="-" 
             android:textColor="@color/text_blue"
-            android:textSize="16sp"
+            android:textSize="16dp"
             android:textStyle="bold"/>
 		<LinearLayout
         	android:id="@+id/id_chart_chartdetail"
@@ -26,10 +26,12 @@
             android:id="@+id/tv_chart_bottom_title_chartdetail"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
             android:gravity="center"
+            android:singleLine="true"
             android:text="2015/07/21 15:00:00 - 2015/07/21 16:00:00" 
             android:textColor="@color/text_blue"
-            android:textSize="15sp"
+            android:textSize="15dp"
             android:textStyle="bold"/>
 
 </LinearLayout>
