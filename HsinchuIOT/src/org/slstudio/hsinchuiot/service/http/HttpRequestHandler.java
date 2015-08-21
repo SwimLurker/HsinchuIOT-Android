@@ -143,7 +143,7 @@ public class HttpRequestHandler {
 				fe = e;
 			} catch (Exception e) {
 				e.printStackTrace();
-				fe = new IOTException(-1, "网络异常");
+				fe = new IOTException(-1, e.getMessage());
 			} finally {
 				if (fe != null) {
 					IOTLog.e("ReqeustProcessor.run(): Exception", fe.toString());
@@ -260,6 +260,7 @@ public class HttpRequestHandler {
 				url = url + nameValuePair.getName() + "="
 						+ nameValuePair.getValue() + "&";
 			}
+			url = url.replaceAll(" ", "%20");
 			IOTLog.i("HTTP", url);
 			return new HttpGet(url);
 		}

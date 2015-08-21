@@ -125,6 +125,7 @@ public class BaseActivity extends FragmentActivity {
 	}
 	
 	protected void setupActionBar() {
+		getActionBar().setDisplayShowHomeEnabled(false);
 		centerActionBarTitle();
 	}
 	
