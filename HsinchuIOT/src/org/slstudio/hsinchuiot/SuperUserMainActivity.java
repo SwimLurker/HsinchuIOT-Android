@@ -93,7 +93,8 @@ public class SuperUserMainActivity extends BaseActivity {
 			}
 
 		});
-
+		ServiceContainer.getInstance().getUpgradeController().checkVersion(null, true);
+		//ServiceContainer.getInstance().getUpgradeController().handleUpgrade();
 	}
 
 	@Override

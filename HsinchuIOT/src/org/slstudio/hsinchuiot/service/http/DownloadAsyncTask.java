@@ -57,6 +57,7 @@ public class DownloadAsyncTask extends AsyncTask<URL, Integer, Object> {
 
 	@Override
 	protected Object doInBackground(URL... params) {
+		File file  = null;
 		try {
 			// URLConnection con = params[0].openConnection();
 
@@ -87,7 +88,7 @@ public class DownloadAsyncTask extends AsyncTask<URL, Integer, Object> {
 			InputStream is = con.getInputStream();
 			int contentlength = con.getContentLength();
 
-			File file = outputFile;
+			file = outputFile;
 
 			file.deleteOnExit();
 
@@ -102,12 +103,16 @@ public class DownloadAsyncTask extends AsyncTask<URL, Integer, Object> {
 			}
 			is.close();
 			out.close();
+			
+		} catch (Exception e) {
+			if (listener != null) {
+				listener.onException(e);
+			}
+			IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - download task failure:" + e.getMessage());
+		}finally{
 			if (listener != null) {
 				listener.onComplete(file);
 			}
-		} catch (Exception e) {
-
-			IOTLog.e(TAG, e.getMessage());
 		}
 		return null;
 	}

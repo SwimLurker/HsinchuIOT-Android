@@ -173,6 +173,8 @@ public class UserMainActivity extends BaseActivity{
 			}
 
 		});
+		ServiceContainer.getInstance().getUpgradeController().checkVersion(null, true);
+		//ServiceContainer.getInstance().getUpgradeController().handleUpgrade();
 	}
 
 	@Override

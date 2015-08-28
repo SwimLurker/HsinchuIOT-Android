@@ -114,12 +114,13 @@
             android:name="org.slstudio.hsinchuiot.user.ChangePasswordActivity"
             android:screenOrientation="portrait" >
         </activity>
+        -->
         <activity
             android:name="org.slstudio.hsinchuiot.upgrade.StartInstallActivity"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Holo.Light.Dialog" >
         </activity>
-        -->
+        
         
         <!-- 
          <activity

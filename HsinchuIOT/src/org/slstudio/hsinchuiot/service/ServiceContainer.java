@@ -70,7 +70,7 @@ public class ServiceContainer {
 		return httpHandler;
 	}
 
-	public UpgradeController getUpgradeController(Context context) {
+	public UpgradeController getUpgradeController() {
 		if (upgradeController == null) {
 			upgradeController = new UpgradeController(context);
 		}

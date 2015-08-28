@@ -53,7 +53,7 @@ public class StartInstallActivity extends Activity {
 			if (msg.what == UpgradeController.MSG_FORCE_DOWNLOAD_COMPLETE) {
 				removeDialog(DIALOG_WAIT);
 				ServiceContainer.getInstance()
-						.getUpgradeController(StartInstallActivity.this)
+						.getUpgradeController()
 						.install();
 				finish();
 				return;
@@ -118,8 +118,7 @@ public class StartInstallActivity extends Activity {
 										int which) {
 									ServiceContainer
 											.getInstance()
-											.getUpgradeController(
-													StartInstallActivity.this)
+											.getUpgradeController()
 											.sendNotification();
 									finish();
 								}
@@ -150,8 +149,7 @@ public class StartInstallActivity extends Activity {
 										int which) {
 									ServiceContainer
 											.getInstance()
-											.getUpgradeController(
-													StartInstallActivity.this)
+											.getUpgradeController()
 											.sendNotification();
 									moveTaskToBack(true);
 

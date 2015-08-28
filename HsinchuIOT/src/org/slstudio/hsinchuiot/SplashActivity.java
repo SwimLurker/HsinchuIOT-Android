@@ -145,6 +145,7 @@ public class SplashActivity extends BaseActivity {
 
 	private void prepare() {
 		//prepareThumbnailImage();
+		//ServiceContainer.getInstance().getUpgradeController().checkVersion(null);
 	}
 
 	private void prepareThumbnailImage() {

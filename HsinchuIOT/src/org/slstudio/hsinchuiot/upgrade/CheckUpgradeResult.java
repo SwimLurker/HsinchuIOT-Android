@@ -10,30 +10,31 @@ public class CheckUpgradeResult {
 
 	private int upgradeSuggest;
 
-	private String url;
-	private String fileName;
+	private String packageURL;
 
 	public int getUpgradeSuggest() {
 		return upgradeSuggest;
 	}
 
-	@JsonSetter(value = "isNeedUpgrade")
+	@JsonSetter(value = "upgrade")
 	public void setUpgradeSuggest(int upgradeSuggest) {
 		this.upgradeSuggest = upgradeSuggest;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getPackageURL() {
+		return packageURL;
 	}
 
-	public void setUrl(String url) {
-
-		this.url = url;
-		fileName = url.replace("/", "").replace(":", "") + ".apk";
+	public void setPackageURL(String packageURL) {
+		this.packageURL = packageURL;
 	}
-
-	public String getFileName() {
-		return fileName;
+	
+	public String getPackageFilename(){
+		return packageURL.substring(packageURL.lastIndexOf("/")+1);
+	}
+	
+	public String toString(){
+		return "upgradeSuggest:" + upgradeSuggest + ", packageURL:" + packageURL;
 	}
 
 }

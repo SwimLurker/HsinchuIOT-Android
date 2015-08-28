@@ -127,7 +127,7 @@ public class Constants {
 	
 	
 	public static class ServerAPIURI {
-		public static final String COMMON_CHKVERSION="v1/common/chkversion.json";//升级检测接口（提供客户端升级检测功能）
+		public static final String COMMON_CHKVERSION="api/v1/check_version";//升级检测接口（提供客户端升级检测功能）
 		public static final String COMMON_GETVERTIFYCODE="v1/common/getVertifyCode.json";//获取验证码接口（获取验证码接口)
 		public static final String COMMON_JUDGEVERTIFYCODE="v1/common/judgeVertifyCode.json";//获取验证码接口（获取验证码接口)
 		public static final String COMMON_UPLOADLOCATION="v1/common/uploadLocation.json";//上传地理位置接口

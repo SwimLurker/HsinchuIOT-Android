@@ -16,8 +16,8 @@ public class FirstActivity extends BaseActivity {
 		
 		final String sessionId = ServiceContainer.getInstance()
 				.getPerferenceService().getSessionId(this);
-		ServiceContainer.getInstance().getUpgradeController(this)
-		.checkVersion(null);
+		ServiceContainer.getInstance().getUpgradeController()
+		.checkVersion(null, true);
 		if ("".equals(sessionId)) {
 			gotoLoginView();
 		} else {

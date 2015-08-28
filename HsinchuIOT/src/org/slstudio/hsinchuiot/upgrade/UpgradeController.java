@@ -6,11 +6,13 @@ import java.net.URL;
 
 import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.R;
+import org.slstudio.hsinchuiot.service.IOTException;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.service.http.DownloadAsyncTask;
 import org.slstudio.hsinchuiot.service.http.DownloadListener;
 import org.slstudio.hsinchuiot.service.http.HttpConfig;
 import org.slstudio.hsinchuiot.service.http.HttpRequest;
+import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
 import org.slstudio.hsinchuiot.service.http.RequestListener.DefaultRequestListener;
 import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
@@ -28,13 +30,13 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.Message;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-public class UpgradeController extends
-		DefaultRequestListener<CheckUpgradeResult> {
+public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 
-	public static final String TAG = "UC";
+	public static final String TAG = "UpgradeController";
 
 	public static final int MSG_SHOW_WAIT = 1000;
 
@@ -48,6 +50,10 @@ public class UpgradeController extends
 
 	private CheckUpgradeResult upgradeInfo;
 
+	private boolean firstTimeChecking = true;
+
+	private boolean downloadFinished = false;
+	
 	private class UpgradeProcessor extends HandlerThread {
 		UpgradeProcessor() {
 			super("UPGRADE_PROCESSOR");
@@ -76,29 +82,42 @@ public class UpgradeController extends
 	private RemoteViews remoteviews;
 	private int count;
 
-	public void checkVersion(RequestListener<CheckUpgradeResult> listener) {
+	public void checkVersion(RequestListener<CheckUpgradeResult> listener,
+			boolean autoCheck) {
+
+		IOTLog.d("UpgradeHandler",
+				"debuginfo(UPGRADE) - checking need update from server");
+
+		if (autoCheck && !firstTimeChecking) {
+			IOTLog.d("UpgradeHandler",
+					"debuginfo(UPGRADE) - not first time auto checking, so just return");
+			return;
+		}
+		firstTimeChecking = false;
+
 		PackageManager nPackageManager = context.getPackageManager();
 		try {
 			final PackageInfo nPackageInfo = nPackageManager
 					.getPackageInfo(context.getPackageName(),
 							PackageManager.GET_CONFIGURATIONS);
+			IOTLog.d("UpgradeHandler",
+					"debuginfo(UPGRADE) - current version is:"
+							+ nPackageInfo.versionName);
+
 			HttpRequest request = new NoneAuthedHttpRequest(
-					new HttpConfig.PostHttpConfig(),
+					new HttpConfig.GetHttpConfig(),
 					Constants.ServerAPIURI.COMMON_CHKVERSION);
-			if (ServiceContainer.getInstance().getContext().getPackageName()
-					.equals("org.slstudio.hsinchuiot")) {
-				request.addParameter("client_type", "1");
-			} else {
-				request.addParameter("client_type", "3");
-			}
-			request.addParameter("version", nPackageInfo.versionName);
+			request.addParameter("current_version", nPackageInfo.versionName);
 
 			if (listener == null) {
 				listener = this;
 			}
 			ServiceContainer.getInstance().getHttpHandler()
 					.doRequest(request, listener);
-			IOTLog.i(TAG, "Current version is " + nPackageInfo.versionName);
+			IOTLog.d("UpgradeHandler",
+					"debuginfo(UPGRADE) - send checking version request:"
+							+ request.getRequestURI());
+
 		} catch (NameNotFoundException e1) {
 			IOTLog.e(TAG, e1.getMessage());
 			e1.printStackTrace();
@@ -106,7 +125,19 @@ public class UpgradeController extends
 
 	}
 
+	/*
+	 * public void handleUpgrade(){ if(needHandleUpgrade){ final int code =
+	 * upgradeInfo.getUpgradeSuggest(); if (code !=
+	 * CheckUpgradeResult.NEEDLESS_UPGRADE) { final Intent intent = new
+	 * Intent(context, StartInstallActivity.class);
+	 * intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	 * intent.putExtra(Constants.BundleKey.UPGRAGE_TYPE, code);
+	 * context.startActivity(intent); } needHandleUpgrade = false; } }
+	 */
+
 	public void sendNotification() {
+		IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - send notification");
+
 		PackageManager nPackageManager = context.getPackageManager();
 		try {
 			final PackageInfo nPackageInfo = nPackageManager
@@ -128,6 +159,11 @@ public class UpgradeController extends
 
 				@Override
 				public void run() {
+					IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - downloading progress update:" + count +"%");
+					if(downloadFinished){
+						return;
+					}
+					
 					if (count < 98) {
 						remoteviews.setProgressBar(
 								R.id.common_upgrade_download_process_bar, 100,
@@ -155,49 +191,60 @@ public class UpgradeController extends
 					}
 				}
 			};
+			
+			
+			
 			upgradeHandler.postDelayed(mrun, 1000);
 			File file = new File(Constants.UPGRADE_FILE_PATH,
-					upgradeInfo.getFileName());
-			if (!file.exists()) {
-				DownloadAsyncTask updateAsyncTask = new DownloadAsyncTask(file,
-						new DownloadListener() {
+					upgradeInfo.getPackageFilename());
+			if (file.exists()) {
+				IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - upgrade file("
+						+ upgradeInfo.getPackageFilename() + ") exist at:"
+						+ Constants.UPGRADE_FILE_PATH + ", remove it.");
 
-							@Override
-							public void onStart() {
-
-							}
-
-							@Override
-							public void onProcessUpdate(int value) {
-								count = value;
-
-							}
-
-							@Override
-							public void onComplete(File file) {
-
-							}
-
-							@Override
-							public void onException(Exception exception) {
-
-							}
-						});
-				try {
-					IOTLog.i(TAG, "versionInfo getPackageName" + upgradeInfo);
-
-					IOTLog.i(TAG, "upgrade url =" + upgradeInfo.getUrl());
-					updateAsyncTask.execute(new URL(upgradeInfo.getUrl()));
-				} catch (MalformedURLException e) {
-					IOTLog.e(TAG, e.getMessage());
-				}
-			} else {
-				count = 100;
-
+				file.delete();
 			}
-		} catch (NameNotFoundException e1) {
-			IOTLog.e(TAG, e1.getMessage());
-			e1.printStackTrace();
+			
+			DownloadAsyncTask updateAsyncTask = new DownloadAsyncTask(file,
+					new DownloadListener() {
+
+						@Override
+						public void onStart() {
+							downloadFinished = false;
+						}
+
+						@Override
+						public void onProcessUpdate(int value) {
+							count = value;
+
+						}
+
+						@Override
+						public void onComplete(File file) {
+							downloadFinished = true;
+						}
+
+						@Override
+						public void onException(Exception exception) {
+							Message msg = new Message();
+							msg.what = MSG_SHOW_ERROR;
+							
+							upgradeHandler.sendMessage(msg);
+						}
+					});
+			try {
+				IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - start async download task from:" + upgradeInfo.getPackageURL());
+				
+				updateAsyncTask.execute(new URL(upgradeInfo.getPackageURL()));
+				
+			} catch (Exception e) {
+				IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - download upgrade failure:" + e.getMessage());
+				e.printStackTrace();
+			}
+
+		} catch (NameNotFoundException e) {
+			IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - start download upgrade failure:" + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -208,8 +255,9 @@ public class UpgradeController extends
 
 	private Intent getInstallIntent() {
 		Intent notifyIntent = new Intent(Intent.ACTION_VIEW);
-		notifyIntent.setDataAndType(Uri.fromFile(new File(
-				Constants.UPGRADE_FILE_PATH, upgradeInfo.getFileName())),
+		notifyIntent.setDataAndType(
+				Uri.fromFile(new File(Constants.UPGRADE_FILE_PATH, upgradeInfo
+						.getPackageFilename())),
 				"application/vnd.android.package-archive");
 		return notifyIntent;
 	}
@@ -217,14 +265,59 @@ public class UpgradeController extends
 	@Override
 	public void onRequestResult(CheckUpgradeResult result) {
 		upgradeInfo = result;
-		IOTLog.i(TAG, "upgrade info  " + upgradeInfo);
+		IOTLog.d(
+				"UpgradeHandler",
+				"debuginfo(UPGRADE) - get checking version result("
+						+ result.toString() + ")");
+
+		// needHandleUpgrade = true;
 		final int code = upgradeInfo.getUpgradeSuggest();
 		if (code != CheckUpgradeResult.NEEDLESS_UPGRADE) {
+			IOTLog.d("UpgradeHandler",
+					"debuginfo(UPGRADE) - start install activity");
+
 			final Intent intent = new Intent(context,
 					StartInstallActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.putExtra(Constants.BundleKey.UPGRAGE_TYPE, code);
 			context.startActivity(intent);
 		}
+	}
+
+	@Override
+	public void onRequestError(Exception e) {
+		IOTLog.d(
+				"UpgradeHandler",
+				"debuginfo(UPGRADE) - checking version failed:"
+						+ e.getMessage());
+
+		Toast.makeText(context, "Check version exception:" + e.getMessage(),
+				Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onRequestComplete() {
+		// synchronized (lock) {
+		// lock.notify();
+		// }
+	}
+
+	@Override
+	public void onRequestStart() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRequestGetControl(RequestControl control) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onRequestCancelled() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

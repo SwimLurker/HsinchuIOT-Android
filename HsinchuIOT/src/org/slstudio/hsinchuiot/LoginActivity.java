@@ -74,7 +74,8 @@ public class LoginActivity extends BaseActivity {
 		listener = new GetSessionIDListener(this, true, getString(R.string.common_please_wait));
 		listener2 = new LoginListener();
 		handler = new Handler();
-
+		ServiceContainer.getInstance().getUpgradeController().checkVersion(null, true);
+		
 	}
 
 	protected void doSignIn() {

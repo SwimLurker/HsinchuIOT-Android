@@ -13,10 +13,10 @@
     <string name="no">否</string>
 	
 	<!-- upgrade -->
-    <string name="common_upgrade_dialog_headline">需要升级</string>
-    <string name="common_upgrade_dialog_message">是否升级至新版本？</string>
-    <string name="common_upgrade_download_over">下载完成</string>		
-    
+    <string name="common_upgrade_dialog_headline">需要升級</string>
+    <string name="common_upgrade_dialog_message">是否升級至新版本？</string>
+    <string name="common_upgrade_download_over">下載完成</string>		
+    <string name="common_upgrade_download_fail">下載升級文件失敗,失敗原因:</string>
     <!-- error messages -->
     <string name="common_default_error_name">錯誤</string>
 	<string name="common_default_error_string">回應發生錯誤</string>
