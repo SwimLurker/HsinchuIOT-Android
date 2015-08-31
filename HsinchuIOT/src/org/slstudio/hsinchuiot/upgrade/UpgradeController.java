@@ -52,7 +52,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 
 	private boolean firstTimeChecking = true;
 
-	private boolean downloadFinished = false;
+	private Exception downloadException = null;
 	
 	private class UpgradeProcessor extends HandlerThread {
 		UpgradeProcessor() {
@@ -82,6 +82,10 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 	private RemoteViews remoteviews;
 	private int count;
 
+	public void resetFirstTimeCheckFlag(){
+		firstTimeChecking = true;
+	}
+	
 	public void checkVersion(RequestListener<CheckUpgradeResult> listener,
 			boolean autoCheck) {
 
@@ -124,6 +128,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 		}
 
 	}
+	
 
 	/*
 	 * public void handleUpgrade(){ if(needHandleUpgrade){ final int code =
@@ -149,7 +154,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 			notification = new Notification(nPackageInfo.applicationInfo.icon,
 					nPackageInfo.applicationInfo.name,
 					System.currentTimeMillis());
-			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+			notification.flags |= Notification.FLAG_ONGOING_EVENT;
 			remoteviews = new RemoteViews(context.getPackageName(),
 					R.layout.common_upgrade_download_bar);
 			notification.contentView = remoteviews;
@@ -160,11 +165,15 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 				@Override
 				public void run() {
 					IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - downloading progress update:" + count +"%");
-					if(downloadFinished){
-						return;
-					}
 					
-					if (count < 98) {
+					if (count < 100) {
+						if(downloadException != null){
+							Toast.makeText(context,
+									R.string.common_upgrade_download_fail,
+									Toast.LENGTH_SHORT).show();
+							mNotificationManager.cancel(8888);
+							return;
+						}
 						remoteviews.setProgressBar(
 								R.id.common_upgrade_download_process_bar, 100,
 								count, false);
@@ -174,6 +183,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 						mNotificationManager.notify(8888, notification);
 						upgradeHandler.postDelayed(mrun, 1000);
 					} else {
+						/*
 						remoteviews.setProgressBar(
 								R.id.common_upgrade_download_process_bar, 100,
 								100, false);
@@ -184,10 +194,18 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 										PendingIntent.FLAG_UPDATE_CURRENT);
 
 						notification.contentIntent = pendingintent;
-						mNotificationManager.notify(8888, notification);
+						notification.flags &= (~Notification.FLAG_ONGOING_EVENT);
+						notification.flags |= Notification.FLAG_AUTO_CANCEL;
+						
 						Toast.makeText(context,
 								R.string.common_upgrade_download_over,
 								Toast.LENGTH_SHORT).show();
+						*/
+						mNotificationManager.cancel(8888);
+						
+						Intent notifyIntent = getInstallIntent();
+						notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						context.startActivity(notifyIntent);
 					}
 				}
 			};
@@ -210,7 +228,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 
 						@Override
 						public void onStart() {
-							downloadFinished = false;
+							downloadException = null;
 						}
 
 						@Override
@@ -221,15 +239,12 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 
 						@Override
 						public void onComplete(File file) {
-							downloadFinished = true;
+							
 						}
 
 						@Override
 						public void onException(Exception exception) {
-							Message msg = new Message();
-							msg.what = MSG_SHOW_ERROR;
-							
-							upgradeHandler.sendMessage(msg);
+							downloadException = exception;
 						}
 					});
 			try {
@@ -240,11 +255,33 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 			} catch (Exception e) {
 				IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - download upgrade failure:" + e.getMessage());
 				e.printStackTrace();
+				final Exception exp = e;
+				upgradeHandler.post(new Runnable(){
+
+					@Override
+					public void run() {
+						Toast.makeText(context,
+								R.string.common_upgrade_download_fail + ":" + exp .getMessage(),
+								Toast.LENGTH_SHORT).show();
+					}
+					
+				});
 			}
 
 		} catch (NameNotFoundException e) {
 			IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - start download upgrade failure:" + e.getMessage());
 			e.printStackTrace();
+			final Exception exp = e;
+			upgradeHandler.post(new Runnable(){
+
+				@Override
+				public void run() {
+					Toast.makeText(context,
+							R.string.common_upgrade_download_fail + ":" + exp .getMessage(),
+							Toast.LENGTH_SHORT).show();
+				}
+				
+			});
 		}
 	}
 
@@ -252,7 +289,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 		Intent notifyIntent = getInstallIntent();
 		context.startActivity(notifyIntent);
 	}
-
+ 
 	private Intent getInstallIntent() {
 		Intent notifyIntent = new Intent(Intent.ACTION_VIEW);
 		notifyIntent.setDataAndType(
@@ -289,10 +326,7 @@ public class UpgradeController implements RequestListener<CheckUpgradeResult> {
 		IOTLog.d(
 				"UpgradeHandler",
 				"debuginfo(UPGRADE) - checking version failed:"
-						+ e.getMessage());
-
-		Toast.makeText(context, "Check version exception:" + e.getMessage(),
-				Toast.LENGTH_SHORT).show();
+						+ e.getMessage());	
 	}
 
 	@Override

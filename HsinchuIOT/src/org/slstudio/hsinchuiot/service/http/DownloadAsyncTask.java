@@ -16,6 +16,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.slstudio.hsinchuiot.service.IOTException;
 import org.slstudio.hsinchuiot.util.IOTLog;
 
 import android.os.AsyncTask;
@@ -82,11 +83,13 @@ public class DownloadAsyncTask extends AsyncTask<URL, Integer, Object> {
 			// //////////////////////////////////////////////
 
 			if (HttpURLConnection.HTTP_OK != con.getResponseCode()) {
-				IOTLog.i(getClass().getName(), "connection failed");
-				return null;
+				throw new IOTException(-2001, "Connection failed");
 			}
 			InputStream is = con.getInputStream();
 			int contentlength = con.getContentLength();
+			if(contentlength < 0){
+				throw new IOTException(-2002, "Unknown download file size");
+			}
 
 			file = outputFile;
 
@@ -104,15 +107,15 @@ public class DownloadAsyncTask extends AsyncTask<URL, Integer, Object> {
 			is.close();
 			out.close();
 			
+			if (listener != null) {
+				listener.onComplete(file);
+			}
+			
 		} catch (Exception e) {
 			if (listener != null) {
 				listener.onException(e);
 			}
 			IOTLog.d("UpgradeHandler", "debuginfo(UPGRADE) - download task failure:" + e.getMessage());
-		}finally{
-			if (listener != null) {
-				listener.onComplete(file);
-			}
 		}
 		return null;
 	}
