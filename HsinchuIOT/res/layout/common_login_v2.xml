@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_bg_v2"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/login_username"
+        android:layout_width="80dp"
+        android:layout_height="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/com_bg_edittext"
+        android:maxLength="16"
+        android:padding="5dp" />
+
+    <EditText
+        android:id="@+id/login_password"
+        android:layout_width="80dp"
+        android:layout_height="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:layout_toRightOf="@+id/login_username"
+        android:background="@drawable/com_bg_edittext"
+        android:maxLength="16"
+        android:padding="5dp" />
+
+    <CheckBox
+        android:id="@+id/remeber_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        android:layout_toRightOf="@+id/login_password"
+        android:layout_alignBottom="@+id/login_password"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:button="@drawable/com_checkbox"
+        android:checked="true"
+        android:text="@string/common_login_remember_password"
+        android:textSize="10sp" />
+
+     <Button
+         android:id="@+id/login_signin"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_marginTop="10dp"
+         android:layout_marginLeft="10dp"
+         android:layout_toRightOf="@+id/remeber_password"
+          android:layout_alignBottom="@+id/login_password"
+         android:background="@drawable/com_bg_edittext"
+         android:text="登入"
+         android:textSize="10sp"
+         android:padding="5dp" />
+
+     
+
+     <View 
+         android:id="@+id/v1"
+         android:layout_width="1dp"
+         android:layout_height="1dp"
+         android:layout_alignParentBottom="true" />
+
+     <Button
+         android:id="@+id/language_ch_btn"
+         android:layout_width="wrap_content"
+         android:layout_height="25dp"
+         android:layout_above="@+id/v1"
+         android:layout_alignLeft="@+id/v1"
+         android:layout_marginBottom="10dp"
+         android:layout_marginLeft="10dp"
+         android:layout_marginRight="5dp"
+         android:background="@drawable/com_bg_edittext"
+         android:padding="5dp"
+         android:text="繁体中文"
+         android:textSize="10sp" />
+
+ 	<Button
+         android:id="@+id/language_cn_btn"
+         android:layout_width="wrap_content"
+         android:layout_height="25dp"
+         android:layout_toRightOf="@+id/language_ch_btn"
+         android:layout_above="@+id/v1"
+         android:layout_marginBottom="10dp"
+         android:layout_marginLeft="5dp"
+         android:layout_marginRight="5dp"
+         android:background="@drawable/com_bg_edittext"
+         android:padding="5dp"
+         android:text="简体中文"
+         android:textSize="10sp" />
+ 	<Button
+         android:id="@+id/language_en_btn"
+         android:layout_width="wrap_content"
+         android:layout_height="25dp"
+         android:layout_toRightOf="@+id/language_cn_btn"
+         android:layout_above="@+id/v1"
+         android:layout_marginBottom="10dp"
+         android:layout_marginLeft="5dp"
+         android:layout_marginRight="5dp"
+         android:background="@drawable/com_bg_edittext"
+         android:padding="5dp"
+         android:text="English"
+         android:textSize="10sp" />
+ 	<TextView
+         android:id="@+id/title_2"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/v1"
+         android:layout_above="@+id/language_ch_btn"
+         android:layout_marginLeft="10dp"
+         android:layout_marginBottom="20dp"
+         android:text="自主管理系统"
+         android:textColor="@color/text_blue"
+         android:textSize="20sp" />
+ 	<TextView
+         android:id="@+id/title_1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignLeft="@+id/v1"
+         android:layout_above="@+id/title_2"
+         android:layout_marginLeft="10dp"
+         android:text="新竹县室内空气品质"
+         android:textColor="@color/text_blue"
+         android:textSize="20sp" />"
+
+</RelativeLayout>
