@@ -1,5 +1,6 @@
 package org.slstudio.hsinchuiot;
 
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.slstudio.hsinchuiot.model.Session;
@@ -18,8 +19,11 @@ import org.slstudio.hsinchuiot.util.EncryptUtil;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,14 +32,20 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ToggleButton;
 
 public class V2LoginActivity extends BaseActivity {
+	
+	
 
 	private Object lock = new Object();
 
 	private EditText usernameET;
 	private EditText passwordET;
 	private Button signInBtn;
+	private ToggleButton lanTWBtn;
+	private ToggleButton lanCNBtn;
+	private ToggleButton lanENBtn;
 	private GetSessionIDListener listener;
 	private LoginListener listener2;
 	private Handler handler;
@@ -71,10 +81,82 @@ public class V2LoginActivity extends BaseActivity {
 
 		rememberPassword = (CheckBox) findViewById(R.id.remeber_password);
 
+		
+		
+		lanTWBtn = (ToggleButton)findViewById(R.id.language_tw_btn);
+		lanTWBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				switchLanguage(Constants.Language.TW);
+				showLoginActivity();
+			}
+		});
+		
+		lanCNBtn = (ToggleButton)findViewById(R.id.language_cn_btn);
+		lanCNBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				switchLanguage(Constants.Language.CN);
+				showLoginActivity();
+			}
+		});
+
+		lanENBtn = (ToggleButton)findViewById(R.id.language_en_btn);
+		lanENBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				switchLanguage(Constants.Language.EN);
+				showLoginActivity();
+			}
+		});
+		
+		setCurrentLanguage();
+		
 		listener = new GetSessionIDListener(this, true, getString(R.string.common_please_wait));
 		listener2 = new LoginListener();
 		handler = new Handler();
 		ServiceContainer.getInstance().getUpgradeController().checkVersion(null, true);
+		
+	}
+	
+	private void switchLanguage(String language){
+		Resources resources = getResources();
+		Configuration config = resources.getConfiguration();
+		DisplayMetrics dm = resources.getDisplayMetrics();
+		if(language.equals(Constants.Language.EN)){
+			config.locale = Locale.ENGLISH;
+		}else if(language.equals(Constants.Language.CN)){
+			config.locale = Locale.CHINA;
+		}else{
+			config.locale = Locale.TAIWAN;
+		}
+		resources.updateConfiguration(config, dm);
+	}
+	
+	private void setCurrentLanguage(){
+		Resources resources = getResources();
+		Configuration config = resources.getConfiguration();
+		
+		
+		if(config.locale.equals(Locale.ENGLISH)){
+			lanENBtn.setChecked(true);
+			lanCNBtn.setChecked(false);
+			lanTWBtn.setChecked(false);
+		}else if(config.locale.equals(Locale.CHINA)){
+			lanENBtn.setChecked(false);
+			lanCNBtn.setChecked(true);
+			lanTWBtn.setChecked(false);
+		}else if(config.locale.equals(Locale.TAIWAN)){
+			lanENBtn.setChecked(false);
+			lanCNBtn.setChecked(false);
+			lanTWBtn.setChecked(true);
+		}else{
+			switchLanguage(Constants.Language.TW);
+			showLoginActivity();
+		}
 		
 	}
 
@@ -104,6 +186,15 @@ public class V2LoginActivity extends BaseActivity {
 
 	}
 
+	private void showLoginActivity() {
+		Intent i = new Intent(Constants.Action.HSINCHUIOT_LOGIN);
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(i);
+		finish();
+
+	}
+	
 	protected void gotoNormalUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);

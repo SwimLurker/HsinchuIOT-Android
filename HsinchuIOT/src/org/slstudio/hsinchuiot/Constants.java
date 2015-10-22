@@ -163,5 +163,10 @@ public class Constants {
 		public static final int IMAGE_UPLOAD_MAX_SIZE =1024 * 1024;
 	}
 
+	public static class Language{
+		public static final String EN = "en";
+		public static final String CN = "cn";
+		public static final String TW = "tw";
+	}
 
 }
