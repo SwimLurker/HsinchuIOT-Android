@@ -63,7 +63,7 @@ public class V2LoginActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.common_login_v2);
+		setContentView(R.layout.v2_common_login);
 		
 		
 		usernameET = (EditText) findViewById(R.id.login_username);

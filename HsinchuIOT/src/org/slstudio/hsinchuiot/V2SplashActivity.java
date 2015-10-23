@@ -26,7 +26,7 @@ public class V2SplashActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.activity_splash_v2);
+		setContentView(R.layout.v2_activity_splash);
 
 		new Handler().postDelayed(new Runnable() {
 

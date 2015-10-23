@@ -67,4 +67,7 @@
     <string name="pull_to_refresh_tap_label">Tap to refresh...</string>
     
     <string name="chart_settings">圖表設置</string>
+    <!-- main v2 -->
+    <string name="tab_text_averagevalue">法定均值</string>
+    <string name="tab_text_realtimevalue">即時數值</string>
 </resources>
