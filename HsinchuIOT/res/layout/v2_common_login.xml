@@ -83,11 +83,11 @@
          android:layout_marginBottom="10dp"
          android:layout_marginLeft="10dp"
          android:layout_marginRight="-2dp"
-         android:background="@drawable/toggle_button_left"
+         android:background="@drawable/button_language_left"
          android:padding="5dp"
          android:textOff="@string/common_login_language_tw"
          android:textOn="@string/common_login_language_tw"
-         android:textColor="@drawable/toggle_button_color"
+         android:textColor="@drawable/button_text_color"
          android:textSize="14sp"
          android:checked="true" />
 
@@ -98,11 +98,11 @@
          android:layout_toRightOf="@+id/language_tw_btn"
          android:layout_above="@+id/v1"
          android:layout_marginBottom="10dp"
-         android:background="@drawable/toggle_button_middle"
+         android:background="@drawable/button_language_middle"
          android:padding="5dp"
          android:textOff="@string/common_login_language_cn"
          android:textOn="@string/common_login_language_cn"
-         android:textColor="@drawable/toggle_button_color"
+         android:textColor="@drawable/button_text_color"
          android:textSize="14sp" />
  	<ToggleButton
          android:id="@+id/language_en_btn"
@@ -113,11 +113,11 @@
          android:layout_marginBottom="10dp"
          android:layout_marginLeft="-2dp"
          android:layout_marginRight="10dp"
-         android:background="@drawable/toggle_button_right"
+         android:background="@drawable/button_language_right"
          android:padding="5dp"
          android:textOff="@string/common_login_language_en"
          android:textOn="@string/common_login_language_en"
-         android:textColor="@drawable/toggle_button_color"
+         android:textColor="@drawable/button_text_color"
          android:textSize="14sp" />
  	<TextView
          android:id="@+id/title_2"

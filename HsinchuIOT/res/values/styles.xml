@@ -58,10 +58,10 @@
 
     <style name="main_tab_bottom">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@drawable/toggle_button_color</item>
+        <item name="android:textColor">@drawable/button_text_color</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:gravity">center_horizontal</item>
-        <item name="android:background">@drawable/toggle_button_middle</item>
+        <item name="android:background">@drawable/button_language_middle</item>
         <item name="android:paddingTop">10dp</item>
         <item name="android:layout_width">fill_parent</item>
         <item name="android:layout_height">wrap_content</item>

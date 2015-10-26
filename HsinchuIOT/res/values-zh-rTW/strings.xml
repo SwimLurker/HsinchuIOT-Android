@@ -9,4 +9,9 @@
     <string name="common_login_language_tw">繁體中文</string>
     <string name="common_login_title_1">新竹縣室內空氣品質</string>
     <string name="common_login_title_2">自主管理系統</string>
+    <string name="menuitem_sortbystatus">按狀態排序</string>
+    <string name="menuitem_sortbyco2">按二氧化碳排序</string>
+    <string name="menuitem_sortbytemperature">按溫度排序</string>
+    <string name="menuitem_sortbyhumidity">按濕度排序</string>
+    <string name="menuitem_sortbylocation">按場所名稱排序</string>
 </resources>

@@ -9,4 +9,9 @@
     <string name="common_login_language_tw">繁體中文</string>
     <string name="common_login_title_1">AIR QUALITY MANAGEMENT</string>
     <string name="common_login_title_2">SYSTEM OF HSINCHU</string>    
+    <string name="menuitem_sortbystatus">Order By Status</string>
+    <string name="menuitem_sortbyco2">Order By CO2</string>
+    <string name="menuitem_sortbytemperature">Order By Temperature</string>
+    <string name="menuitem_sortbyhumidity">Order By Humidity</string>
+    <string name="menuitem_sortbylocation">Order By Location</string>
 </resources>
