@@ -1,96 +1,208 @@
 package org.slstudio.hsinchuiot.fragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-import org.slstudio.hsinchuiot.MainActivity;
+import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.R;
-import org.slstudio.hsinchuiot.SiteDetailActivity;
+import org.slstudio.hsinchuiot.SuperUserMainActivity;
+import org.slstudio.hsinchuiot.UserMainActivity;
+import org.slstudio.hsinchuiot.model.Device;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
-import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
-import org.slstudio.hsinchuiot.ui.adapter.RealTimeDataListViewAdapter;
+import org.slstudio.hsinchuiot.model.IOTSampleData;
+import org.slstudio.hsinchuiot.model.Site;
+import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.service.http.ForgroundRequestListener;
+import org.slstudio.hsinchuiot.service.http.HttpConfig;
+import org.slstudio.hsinchuiot.service.http.HttpRequest;
+import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
+import org.slstudio.hsinchuiot.service.http.RequestControl;
+import org.slstudio.hsinchuiot.service.http.RequestListener;
+import org.slstudio.hsinchuiot.util.IOTLog;
+import org.slstudio.hsinchuiot.util.ReportUtil;
 
-
-
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.os.Message;
 
-public class V2RTDataTab extends Fragment {
-	private ListView rtDataListView;
-	private RealTimeDataListViewAdapter rtDataListViewAdapter;
-	
-	
-	public RealTimeDataListViewAdapter getRtDataListViewAdapter() {
-		return rtDataListViewAdapter;
-	}
+public class V2RTDataTab extends V2ListViewTab {
 
-
-
-	public void setRtDataListViewAdapter(
-			RealTimeDataListViewAdapter rtDataListViewAdapter) {
-		this.rtDataListViewAdapter = rtDataListViewAdapter;
-	}
-
-
+	private List<Device> deviceList = new ArrayList<Device>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		createRTDataListViewAdapter();
 	}
-
-
-
-	private void createRTDataListViewAdapter() {
-		List<IOTMonitorData> items = new ArrayList<IOTMonitorData>();
-		/*
-		items.add(new IOTMonitorData("国立台湾大学医学院附设医院竹东分院", 1623, 29, 57));
-		items.add(new IOTMonitorData("竹东镇公所", 758, 26, 33));
-		items.add(new IOTMonitorData("竹北市立图书馆", 758, 28, 33));
-		items.add(new IOTMonitorData("新竹县妇幼馆", 758, 33, 33));
-		items.add(new IOTMonitorData("国立台湾大学医学院附设医院竹东分院", 1623, 29, 57));
-		items.add(new IOTMonitorData("竹东镇公所", 758, 26, 33));
-		items.add(new IOTMonitorData("竹北市立图书馆", 758, 28, 33));
-		items.add(new IOTMonitorData("新竹县妇幼馆", 758, 33, 33));
-		*/
-		IOTMonitorThreshold warningThreshold = new IOTMonitorThreshold(Integer.MIN_VALUE, 800, 16, 27, 0, 100);
-		IOTMonitorThreshold breachThreshold = new IOTMonitorThreshold(Integer.MIN_VALUE, 1000, 15, 28, 0, 100);
-		
-		rtDataListViewAdapter = new RealTimeDataListViewAdapter(this.getActivity(), items, warningThreshold, breachThreshold);
-	}
-
-
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		
-		
-		View view = inflater.inflate(R.layout.superuser_tab_rtdata, container, false);
-		rtDataListView = (ListView) view.findViewById(R.id.rtdata_list_view);
-		rtDataListView.setVisibility(View.VISIBLE);
-		rtDataListView.setAdapter(rtDataListViewAdapter);
-		rtDataListView.setOnItemClickListener(new OnItemClickListener(){
+	protected void getListViewData() {
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
-					long arg3) {
-				Intent intent = new Intent();
-				intent.putExtra(MainActivity.SELECTED_SITE, (IOTMonitorData)rtDataListViewAdapter.getItem(position));
-				intent.setClass(getActivity(), SiteDetailActivity.class);
-				startActivity(intent);
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
+				Constants.ServerAPIURI.DEVICE_LIST);
+
+		request.addParameter("dataType", "xml");
+		request.addParameter("__session_id", sessionID);
+		request.addParameter("__page_no", "1");
+		request.addParameter("__page_size", "1000");
+		request.addParameter("__sort", "-id");
+
+		GetDeviceListListener listener = new GetDeviceListListener(
+				this.getActivity(), true,
+				getString(R.string.common_please_wait));
+
+		ServiceContainer.getInstance().getHttpHandler()
+				.doRequest(request, listener);
+	}
+
+	private void sendQueryRealtimeDataRequest(String deviceID) {
+
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
+				Constants.ServerAPIURI.GET_SAMPLE_DATA);
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
+		request.addParameter("dataType", "xml");
+		request.addParameter("__session_id", sessionID);
+		request.addParameter("__page_no", "1");
+		request.addParameter("__column", "did,sensor,name,value,t");
+		request.addParameter("__having_max", "id");
+		request.addParameter("__group_by", "did,name");
+		request.addParameter("__sort", "-id");
+		request.addParameter("did[0]", deviceID);
+
+		GetRealtimeDataListener l = new GetRealtimeDataListener(deviceID);
+
+		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
+	}
+
+	private class GetDeviceListListener extends
+			ForgroundRequestListener<List<Device>> {
+
+		public GetDeviceListListener(Context context,
+				boolean isShowProgressDialog, String content) {
+			super(context, isShowProgressDialog, content);
+		}
+
+		@Override
+		public void onRequestComplete() {
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+				}
+			});
+
+			super.onRequestComplete();
+		}
+
+		@Override
+		public void onRequestResult(final List<Device> result) {
+			deviceList = result;
+			List<Site> sites = new ArrayList<Site>();
+			for (Device d : deviceList) {
+				Site site = new Site();
+				site.setSiteID(d.getDeviceID());
+				site.setDevice(d);
+				site.setSiteName(d.getSiteName());
+				site.setSiteImageFilename("site_" + d.getDeviceSN() + ".png");
+				site.setMonitorData(new IOTMonitorData(0, 0, 0));
+				sites.add(site);
+			}
+
+			lvAdapter.setItems(sites);
+
+			for (Device d : deviceList) {
+				sendQueryRealtimeDataRequest(d.getDeviceID());
+			}
+
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					lvAdapter.notifyDataSetChanged();
+				}
+
+			});
+
+		}
+
+	}
+
+	private class GetRealtimeDataListener implements
+			RequestListener<List<IOTSampleData>> {
+		private RequestControl control;
+		private String deviceID;
+
+		public GetRealtimeDataListener(String deviceID) {
+			this.deviceID = deviceID;
+		}
+
+		@Override
+		public void onRequestCancelled() {
+			if (control != null)
+				control.cancel();
+
+		}
+
+		@Override
+		public void onRequestResult(final List<IOTSampleData> result) {
+			
+			final IOTMonitorData data = new IOTMonitorData();
+			for (IOTSampleData sample : result) {
+				if (sample.getType() == IOTSampleData.IOTSampleDataType.CO2) {
+					data.setCo2(sample.getValue());
+				} else if (sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE) {
+					data.setTemperature(sample.getValue());
+				} else if (sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY) {
+					data.setHumidity(sample.getValue());
+				}
 			}
 			
-		});
-		return view;
+			List<Site> sites = lvAdapter.getItems();
+			
+			for(Site s: sites){
+				if(s.getDevice().getDeviceID().equals(deviceID)){
+					s.setMonitorData(data);
+					break;
+				}
+			}
+			
+			lvAdapter.setItems(sites);
+			
+			handler.post(new Runnable() {
 
+				@Override
+				public void run() {
+					lvAdapter.notifyDataSetChanged();
+				}
+
+			});
+		}
+
+		@Override
+		public void onRequestGetControl(RequestControl control) {
+			this.control = control;
+		}
+
+		@Override
+		public void onRequestStart() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onRequestError(Exception e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onRequestComplete() {
+		}
 	}
 
 }

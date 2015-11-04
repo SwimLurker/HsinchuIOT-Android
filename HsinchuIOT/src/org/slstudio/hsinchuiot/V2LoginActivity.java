@@ -14,6 +14,7 @@ import org.slstudio.hsinchuiot.service.http.HttpRequest;
 import org.slstudio.hsinchuiot.service.http.NoneAuthedHttpRequest;
 import org.slstudio.hsinchuiot.service.http.RequestControl;
 import org.slstudio.hsinchuiot.service.http.RequestListener;
+import org.slstudio.hsinchuiot.util.AESUtils;
 import org.slstudio.hsinchuiot.util.EncryptUtil;
 
 import android.app.ActionBar;
@@ -35,8 +36,6 @@ import android.widget.EditText;
 import android.widget.ToggleButton;
 
 public class V2LoginActivity extends BaseActivity {
-	
-	
 
 	private Object lock = new Object();
 
@@ -64,11 +63,39 @@ public class V2LoginActivity extends BaseActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.v2_common_login);
-		
-		
+
+		initViews();
+
+		listener = new GetSessionIDListener(this, true,
+				getString(R.string.common_please_wait));
+		listener2 = new LoginListener();
+		handler = new Handler();
+		ServiceContainer.getInstance().getUpgradeController()
+				.checkVersion(null, true);
+
+	}
+
+	private void initViews() {
+
+		String loginName = ServiceContainer.getInstance()
+				.getPerferenceService()
+				.getValue(this, Constants.PreferenceKey.LOGINNAME);
+		String encryptedPassword = ServiceContainer.getInstance()
+				.getPerferenceService()
+				.getValue(this, Constants.PreferenceKey.ENCRYPTED_PASSWORD);
+
 		usernameET = (EditText) findViewById(R.id.login_username);
+		if (!loginName.equals("")) {
+			usernameET.setText(loginName);
+		}
 
 		passwordET = (EditText) findViewById(R.id.login_password);
+		if (!encryptedPassword.equals("")) {
+			String pwd = AESUtils.decrypt(Constants.ENCRYPT_SEED,
+					encryptedPassword);
+			passwordET.setText(pwd);
+		}
+
 		signInBtn = (Button) findViewById(R.id.login_signin);
 		signInBtn.setOnClickListener(new OnClickListener() {
 
@@ -80,10 +107,13 @@ public class V2LoginActivity extends BaseActivity {
 		});
 
 		rememberPassword = (CheckBox) findViewById(R.id.remeber_password);
+		if (!loginName.equals("")) {
+			rememberPassword.setChecked(true);
+		} else {
+			rememberPassword.setChecked(false);
+		}
 
-		
-		
-		lanTWBtn = (ToggleButton)findViewById(R.id.language_tw_btn);
+		lanTWBtn = (ToggleButton) findViewById(R.id.language_tw_btn);
 		lanTWBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -92,8 +122,8 @@ public class V2LoginActivity extends BaseActivity {
 				showLoginActivity();
 			}
 		});
-		
-		lanCNBtn = (ToggleButton)findViewById(R.id.language_cn_btn);
+
+		lanCNBtn = (ToggleButton) findViewById(R.id.language_cn_btn);
 		lanCNBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -103,7 +133,7 @@ public class V2LoginActivity extends BaseActivity {
 			}
 		});
 
-		lanENBtn = (ToggleButton)findViewById(R.id.language_en_btn);
+		lanENBtn = (ToggleButton) findViewById(R.id.language_en_btn);
 		lanENBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -112,52 +142,43 @@ public class V2LoginActivity extends BaseActivity {
 				showLoginActivity();
 			}
 		});
-		
-		setCurrentLanguage();
-		
-		listener = new GetSessionIDListener(this, true, getString(R.string.common_please_wait));
-		listener2 = new LoginListener();
-		handler = new Handler();
-		ServiceContainer.getInstance().getUpgradeController().checkVersion(null, true);
-		
-	}
-	
-	private void switchLanguage(String language){
+
 		Resources resources = getResources();
 		Configuration config = resources.getConfiguration();
-		DisplayMetrics dm = resources.getDisplayMetrics();
-		if(language.equals(Constants.Language.EN)){
-			config.locale = Locale.ENGLISH;
-		}else if(language.equals(Constants.Language.CN)){
-			config.locale = Locale.CHINA;
-		}else{
-			config.locale = Locale.TAIWAN;
-		}
-		resources.updateConfiguration(config, dm);
-	}
-	
-	private void setCurrentLanguage(){
-		Resources resources = getResources();
-		Configuration config = resources.getConfiguration();
-		
-		
-		if(config.locale.equals(Locale.ENGLISH)){
+
+		if (config.locale.equals(Locale.ENGLISH)) {
 			lanENBtn.setChecked(true);
 			lanCNBtn.setChecked(false);
 			lanTWBtn.setChecked(false);
-		}else if(config.locale.equals(Locale.CHINA)){
+		} else if (config.locale.equals(Locale.CHINA)) {
 			lanENBtn.setChecked(false);
 			lanCNBtn.setChecked(true);
 			lanTWBtn.setChecked(false);
-		}else if(config.locale.equals(Locale.TAIWAN)){
+		} else if (config.locale.equals(Locale.TAIWAN)) {
 			lanENBtn.setChecked(false);
 			lanCNBtn.setChecked(false);
 			lanTWBtn.setChecked(true);
-		}else{
+		} else {
 			switchLanguage(Constants.Language.TW);
 			showLoginActivity();
 		}
-		
+	}
+
+	private void switchLanguage(String language) {
+		Resources resources = getResources();
+		Configuration config = resources.getConfiguration();
+		DisplayMetrics dm = resources.getDisplayMetrics();
+		if (language.equals(Constants.Language.EN)) {
+			config.locale = Locale.ENGLISH;
+		} else if (language.equals(Constants.Language.CN)) {
+			config.locale = Locale.CHINA;
+		} else {
+			config.locale = Locale.TAIWAN;
+		}
+		resources.updateConfiguration(config, dm);
+
+		ServiceContainer.getInstance().getPerferenceService()
+				.setValue(this, Constants.PreferenceKey.LANGUAGE, language);
 	}
 
 	protected void doSignIn() {
@@ -166,23 +187,27 @@ public class V2LoginActivity extends BaseActivity {
 		password = passwordET.getText().toString().trim();
 
 		if (username.equals("")) {
-			setException(new IOTException(-1, getString(R.string.error_message_require_loginname_text)));
+			setException(new IOTException(-1,
+					getString(R.string.error_message_require_loginname_text)));
 			showDialog(DIALOG_ERROR);
 			return;
 		}
 
 		if (password.equals("")) {
-			setException(new IOTException(-1, getString(R.string.error_message_require_pwd_text)));
+			setException(new IOTException(-1,
+					getString(R.string.error_message_require_pwd_text)));
 			showDialog(DIALOG_ERROR);
 			return;
 		}
 
-		HttpRequest request = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
 				Constants.ServerAPIURI.GET_SESSION_ID);
 
 		request.addParameter("dataType", "xml");
 
-		ServiceContainer.getInstance().getHttpHandler().doRequest(request, listener);
+		ServiceContainer.getInstance().getHttpHandler()
+				.doRequest(request, listener);
 
 	}
 
@@ -194,7 +219,7 @@ public class V2LoginActivity extends BaseActivity {
 		finish();
 
 	}
-	
+
 	protected void gotoNormalUserMainScreen() {
 		Intent intent = new Intent(Constants.Action.HSINCHUIOT_USER_MAIN);
 		startActivity(intent);
@@ -223,10 +248,12 @@ public class V2LoginActivity extends BaseActivity {
 		return super.onKeyDown(keyCode, event);
 	}
 
-	private class GetSessionIDListener extends ForgroundRequestListener<Session> {
+	private class GetSessionIDListener extends
+			ForgroundRequestListener<Session> {
 		private RequestControl control;
 
-		public GetSessionIDListener(Context context, boolean isShowProgressDialog, String content) {
+		public GetSessionIDListener(Context context,
+				boolean isShowProgressDialog, String content) {
 			super(context, isShowProgressDialog, content);
 		}
 
@@ -243,9 +270,11 @@ public class V2LoginActivity extends BaseActivity {
 
 			String pwdMD5 = EncryptUtil.getStringMD5(password);
 
-			String mangledPwd = EncryptUtil.getStringMD5(pwdMD5 + ":" + sessionID);
+			String mangledPwd = EncryptUtil.getStringMD5(pwdMD5 + ":"
+					+ sessionID);
 
-			HttpRequest request2 = new NoneAuthedHttpRequest(new HttpConfig.GetHttpConfig(),
+			HttpRequest request2 = new NoneAuthedHttpRequest(
+					new HttpConfig.GetHttpConfig(),
 					Constants.ServerAPIURI.LOGIN);
 
 			request2.addParameter("dataType", "json");
@@ -253,8 +282,10 @@ public class V2LoginActivity extends BaseActivity {
 			request2.addParameter("username", username);
 			request2.addParameter("mangled_password", mangledPwd);
 			request2.addParameter("lang", "zh-cn");
-			request2.addParameter("timezone", Integer.toString(TimeZone.getDefault().getRawOffset()));
-			ServiceContainer.getInstance().getHttpHandler().doRequest(request2, listener2);
+			request2.addParameter("timezone",
+					Integer.toString(TimeZone.getDefault().getRawOffset()));
+			ServiceContainer.getInstance().getHttpHandler()
+					.doRequest(request2, listener2);
 			synchronized (lock) {
 				try {
 					lock.wait();
@@ -271,40 +302,89 @@ public class V2LoginActivity extends BaseActivity {
 			}
 
 			if (rememberPassword.isChecked()) {
-				ServiceContainer.getInstance().getPerferenceService().setValue(V2LoginActivity.this,
-						Constants.PreferenceKey.LOGINNAME, username);
+				ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.setValue(V2LoginActivity.this,
+								Constants.PreferenceKey.LOGINNAME, username);
 
-				ServiceContainer.getInstance().getPerferenceService().setValue(V2LoginActivity.this,
-						Constants.PreferenceKey.PASSWORD, EncryptUtil.getStringMD5(password));
+				ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.setValue(V2LoginActivity.this,
+								Constants.PreferenceKey.PASSWORD,
+								EncryptUtil.getStringMD5(password));
+
+				String encryptedPwd = AESUtils.encrypt(Constants.ENCRYPT_SEED,
+						password);
+				ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.setValue(V2LoginActivity.this,
+								Constants.PreferenceKey.ENCRYPTED_PASSWORD,
+								encryptedPwd);
 			} else {
-				ServiceContainer.getInstance().getPerferenceService().setValue(V2LoginActivity.this,
-						Constants.PreferenceKey.LOGINNAME, null);
+				ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.setValue(V2LoginActivity.this,
+								Constants.PreferenceKey.LOGINNAME, null);
 
-				ServiceContainer.getInstance().getPerferenceService().setValue(V2LoginActivity.this,
-						Constants.PreferenceKey.PASSWORD, null);
+				ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.setValue(V2LoginActivity.this,
+								Constants.PreferenceKey.PASSWORD, null);
+				ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.setValue(V2LoginActivity.this,
+								Constants.PreferenceKey.ENCRYPTED_PASSWORD, null);
 			}
 
-			ServiceContainer.getInstance().getSessionService().setSessionID(sessionID);
+			ServiceContainer.getInstance().getSessionService()
+					.setSessionID(sessionID);
 
 			loginUser.setLoginName(username);
 			loginUser.setPassword(pwdMD5);
-			ServiceContainer.getInstance().getSessionService().setLoginUser(loginUser);
+			ServiceContainer.getInstance().getSessionService()
+					.setLoginUser(loginUser);
 
-			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
-					LoginService.getWarningThreshold(V2LoginActivity.this));
-			ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
-					LoginService.getBreachThreshold(V2LoginActivity.this));
+			ServiceContainer
+					.getInstance()
+					.getSessionService()
+					.setSessionValue(
+							Constants.SessionKey.THRESHOLD_WARNING,
+							LoginService
+									.getWarningThreshold(V2LoginActivity.this));
+			ServiceContainer
+					.getInstance()
+					.getSessionService()
+					.setSessionValue(
+							Constants.SessionKey.THRESHOLD_BREACH,
+							LoginService
+									.getBreachThreshold(V2LoginActivity.this));
 
-			if(loginUser.isNormalUser()){
+			if (loginUser.isNormalUser()) {
 				int refreshTime = 10;
-				String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(V2LoginActivity.this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
-				if(!"".equals(refreshTimeStr)){
+				String refreshTimeStr = ServiceContainer
+						.getInstance()
+						.getPerferenceService()
+						.getValue(
+								V2LoginActivity.this,
+								Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
+				if (!"".equals(refreshTimeStr)) {
 					refreshTime = Integer.parseInt(refreshTimeStr);
 				}
-				
-				ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, refreshTime);
+
+				ServiceContainer
+						.getInstance()
+						.getSessionService()
+						.setSessionValue(
+								Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME,
+								refreshTime);
 			}
-			
+
 			handler.post(new Runnable() {
 
 				@Override
@@ -314,12 +394,15 @@ public class V2LoginActivity extends BaseActivity {
 					 * .getPerferenceService()
 					 * .getSessionId(LoginActivity.this));
 					 */
+
 					if (loginUser.isAdminUser()) {
 						gotoAdminUserMainScreen();
-					} else if (loginUser.isNormalUser()){
+					} else if (loginUser.isNormalUser()) {
 						gotoNormalUserMainScreen();
-					}else{
-						setException(new IOTException(-1, getString(R.string.error_message_user_permission_wrong)));
+					} else {
+						setException(new IOTException(
+								-1,
+								getString(R.string.error_message_user_permission_wrong)));
 						showDialog(DIALOG_ERROR);
 						return;
 					}

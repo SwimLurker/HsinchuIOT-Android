@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/superuser_title_layout"
+    android:id="@+id/superuser_sitedetail_title_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
@@ -17,12 +17,12 @@
         android:background="@color/grey" >
 
         <ImageButton
-            android:id="@+id/btn_logoff"
+            android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_logoff" />
+            android:background="@drawable/button_back" />
         <TextView 
-            android:id="@+id/superuser_title"
+            android:id="@+id/superuser_sitedetail_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -32,15 +32,22 @@
             android:textSize="15sp"
             android:textStyle="bold"/>
 
-        <Button 
-            android:id="@+id/btn_sort"
+       <ImageButton
+            android:id="@+id/btn_refresh"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:background="@drawable/com_button_grey"
-            android:text="@string/menuitem_sortbylocation"
-            android:textSize="14sp"
-            android:textColor="@drawable/button_text_color" 
-            android:drawableRight="@drawable/button_dropdown"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_refresh" />
+        <ImageButton
+            android:id="@+id/btn_timescope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_timescope" />
+         <ImageButton
+            android:id="@+id/btn_interval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button_interval" />
+       
     </LinearLayout>
 	 <View
             android:layout_width="match_parent"

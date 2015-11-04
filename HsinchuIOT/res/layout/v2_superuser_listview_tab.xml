@@ -9,7 +9,7 @@
         android:layout_weight="1" >
 
         <ListView
-            android:id="@+id/averagevalue_list_view"
+            android:id="@+id/superuser_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
         </ListView>

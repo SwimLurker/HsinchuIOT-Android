@@ -1,6 +1,7 @@
 package org.slstudio.hsinchuiot;
 
 import java.io.File;
+import java.util.Locale;
 
 import org.slstudio.hsinchuiot.model.User;
 import org.slstudio.hsinchuiot.service.IOTException;
@@ -12,9 +13,12 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.view.Window;
 
 public class V2SplashActivity extends BaseActivity {
@@ -99,6 +103,8 @@ public class V2SplashActivity extends BaseActivity {
 	private void prepare() {
 		//prepareThumbnailImage();
 		ServiceContainer.getInstance().getUpgradeController().resetFirstTimeCheckFlag();
+		setCurrentLanguage();
+		
 	}
 
 	private void prepareThumbnailImage() {
@@ -162,5 +168,39 @@ public class V2SplashActivity extends BaseActivity {
 			}
 
 		}
+	}
+	
+	private void setCurrentLanguage() {
+		String currentLanguage = ServiceContainer.getInstance()
+				.getPerferenceService()
+				.getValue(this, Constants.PreferenceKey.LANGUAGE);
+
+		Resources resources = getResources();
+		Configuration config = resources.getConfiguration();
+		
+		if(!currentLanguage.equals("")){
+			switchLanguage(currentLanguage);
+		}else if((!config.locale.equals(Locale.ENGLISH))
+				&&(!config.locale.equals(Locale.CHINA))
+				&&(!config.locale.equals(Locale.CHINA))){
+			switchLanguage(Constants.Language.TW);
+		}
+	}
+
+	private void switchLanguage(String language) {
+		Resources resources = getResources();
+		Configuration config = resources.getConfiguration();
+		DisplayMetrics dm = resources.getDisplayMetrics();
+		if (language.equals(Constants.Language.EN)) {
+			config.locale = Locale.ENGLISH;
+		} else if (language.equals(Constants.Language.CN)) {
+			config.locale = Locale.CHINA;
+		} else {
+			config.locale = Locale.TAIWAN;
+		}
+		resources.updateConfiguration(config, dm);
+
+		ServiceContainer.getInstance().getPerferenceService()
+				.setValue(this, Constants.PreferenceKey.LANGUAGE, language);
 	}
 }

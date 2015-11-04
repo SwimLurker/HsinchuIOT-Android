@@ -69,7 +69,7 @@ public class SiteListJSONParser implements ResponseParser{
 				if(humidityValue.equals("")){
 					data.setHumidity(0);
 				}else{
-					float f1 = Float.parseFloat(temperatureValue);
+					float f1 = Float.parseFloat(humidityValue);
 					float f2 = (float) (Math.round(f1 * 100.0) / 100.0);
 					data.setHumidity(f2);
 				}

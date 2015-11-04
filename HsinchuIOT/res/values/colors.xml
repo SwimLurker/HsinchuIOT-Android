@@ -40,6 +40,10 @@
     <color name="status_ok">#00ff00</color>
 	<color name="status_warning">#fcae00</color>
     <color name="status_alarm">#ff0000</color>
+    <color name="status_icon_ok">#00a651</color>
+	<color name="status_icon_warning">#ffcc00</color>
+    <color name="status_icon_alarm">#ff0000</color>
+    <color name="status_icon_missing">#F2F2F2</color>
     <color name="curtainmenu_bg">#F74AC6DC</color>
 
 </resources>

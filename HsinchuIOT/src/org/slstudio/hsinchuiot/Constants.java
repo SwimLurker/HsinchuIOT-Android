@@ -6,6 +6,7 @@ import android.os.Environment;
 
 
 public class Constants {
+	public static final String ENCRYPT_SEED = "HSINCHU_IOT";
 	public static final String debugLogTag = "hsinchuIOT_debug";
 	public static final String DEFAULT_URI = "download";
 	public static final String DOWNLOAD_URL = AppConfig.HTTP_SCHEME
@@ -41,6 +42,7 @@ public class Constants {
 		public static final int MESSAGE_GET_CHART_DATA = 2;
 		public static final int MESSAGE_UPDATE_CHART_DATA = 3;
 		public static final int MESSAGE_UPDATE_MONITOR_DATA = 4;
+		public static final int V2_MESSAGE_UPDATE_TIME = 5;
 	}
 
 	public static class SessionKey{
@@ -53,7 +55,9 @@ public class Constants {
 		public static final String SESSION_ID = "SESSION_ID";
 		public static final String LOGINNAME = "LOGIN_NAME";
 		public static final String PASSWORD = "PASSWORD";
+		public static final String ENCRYPTED_PASSWORD = "ENCRYPTED_PASSWORD";
 		public static final String USER_ID = "USER_ID";
+		public static final String LANGUAGE = "LANGUAGE";
 		public static final String SERVER_PUSH_BIND_FLAG = "SERVER_PUSH_BIND_FLAG";
 		public static final String SERVER_PUSH_BIND_USRID = "SERVER_PUSH_BIND_USRID";
 		public static final String SERVER_PUSH_BIND_DECIVEID = "SERVER_PUSH_BIND_DECIVEID";
