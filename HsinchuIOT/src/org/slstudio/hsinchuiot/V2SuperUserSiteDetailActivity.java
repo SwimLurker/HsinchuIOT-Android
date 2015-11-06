@@ -3,12 +3,12 @@ package org.slstudio.hsinchuiot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -16,9 +16,7 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
-import org.slstudio.hsinchuiot.fragment.UserSiteHomePageFragment;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
-import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.IOTSampleData;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
@@ -31,19 +29,73 @@ import org.slstudio.hsinchuiot.ui.chart.IOTChartFactory;
 import org.slstudio.hsinchuiot.util.IOTLog;
 import org.slstudio.hsinchuiot.util.ReportUtil;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.graphics.Paint.Align;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 public class V2SuperUserSiteDetailActivity extends BaseActivity {
+	public final String[] monthSelection = { "01", "02", "03", "04", "05",
+			"06", "07", "08", "09", "10", "11", "12" };
+	public final String[] dateSelection = { "01", "02", "03", "04", "05", "06",
+			"07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17",
+			"18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28",
+			"29", "30", "31" };
+	public final String[] hourSelection = { "00", "01", "02", "03", "04", "05",
+			"06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16",
+			"17", "18", "19", "20", "21", "22", "23" };
+	public final String[] minuteSelection = { "00", "01", "02", "03", "04",
+			"05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
+			"16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26",
+			"27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37",
+			"38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48",
+			"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" };
+	public final String[] secondSelection = { "00", "01", "02", "03", "04",
+			"05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15",
+			"16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26",
+			"27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37",
+			"38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48",
+			"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59" };
+
+	public static final int TIME_PERIOD_1_HOUR = 0;
+	public static final int TIME_PERIOD_4_HOURS = 1;
+	public static final int TIME_PERIOD_8_HOURS = 2;
+	public static final int TIME_PERIOD_TODAY = 3;
+	public static final int TIME_PERIOD_YESTERDAY = 4;
+	public static final int TIME_PERIOD_THIS_WEEK = 5;
+	public static final int TIME_PERIOD_LAST_WEEK = 6;
+	public static final int TIME_PERIOD_THIS_MONTH = 7;
+	public static final int TIME_PERIOD_LAST_MONTH = 8;
+	public static final int TIME_PERIOD_LAST_3DAYS = 9;
+	public static final int TIME_PERIOD_LAST_5DAYS = 10;
+	public static final int TIME_PERIOD_LAST_7DAYS = 11;
+	public static final int TIME_PERIOD_LAST_1WEEK = 12;
+	public static final int TIME_PERIOD_LAST_2WEEKS = 13;
+	public static final int TIME_PERIOD_LAST_3WEEKS = 14;
+	public static final int TIME_PERIOD_LAST_1MONTH = 15;
+	public static final int TIME_PERIOD_LAST_2MONTHS = 16;
+	public static final int TIME_PERIOD_LAST_3MONTHS = 17;
 
 	private Handler handler = new Handler() {
 
@@ -71,7 +123,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 				break;
 			}
 			super.handleMessage(msg);
-			
+
 		}
 	};
 
@@ -102,9 +154,21 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 	private boolean isChartRequestHandling = false;
 
 	private RequestControl chartRC;
-	
+
 	private TextView tvChartTitle;
+	private ImageButton btnBack;
+	private ImageButton btnRefresh;
+	private ImageButton btnTimeScope;
+	private ImageButton btnTimeScope2;
+	private RadioGroup rgInterval;
+	private RadioButton rbIntervalRealtime;
+	private RadioButton rbIntervalByHour;
+	private RadioButton rbIntervalBy8Hours;
+	private RadioButton rbIntervalByDay;
+	private RadioButton rbIntervalByWeek;
+	private RadioButton rbIntervalByMonth;
 	
+	private ProgressDialog progressDialog;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -121,19 +185,23 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		long startTimeLong = getIntent().getLongExtra(
 				Constants.ActivityPassValue.CHART_AGGR_STARTTIME, 0);
 		chartStartTime = new Date();
-		chartStartTime.setTime(startTimeLong);
+		if (startTimeLong != 0) {
+			chartStartTime.setTime(startTimeLong);
+		}
 		long endTimeLong = getIntent().getLongExtra(
 				Constants.ActivityPassValue.CHART_AGGR_ENDTIME, 0);
 		chartEndTime = new Date();
-		chartEndTime.setTime(endTimeLong);
+		if (endTimeLong != 0) {
+			chartEndTime.setTime(endTimeLong);
+		}
 
 		setContentView(R.layout.v2_activity_superuser_sitedetail);
-		
+
 		initViews();
 		createChart();
 		updateChartData();
 		chartView.repaint();
-		
+
 		handler.sendEmptyMessage(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 	}
 
@@ -203,11 +271,732 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 
 	private void initViews() {
 		chartLayout = (LinearLayout) findViewById(R.id.id_chart_chartdetail);
-		
-		tvChartTitle = (TextView)findViewById(R.id.superuser_sitedetail_title);
-		// tvChartTitleBottom = (TextView)
-		// findViewById(R.id.tv_chart_bottom_title_chartdetail);
 
+		tvChartTitle = (TextView) findViewById(R.id.superuser_sitedetail_title);
+		tvChartTitle.setText(currentSite.getSiteName());
+
+		btnBack = (ImageButton) findViewById(R.id.btn_back);
+		btnBack.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+
+		});
+
+		btnRefresh = (ImageButton) findViewById(R.id.btn_refresh);
+		btnRefresh.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				resendMessage();
+			}
+
+		});
+
+		btnTimeScope = (ImageButton) findViewById(R.id.btn_timescope);
+		btnTimeScope.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				showTimeScopeDialog();
+			}
+
+		});
+
+		btnTimeScope2 = (ImageButton) findViewById(R.id.btn_timescope2);
+		btnTimeScope2.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				showTimeScope2Dialog();
+			}
+
+		});
+
+		rgInterval = (RadioGroup) findViewById(R.id.interval_btn_group);
+		rgInterval
+				.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(RadioGroup group, int checkedId) {
+						if (checkedId == R.id.interval_btn_realtime) {
+							chartType = Constants.ChartSettings.CHART_TYPE_REALTIME;
+							btnTimeScope.setVisibility(View.GONE);
+							btnTimeScope2.setVisibility(View.GONE);
+						} else if (checkedId == R.id.interval_btn_byhour) {
+							chartType = Constants.ChartSettings.CHART_TYPE_AGGRAGATION;
+							chartGranularity = Constants.ChartSettings.GRANULARITY_HOUR;
+							btnTimeScope.setVisibility(View.VISIBLE);
+							btnTimeScope2.setVisibility(View.VISIBLE);
+						} else if (checkedId == R.id.interval_btn_by8hours) {
+							chartType = Constants.ChartSettings.CHART_TYPE_AGGRAGATION;
+							chartGranularity = Constants.ChartSettings.GRANULARITY_HOURS;
+							btnTimeScope.setVisibility(View.VISIBLE);
+							btnTimeScope2.setVisibility(View.VISIBLE);
+						} else if (checkedId == R.id.interval_btn_byday) {
+							chartType = Constants.ChartSettings.CHART_TYPE_AGGRAGATION;
+							chartGranularity = Constants.ChartSettings.GRANULARITY_DAY;
+							btnTimeScope.setVisibility(View.VISIBLE);
+							btnTimeScope2.setVisibility(View.VISIBLE);
+						} else if (checkedId == R.id.interval_btn_byweek) {
+							chartType = Constants.ChartSettings.CHART_TYPE_AGGRAGATION;
+							chartGranularity = Constants.ChartSettings.GRANULARITY_WEEK;
+							btnTimeScope.setVisibility(View.VISIBLE);
+							btnTimeScope2.setVisibility(View.VISIBLE);
+						} else if (checkedId == R.id.interval_btn_bymonth) {
+							chartType = Constants.ChartSettings.CHART_TYPE_AGGRAGATION;
+							chartGranularity = Constants.ChartSettings.GRANULARITY_MONTH;
+							btnTimeScope.setVisibility(View.VISIBLE);
+							btnTimeScope2.setVisibility(View.VISIBLE);
+						}
+						generateChart();
+						resendMessage();
+					}
+
+				});
+		rbIntervalRealtime = (RadioButton) findViewById(R.id.interval_btn_realtime);
+		rbIntervalByHour = (RadioButton) findViewById(R.id.interval_btn_byhour);
+		rbIntervalBy8Hours = (RadioButton) findViewById(R.id.interval_btn_by8hours);
+		rbIntervalByDay = (RadioButton) findViewById(R.id.interval_btn_byday);
+		rbIntervalByWeek = (RadioButton) findViewById(R.id.interval_btn_byweek);
+		rbIntervalByMonth = (RadioButton) findViewById(R.id.interval_btn_bymonth);
+
+		if (chartType == Constants.ChartSettings.CHART_TYPE_REALTIME) {
+			rbIntervalRealtime.setChecked(true);
+			btnTimeScope.setVisibility(View.GONE);
+			btnTimeScope2.setVisibility(View.GONE);
+		} else if (chartType == Constants.ChartSettings.CHART_TYPE_AGGRAGATION) {
+			btnTimeScope.setVisibility(View.VISIBLE);
+			btnTimeScope2.setVisibility(View.VISIBLE);
+			if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOUR) {
+				rbIntervalByHour.setChecked(true);
+			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_HOURS) {
+				rbIntervalBy8Hours.setChecked(true);
+			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_DAY) {
+				rbIntervalByDay.setChecked(true);
+			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_WEEK) {
+				rbIntervalByWeek.setChecked(true);
+			} else if (chartGranularity == Constants.ChartSettings.GRANULARITY_MONTH) {
+				rbIntervalByMonth.setChecked(true);
+			}
+		}
+
+	}
+
+	private void showTimeScopeDialog() {
+		View view = View.inflate(getApplicationContext(),
+				R.layout.v2_dialog_chart_timescope, null);
+		ImageButton btnClose = (ImageButton) view
+				.findViewById(R.id.btn_chart_timescope_close);
+		Button btnOk = (Button) view.findViewById(R.id.btn_chart_timescope_ok);
+		Button btnCancel = (Button) view
+				.findViewById(R.id.btn_chart_timescope_cancel);
+		final Button btnFromYear = (Button) view
+				.findViewById(R.id.btn_chart_timescope_from_year);
+		final Button btnFromMonth = (Button) view
+				.findViewById(R.id.btn_chart_timescope_from_month);
+		final Button btnFromDay = (Button) view
+				.findViewById(R.id.btn_chart_timescope_from_day);
+		final Button btnFromHour = (Button) view
+				.findViewById(R.id.btn_chart_timescope_from_hour);
+		final Button btnFromMinute = (Button) view
+				.findViewById(R.id.btn_chart_timescope_from_minute);
+		final Button btnFromSecond = (Button) view
+				.findViewById(R.id.btn_chart_timescope_from_second);
+		final Button btnToYear = (Button) view
+				.findViewById(R.id.btn_chart_timescope_to_year);
+		final Button btnToMonth = (Button) view
+				.findViewById(R.id.btn_chart_timescope_to_month);
+		final Button btnToDay = (Button) view
+				.findViewById(R.id.btn_chart_timescope_to_day);
+		final Button btnToHour = (Button) view
+				.findViewById(R.id.btn_chart_timescope_to_hour);
+		final Button btnToMinute = (Button) view
+				.findViewById(R.id.btn_chart_timescope_to_minute);
+		final Button btnToSecond = (Button) view
+				.findViewById(R.id.btn_chart_timescope_to_second);
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				V2SuperUserSiteDetailActivity.this,
+				android.R.style.Theme_Black_NoTitleBar).setView(view);
+
+		final AlertDialog dlg = builder.create();
+
+		Window dialogWindow = dlg.getWindow();
+
+		WindowManager m = getWindowManager();
+		Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+		WindowManager.LayoutParams p = dlg.getWindow().getAttributes(); // 获取对话框当前的参数值
+		p.height = (int) (d.getHeight() * 0.8); // 高度设置为屏幕的0.6
+		p.width = (int) (d.getWidth() * 0.65); // 宽度设置为屏幕的0.95
+		dialogWindow.setAttributes(p);
+		dlg.setCancelable(false);
+
+		btnClose.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dlg.dismiss();
+			}
+
+		});
+		btnOk.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				int fromYear = Integer.parseInt(btnFromYear.getText()
+						.toString());
+				int fromMonth = Integer.parseInt(btnFromMonth.getText()
+						.toString());
+				int fromDay = Integer.parseInt(btnFromDay.getText().toString());
+				int fromHour = Integer.parseInt(btnFromHour.getText()
+						.toString());
+				int fromMinute = Integer.parseInt(btnFromMinute.getText()
+						.toString());
+				int fromSecond = Integer.parseInt(btnFromSecond.getText()
+						.toString());
+
+				int toYear = Integer.parseInt(btnToYear.getText().toString());
+				int toMonth = Integer.parseInt(btnToMonth.getText().toString());
+				int toDay = Integer.parseInt(btnToDay.getText().toString());
+				int toHour = Integer.parseInt(btnToHour.getText().toString());
+				int toMinute = Integer.parseInt(btnToMinute.getText()
+						.toString());
+				int toSecond = Integer.parseInt(btnToSecond.getText()
+						.toString());
+
+				Calendar sCal = Calendar.getInstance();
+				sCal.set(Calendar.YEAR, fromYear);
+				sCal.set(Calendar.MONTH, fromMonth - 1);
+				sCal.set(Calendar.DATE, fromDay);
+				sCal.set(Calendar.HOUR_OF_DAY, fromHour);
+				sCal.set(Calendar.MINUTE, fromMinute);
+				sCal.set(Calendar.SECOND, fromSecond);
+
+				chartStartTime = sCal.getTime();
+
+				Calendar eCal = Calendar.getInstance();
+				eCal.set(Calendar.YEAR, toYear);
+				eCal.set(Calendar.MONTH, toMonth - 1);
+				eCal.set(Calendar.DATE, toDay);
+				eCal.set(Calendar.HOUR_OF_DAY, toHour);
+				eCal.set(Calendar.MINUTE, toMinute);
+				eCal.set(Calendar.SECOND, toSecond);
+
+				chartEndTime = eCal.getTime();
+
+				dlg.dismiss();
+
+				generateChart();
+				resendMessage();
+			}
+
+		});
+		btnCancel.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dlg.dismiss();
+			}
+
+		});
+
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		final String[] yearSelection = { Integer.toString(currentYear - 2),
+				Integer.toString(currentYear - 1),
+				Integer.toString(currentYear),
+				Integer.toString(currentYear + 1),
+				Integer.toString(currentYear + 2) };
+
+		btnFromYear.setText(Integer.toString(chartStartTime.getYear() + 1900));
+		btnFromYear.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						yearSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnFromYear.setText(yearSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnFromMonth.setText(monthSelection[chartStartTime.getMonth()]);
+		btnFromMonth.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						monthSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnFromMonth.setText(monthSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnFromDay.setText(dateSelection[chartStartTime.getDate() - 1]);
+		btnFromDay.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				int selectYear = Integer.parseInt(btnFromYear.getText()
+						.toString());
+				int selectMonth = Integer.parseInt(btnFromMonth.getText()
+						.toString());
+
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.YEAR, selectYear);
+				cal.set(Calendar.MONTH, selectMonth - 1);
+				int maxDate = cal.getActualMaximum(Calendar.DATE);
+
+				final String[] date = new String[maxDate];
+				System.arraycopy(dateSelection, 0, date, 0, maxDate);
+
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(date,
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnFromDay.setText(date[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnFromHour.setText(hourSelection[chartStartTime.getHours()]);
+		btnFromHour.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						hourSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnFromHour.setText(hourSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnFromMinute.setText(minuteSelection[chartStartTime.getMinutes()]);
+		btnFromMinute.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						minuteSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnFromMinute.setText(minuteSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnFromSecond.setText(secondSelection[chartStartTime.getSeconds()]);
+		btnFromSecond.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						secondSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnFromSecond.setText(secondSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnToYear.setText(Integer.toString(chartEndTime.getYear() + 1900));
+		btnToYear.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						yearSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnToYear.setText(yearSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnToMonth.setText(monthSelection[chartEndTime.getMonth()]);
+		btnToMonth.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						monthSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnToMonth.setText(monthSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnToDay.setText(dateSelection[chartEndTime.getDate() - 1]);
+		btnToDay.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				int selectYear = Integer.parseInt(btnToYear.getText()
+						.toString());
+				int selectMonth = Integer.parseInt(btnToMonth.getText()
+						.toString());
+
+				Calendar cal = Calendar.getInstance();
+				cal.set(Calendar.YEAR, selectYear);
+				cal.set(Calendar.MONTH, selectMonth - 1);
+				int maxDate = cal.getActualMaximum(Calendar.DATE);
+
+				final String[] date = new String[maxDate];
+				System.arraycopy(dateSelection, 0, date, 0, maxDate);
+
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(date,
+						new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnToDay.setText(date[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnToHour.setText(hourSelection[chartEndTime.getHours()]);
+		btnToHour.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						hourSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnToHour.setText(hourSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnToMinute.setText(minuteSelection[chartEndTime.getMinutes()]);
+		btnToMinute.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						minuteSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnToMinute.setText(minuteSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		btnToSecond.setText(secondSelection[chartEndTime.getSeconds()]);
+		btnToSecond.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Dialog dialog = new AlertDialog.Builder(
+						V2SuperUserSiteDetailActivity.this).setItems(
+						secondSelection, new DialogInterface.OnClickListener() {
+
+							public void onClick(DialogInterface dialog,
+									int which) {
+								btnToSecond.setText(secondSelection[which]);
+							}
+						}).create();
+				dialog.show();
+
+			}
+
+		});
+
+		dlg.show();
+	}
+
+	private void showTimeScope2Dialog() {
+		View view = View.inflate(getApplicationContext(),
+				R.layout.v2_dialog_chart_timescope2, null);
+
+		ImageButton btnClose = (ImageButton) view
+				.findViewById(R.id.btn_chart_timescope2_close);
+		Button btn1Hour = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_1hour);
+		Button btn4Hours = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_4hours);
+		Button btn8Hours = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_8hours);
+		Button btnToday = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_today);
+		Button btnYesterday = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_yesterday);
+		Button btnLast3Days = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_last3days);
+		Button btnLast5Days = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_last5days);
+		Button btnThisWeek = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_thisweek);
+		Button btnLastWeek = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_lastweek);
+		Button btnLast2Weeks = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_last2weeks);
+		Button btnLast3Weeks = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_last3weeks);
+		Button btnThisMonth = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_thismonth);
+		Button btnLastMonth = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_lastmonth);
+		Button btnLast2Months = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_last2months);
+		Button btnLast3Months = (Button) view
+				.findViewById(R.id.btn_chart_timescope2_last3months);
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				V2SuperUserSiteDetailActivity.this,
+				android.R.style.Theme_Black_NoTitleBar).setView(view);
+
+		final AlertDialog dlg = builder.create();
+
+		Window dialogWindow = dlg.getWindow();
+
+		WindowManager m = getWindowManager();
+		Display d = m.getDefaultDisplay(); // 获取屏幕宽、高用
+		WindowManager.LayoutParams p = dlg.getWindow().getAttributes(); // 获取对话框当前的参数值
+		p.height = (int) (d.getHeight() * 0.5); // 高度设置为屏幕的0.6
+		p.width = (int) (d.getWidth() * 0.95); // 宽度设置为屏幕的0.95
+		dialogWindow.setAttributes(p);
+		dlg.setCancelable(false);
+
+		btnClose.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				dlg.dismiss();
+			}
+
+		});
+
+		btn1Hour.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_1_HOUR);
+				dlg.dismiss();
+			}
+
+		});
+
+		btn4Hours.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_4_HOURS);
+				dlg.dismiss();
+			}
+
+		});
+
+		btn8Hours.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_8_HOURS);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnToday.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_TODAY);
+				dlg.dismiss();
+			}
+
+		});
+
+		btnYesterday.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_YESTERDAY);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLast3Days.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_3DAYS);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLast5Days.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_5DAYS);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnThisWeek.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_THIS_WEEK);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLastWeek.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_WEEK);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLast2Weeks.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_2WEEKS);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLast3Weeks.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_3WEEKS);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnThisMonth.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_THIS_MONTH);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLastMonth.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_MONTH);
+				dlg.dismiss();
+			}
+
+		});
+		
+		btnLast2Months.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_2MONTHS);
+				dlg.dismiss();
+			}
+
+		});
+
+		btnLast3Months.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				setChartTimePeriod(TIME_PERIOD_LAST_3MONTHS);
+				dlg.dismiss();
+			}
+
+		});
+
+		
+		dlg.show();
+	}
+
+	private void setChartTimePeriod(int period) {
+		chartStartTime = getStartTime(period);
+		chartEndTime = getEndTime(period);
+		generateChart();
+		resendMessage();
 	}
 
 	private void createChart() {
@@ -328,23 +1117,22 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		chartLayout.addView(chartView, new LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 	}
-	
+
 	private void updateChartData() {
 		/*
-		IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold) ServiceContainer
-				.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
-		IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold) ServiceContainer
-				.getInstance().getSessionService()
-				.getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
-
-		// reset target line
-		chartRenderer.clearYTextLabels();
-		chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),
-				"warning", 0, getResources().getColor(R.color.status_warning));
-		chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),
-				"breach", 0, getResources().getColor(R.color.status_alarm));
-		*/
+		 * IOTMonitorThreshold warningThreshold = (IOTMonitorThreshold)
+		 * ServiceContainer .getInstance().getSessionService()
+		 * .getSessionValue(Constants.SessionKey.THRESHOLD_WARNING);
+		 * IOTMonitorThreshold breachThreshold = (IOTMonitorThreshold)
+		 * ServiceContainer .getInstance().getSessionService()
+		 * .getSessionValue(Constants.SessionKey.THRESHOLD_BREACH);
+		 * 
+		 * // reset target line chartRenderer.clearYTextLabels();
+		 * chartRenderer.addYTextLabel(warningThreshold.getCo2UpperBound(),
+		 * "warning", 0, getResources().getColor(R.color.status_warning));
+		 * chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),
+		 * "breach", 0, getResources().getColor(R.color.status_alarm));
+		 */
 		co2Series.clear();
 		temperatureSeries.clear();
 		humiditySeries.clear();
@@ -386,14 +1174,12 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 				minY0 = minY0 - 10 < 0 ? 0 : minY0 - 10;
 			}
 			/*
-			if (maxY0 < breachThreshold.getCo2UpperBound()) {
-				maxY0 = breachThreshold.getCo2UpperBound() + 10;
-			}
-
-			if (minY0 > warningThreshold.getCo2UpperBound()) {
-				minY0 = warningThreshold.getCo2UpperBound() - 10;
-			}
-			*/
+			 * if (maxY0 < breachThreshold.getCo2UpperBound()) { maxY0 =
+			 * breachThreshold.getCo2UpperBound() + 10; }
+			 * 
+			 * if (minY0 > warningThreshold.getCo2UpperBound()) { minY0 =
+			 * warningThreshold.getCo2UpperBound() - 10; }
+			 */
 			chartRenderer.setYAxisMax(maxY0, 0);
 			chartRenderer.setYAxisMin(minY0, 0);
 
@@ -429,16 +1215,15 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		// sdf.format(maxTime));
 		// tvChartTitle.setText(getChartTitle());
 	}
-	
+
 	private void updateChartDataFinished() {
-		tvChartTitle.setText(getChartTitle());
+		progressDialog.dismiss();
 	}
 
 	private void updateChartDataInProcessing() {
 		IOTLog.d("UserSiteHomePageFragment",
 				"debuginfo - updateChartDataInProcessing: update chart title in processing");
-		String title = getChartTitle();
-		tvChartTitle.setText(title + " - 正在獲取數據...");
+		showProgressDialog();
 	}
 
 	private boolean updateChartData(List<IOTSampleData> samples) {
@@ -447,7 +1232,14 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		chartView.repaint();
 		return true;
 	}
-	
+
+	private void generateChart() {
+		chartData = new ArrayList<IOTSampleData>();
+		createChart();
+		updateChartData();
+		chartView.repaint();
+	}
+
 	public void resendMessage() {
 
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
@@ -456,9 +1248,10 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			chartRC.cancel();
 		}
 
-		Message msg = new Message();
-		msg.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
-		handler.sendMessageDelayed(msg, 2000);
+		//Message msg = new Message();
+		//msg.what = Constants.MessageKey.MESSAGE_GET_CHART_DATA;
+		// handler.sendMessageDelayed(msg, 2000);
+		handler.sendEmptyMessage(Constants.MessageKey.MESSAGE_GET_CHART_DATA);
 
 	}
 
@@ -478,6 +1271,307 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		} else {
 			return "即時資料(資料範圍:" + chartTimeDuration + "分鐘)";
 		}
+	}
+
+	private Date getStartTime(int preDefinedTimePeriod) {
+		Date result = null;
+		switch (preDefinedTimePeriod) {
+		case TIME_PERIOD_TODAY: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_YESTERDAY: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.add(Calendar.DATE, -1);
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_THIS_WEEK: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			while (now.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+				now.add(Calendar.DATE, -1);
+			}
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_WEEK: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			while (now.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+				now.add(Calendar.DATE, -1);
+			}
+			now.add(Calendar.DATE, -7);
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_THIS_MONTH: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.DAY_OF_MONTH, 1);
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_MONTH: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.DAY_OF_MONTH, 1);
+			now.add(Calendar.MONTH, -1);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_3DAYS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.add(Calendar.DATE, -3);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_5DAYS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.add(Calendar.DATE, -5);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_7DAYS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.add(Calendar.DATE, -7);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_1WEEK: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			while (now.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+				now.add(Calendar.DATE, -1);
+			}
+			now.add(Calendar.DATE, -7);
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_2WEEKS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			while (now.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+				now.add(Calendar.DATE, -1);
+			}
+			now.add(Calendar.DATE, -14);
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_3WEEKS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			while (now.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+				now.add(Calendar.DATE, -1);
+			}
+			now.add(Calendar.DATE, -21);
+
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_1MONTH: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.DAY_OF_MONTH, 1);
+			now.add(Calendar.MONTH, -1);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_2MONTHS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.DAY_OF_MONTH, 1);
+			now.add(Calendar.MONTH, -2);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_LAST_3MONTHS: {
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 0);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			now.set(Calendar.DAY_OF_MONTH, 1);
+			now.add(Calendar.MONTH, -3);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_1_HOUR: {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.HOUR_OF_DAY, -1);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_4_HOURS: {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.HOUR_OF_DAY, -4);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_8_HOURS: {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.HOUR_OF_DAY, -8);
+			result = now.getTime();
+			break;
+		}
+		}
+
+		return result;
+	}
+
+	private Date getEndTime(int preDefinedTimePeriod) {
+		Date startTime = getStartTime(preDefinedTimePeriod);
+		if (startTime == null) {
+			return null;
+		} else {
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startTime);
+
+			Date result = null;
+			switch (preDefinedTimePeriod) {
+			case TIME_PERIOD_TODAY: {
+				result = Calendar.getInstance().getTime();
+				break;
+			}
+			case TIME_PERIOD_YESTERDAY: {
+				cal.add(Calendar.DATE, 1);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_THIS_WEEK: {
+				result = Calendar.getInstance().getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_WEEK: {
+				cal.add(Calendar.DATE, 7);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_THIS_MONTH: {
+				result = Calendar.getInstance().getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_MONTH: {
+				cal.add(Calendar.MONTH, 1);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_3DAYS: {
+				cal.add(Calendar.DATE, 3);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_5DAYS: {
+				cal.add(Calendar.DATE, 5);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_7DAYS: {
+				cal.add(Calendar.DATE, 7);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_1WEEK: {
+				cal.add(Calendar.DATE, 7);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_2WEEKS: {
+				cal.add(Calendar.DATE, 14);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_3WEEKS: {
+				cal.add(Calendar.DATE, 21);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_1MONTH: {
+				cal.add(Calendar.MONTH, 1);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_2MONTHS: {
+				cal.add(Calendar.MONTH, 2);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_LAST_3MONTHS: {
+				cal.add(Calendar.MONTH, 3);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_1_HOUR: {
+				cal.add(Calendar.HOUR_OF_DAY, 1);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_4_HOURS: {
+				cal.add(Calendar.HOUR_OF_DAY, 4);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_8_HOURS: {
+				cal.add(Calendar.HOUR_OF_DAY, 8);
+				result = cal.getTime();
+				break;
+			}
+			}
+			return result;
+		}
+	}
+	
+	
+	private void showProgressDialog() {
+		progressDialog = ProgressDialog.show(this, "", getString(R.string.chart_waiting), true);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressDialog.setCanceledOnTouchOutside(false);
+		progressDialog.setCancelable(true);
+		progressDialog.setOnCancelListener(new OnCancelListener() {
+
+			@Override
+			public void onCancel(DialogInterface dialog) {
+			}
+		});
 	}
 
 	private boolean sendQueryChartDataRequest(String deviceID) {
@@ -713,6 +1807,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		@Override
 		public void onRequestGetControl(RequestControl control) {
 			this.control = control;
+			chartRC = control;
 		}
 
 		@Override
@@ -730,6 +1825,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		@Override
 		public void onRequestComplete() {
 			isChartRequestHandling = false;
+			chartRC = null;
 
 			IOTLog.d(
 					"GetRealtimeChartDataListener",
@@ -796,6 +1892,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		@Override
 		public void onRequestGetControl(RequestControl control) {
 			this.control = control;
+			chartRC = control;
 		}
 
 		@Override
@@ -812,6 +1909,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 
 		@Override
 		public void onRequestComplete() {
+			chartRC = null;
 		}
 	}
 

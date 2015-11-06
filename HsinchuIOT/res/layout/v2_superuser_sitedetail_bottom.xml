@@ -1,80 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" 
-    android:gravity="center_horizontal">
-    
-<ToggleButton
-         android:id="@+id/interval_btn_realtime"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginBottom="10dp"
-         android:layout_marginLeft="10dp"
-         android:layout_marginRight="-2dp"
-         android:background="@drawable/button_language_left"
-         android:padding="5dp"
-         android:textOff="@string/chart_interval_realtime"
-         android:textOn="@string/chart_interval_realtime"
-         android:textColor="@drawable/button_text_color"
-         android:textSize="14sp"
-         android:checked="true" />
+    android:gravity="center_horizontal"
+    android:orientation="horizontal" >
 
- 	<ToggleButton
-         android:id="@+id/interval_btn_byhour"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginBottom="10dp"
-         android:background="@drawable/button_language_middle"
-         android:padding="5dp"
-         android:textOff="@string/chart_interval_byhour"
-         android:textOn="@string/chart_interval_byhour"
-         android:textColor="@drawable/button_text_color"
-         android:textSize="14sp" />
- 	<ToggleButton
-         android:id="@+id/interval_btn_by8hours"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginBottom="10dp"
-         android:background="@drawable/button_language_middle"
-         android:padding="5dp"
-         android:textOff="@string/chart_interval_by8hours"
-         android:textOn="@string/chart_interval_by8hours"
-         android:textColor="@drawable/button_text_color"
-         android:textSize="14sp" />
- 	<ToggleButton
-         android:id="@+id/interval_btn_byday"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginBottom="10dp"
-         android:background="@drawable/button_language_middle"
-         android:padding="5dp"
-         android:textOff="@string/chart_interval_byday"
-         android:textOn="@string/chart_interval_byday"
-         android:textColor="@drawable/button_text_color"
-         android:textSize="14sp" />
- 	<ToggleButton
-         android:id="@+id/interval_btn_byweek"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginBottom="10dp"
-         android:background="@drawable/button_language_middle"
-         android:padding="5dp"
-         android:textOff="@string/chart_interval_byweek"
-         android:textOn="@string/chart_interval_byweek"
-         android:textColor="@drawable/button_text_color"
-         android:textSize="14sp" />
- 	<ToggleButton
-         android:id="@+id/interval_btn_bymonth"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_marginBottom="10dp"
-         android:layout_marginLeft="-2dp"
-         android:layout_marginRight="10dp"
-         android:background="@drawable/button_language_right"
-         android:padding="5dp"
-         android:textOff="@string/chart_interval_bymonth"
-         android:textOn="@string/chart_interval_bymonth"
-         android:textColor="@drawable/button_text_color"
-         android:textSize="14sp" />
+    <RadioGroup
+        android:id="@+id/interval_btn_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/interval_btn_realtime"
+            style="@style/radio_button_left"
+            android:checked="true"
+            android:text="@string/chart_interval_realtime" />
+
+        <RadioButton
+            android:id="@+id/interval_btn_byhour"
+            style="@style/radio_button_middle"
+            android:text="@string/chart_interval_byhour" />
+
+        <RadioButton
+            android:id="@+id/interval_btn_by8hours"
+            style="@style/radio_button_middle"
+            android:text="@string/chart_interval_by8hours" />
+
+        <RadioButton
+            android:id="@+id/interval_btn_byday"
+            style="@style/radio_button_middle"
+            android:text="@string/chart_interval_byday" />
+
+        <RadioButton
+            android:id="@+id/interval_btn_byweek"
+            style="@style/radio_button_middle"
+            android:text="@string/chart_interval_byweek" />
+
+        <RadioButton
+            android:id="@+id/interval_btn_bymonth"
+            style="@style/radio_button_right"
+            android:text="@string/chart_interval_bymonth" />
+    </RadioGroup>
 </LinearLayout>

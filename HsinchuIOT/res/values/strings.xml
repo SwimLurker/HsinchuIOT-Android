@@ -87,4 +87,25 @@
     <string name="chart_interval_byday">日</string>
     <string name="chart_interval_byweek">周</string>
     <string name="chart_interval_bymonth">月</string>
+    
+    <string name="chart_settimescope">設置時間範圍</string>
+     <string name="chart_timescope_from">從</string>
+     <string name="chart_timescope_to">到</string>
+     
+     <string name="chart_time_scope_1hour">壹小時</string>
+     <string name="chart_time_scope_4hours">四小時</string>
+     <string name="chart_time_scope_8hours">八小時</string>
+     <string name="chart_time_scope_today">今天</string>
+     <string name="chart_time_scope_yesterday">昨天</string>
+     <string name="chart_time_scope_last3days">前三天</string>
+     <string name="chart_time_scope_last5days">前五天</string>
+     <string name="chart_time_scope_thisweek">本周</string>
+     <string name="chart_time_scope_lastweek">上周</string>
+     <string name="chart_time_scope_last2weeks">前兩周</string>
+     <string name="chart_time_scope_last3weeks">前三周</string>
+     <string name="chart_time_scope_thismonth">本月</string>
+     <string name="chart_time_scope_lastmonth">上月</string>
+     <string name="chart_time_scope_last2months">前兩月</string>
+     <string name="chart_time_scope_last3months">前三月</string>
+     <string name="chart_waiting">正在獲取數據...</string>
 </resources>

@@ -1,6 +1,7 @@
 package org.slstudio.hsinchuiot.fragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.MainActivity;
@@ -9,6 +10,7 @@ import org.slstudio.hsinchuiot.SiteDetailActivity;
 import org.slstudio.hsinchuiot.V2SuperUserSiteDetailActivity;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.ui.adapter.V2SiteListViewAdapter;
+import org.slstudio.hsinchuiot.util.ReportUtil;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -85,9 +87,35 @@ public abstract class V2ListViewTab extends Fragment {
 				if (position == 0)
 					return;
 
+				Calendar to = Calendar.getInstance();
+				to.set(Calendar.MINUTE, 0);
+				to.set(Calendar.SECOND, 0);
+				
+				Calendar from = Calendar.getInstance();
+				from.set(Calendar.MINUTE, 0);
+				from.set(Calendar.SECOND, 0);
+				from.add(Calendar.HOUR_OF_DAY, -8);
+				
 				Intent intent = new Intent();
 				intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE,
 						(Site) lvAdapter.getItem(position));
+				
+				intent.putExtra(Constants.ActivityPassValue.CHART_TYPE,
+						Constants.ChartSettings.CHART_TYPE_AGGRAGATION);
+				
+				intent.putExtra(Constants.ActivityPassValue.CHART_RT_DURATION,
+						5);
+				
+				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_GRANULARITY,
+						Constants.ChartSettings.GRANULARITY_HOUR);
+				
+				
+				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_STARTTIME,
+						from.getTime().getTime());
+				
+				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME,
+						to.getTime().getTime());
+				
 				intent.setClass(getActivity(), V2SuperUserSiteDetailActivity.class);
 				startActivity(intent);
 			}

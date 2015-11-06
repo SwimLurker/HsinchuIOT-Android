@@ -49,6 +49,11 @@ public class UserChartSettingsActivity extends BaseActivity {
 	public static final int TIME_PERIOD_LAST_1MONTH = 12;
 	public static final int TIME_PERIOD_LAST_2MONTHS = 13;
 	public static final int TIME_PERIOD_LAST_3MONTHS = 14;
+	public static final int TIME_PERIOD_1_HOUR = 15;
+	public static final int TIME_PERIOD_4_HOURS = 16;
+	public static final int TIME_PERIOD_8_HOURS = 17;
+	
+	
 
 	private static int START_YEAR = 1990, END_YEAR = 2100;
 
@@ -764,6 +769,24 @@ public class UserChartSettingsActivity extends BaseActivity {
 			result = now.getTime();
 			break;
 		}
+		case TIME_PERIOD_1_HOUR: {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.HOUR_OF_DAY, -1);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_4_HOURS: {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.HOUR_OF_DAY, -4);
+			result = now.getTime();
+			break;
+		}
+		case TIME_PERIOD_8_HOURS: {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.HOUR_OF_DAY, -8);
+			result = now.getTime();
+			break;
+		}
 		}
 
 		return result;
@@ -846,6 +869,21 @@ public class UserChartSettingsActivity extends BaseActivity {
 			}
 			case TIME_PERIOD_LAST_3MONTHS: {
 				result = getEndTime(TIME_PERIOD_TODAY);
+				break;
+			}
+			case TIME_PERIOD_1_HOUR: {
+				cal.add(Calendar.HOUR_OF_DAY, 1);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_4_HOURS: {
+				cal.add(Calendar.HOUR_OF_DAY, 4);
+				result = cal.getTime();
+				break;
+			}
+			case TIME_PERIOD_8_HOURS: {
+				cal.add(Calendar.HOUR_OF_DAY, 8);
+				result = cal.getTime();
 				break;
 			}
 			}

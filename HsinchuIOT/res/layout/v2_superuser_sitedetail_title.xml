@@ -43,10 +43,10 @@
             android:layout_height="wrap_content"
             android:background="@drawable/button_timescope" />
          <ImageButton
-            android:id="@+id/btn_interval"
+            android:id="@+id/btn_timescope2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_interval" />
+            android:background="@drawable/button_timescope2" />
        
     </LinearLayout>
 	 <View
