@@ -9,6 +9,9 @@ import java.util.Date;
 
 
 
+
+import org.slstudio.hsinchuiot.AppConfig;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -182,6 +185,8 @@ public class User implements Serializable {
 	}
 
 	public boolean isAdminUser(){
+		if(AppConfig.TESTING) return true;
+		
 		return PERMISSION_ADMINUSER.equals(permission);
 	}
 	

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.slstudio.hsinchuiot.AppConfig;
 import org.slstudio.hsinchuiot.service.IOTException;
 import org.slstudio.hsinchuiot.service.http.ResponseParser;
 import org.slstudio.hsinchuiot.util.IOTLog;
@@ -34,15 +35,20 @@ public class SiteListJSONParser implements ResponseParser{
 			JsonNode node = objectMapper.readTree(in);
 			IOTLog.i("HTTP Result", node.toString());
 			
+			String symbol = "$";
+			if(AppConfig.TESTING){
+				symbol = "@";
+			}
+			
 			int count = node.get("count").asInt();
 			for(int i=1; i<=count; i++){
-				int did = node.get(Integer.toString(i)).get("did").get("$").asInt();
-				String deviceSN = node.get(Integer.toString(i)).get("sn").get("$").asText();
-				String domainName = node.get(Integer.toString(i)).get("domain_name").get("$").asText();
+				int did = node.get(Integer.toString(i)).get("did").get(symbol).asInt();
+				String deviceSN = node.get(Integer.toString(i)).get("sn").get(symbol).asText();
+				String domainName = node.get(Integer.toString(i)).get("domain_name").get(symbol).asText();
 				
-				String co2Value = node.get(Integer.toString(i)).get("co2_eight_hours_avg").get("$").asText();
-				String temperatureValue = node.get(Integer.toString(i)).get("temp_hour_avg").get("$").asText();
-				String humidityValue = node.get(Integer.toString(i)).get("humidity_hour_avg").get("$").asText();
+				String co2Value = node.get(Integer.toString(i)).get("co2_eight_hours_avg").get(symbol).asText();
+				String temperatureValue = node.get(Integer.toString(i)).get("temp_hour_avg").get(symbol).asText();
+				String humidityValue = node.get(Integer.toString(i)).get("humidity_hour_avg").get(symbol).asText();
 				
 				Device d = new Device();
 				d.setDeviceID(Integer.toString(did));

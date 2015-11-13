@@ -4,14 +4,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.slstudio.hsinchuiot.Constants;
-import org.slstudio.hsinchuiot.MainActivity;
 import org.slstudio.hsinchuiot.R;
-import org.slstudio.hsinchuiot.SiteDetailActivity;
-import org.slstudio.hsinchuiot.V2SuperUserSiteDetailActivity;
+import org.slstudio.hsinchuiot.V2SiteDetailActivity;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.ui.adapter.V2SiteListViewAdapter;
-import org.slstudio.hsinchuiot.util.ReportUtil;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -116,7 +112,7 @@ public abstract class V2ListViewTab extends Fragment {
 				intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME,
 						to.getTime().getTime());
 				
-				intent.setClass(getActivity(), V2SuperUserSiteDetailActivity.class);
+				intent.setClass(getActivity(), V2SiteDetailActivity.class);
 				startActivity(intent);
 			}
 

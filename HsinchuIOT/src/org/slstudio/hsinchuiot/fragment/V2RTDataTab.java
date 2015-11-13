@@ -3,7 +3,9 @@ package org.slstudio.hsinchuiot.fragment;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
+import org.slstudio.hsinchuiot.AppConfig;
 import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.R;
 import org.slstudio.hsinchuiot.SuperUserMainActivity;
@@ -79,6 +81,31 @@ public class V2RTDataTab extends V2ListViewTab {
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
 	}
 
+	private void sendQueryMultipleDevicesRealtimeDataRequest(
+			List<Device> devices) {
+
+		HttpRequest request = new NoneAuthedHttpRequest(
+				new HttpConfig.GetHttpConfig(),
+				Constants.ServerAPIURI.GET_REALTIME_DATA_MULTIPLEDEVICES_V2);
+		String sessionID = ServiceContainer.getInstance().getSessionService()
+				.getSessionID();
+		request.addParameter("dataType", "xml");
+		request.addParameter("__session_id", sessionID);
+		request.addParameter("__page_no", "1");
+		request.addParameter("__column", "did,sensor,name,value,t");
+		request.addParameter("__having_max", "id");
+		request.addParameter("__group_by", "did,name");
+		request.addParameter("__sort", "-id");
+
+		for (int i = 0; i < devices.size(); i++) {
+			request.addParameter("did[" + i + "]", devices.get(i).getDeviceID());
+		}
+
+		GetMultipleDevicesRealtimeDataListener l = new GetMultipleDevicesRealtimeDataListener();
+
+		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
+	}
+
 	private class GetDeviceListListener extends
 			ForgroundRequestListener<List<Device>> {
 
@@ -114,11 +141,15 @@ public class V2RTDataTab extends V2ListViewTab {
 			}
 
 			lvAdapter.setItems(sites);
-
-			for (Device d : deviceList) {
-				sendQueryRealtimeDataRequest(d.getDeviceID());
+			if(AppConfig.TESTING){
+				sendQueryMultipleDevicesRealtimeDataRequest(deviceList);
+			}else{
+			
+				for (Device d : deviceList) {
+					sendQueryRealtimeDataRequest(d.getDeviceID());
+				}
+			 
 			}
-
 			handler.post(new Runnable() {
 
 				@Override
@@ -150,7 +181,7 @@ public class V2RTDataTab extends V2ListViewTab {
 
 		@Override
 		public void onRequestResult(final List<IOTSampleData> result) {
-			
+
 			final IOTMonitorData data = new IOTMonitorData();
 			for (IOTSampleData sample : result) {
 				if (sample.getType() == IOTSampleData.IOTSampleDataType.CO2) {
@@ -161,18 +192,92 @@ public class V2RTDataTab extends V2ListViewTab {
 					data.setHumidity(sample.getValue());
 				}
 			}
-			
+
 			List<Site> sites = lvAdapter.getItems();
-			
-			for(Site s: sites){
-				if(s.getDevice().getDeviceID().equals(deviceID)){
+
+			for (Site s : sites) {
+				if (s.getDevice().getDeviceID().equals(deviceID)) {
 					s.setMonitorData(data);
 					break;
 				}
 			}
-			
+
 			lvAdapter.setItems(sites);
+
+			handler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					lvAdapter.notifyDataSetChanged();
+				}
+
+			});
+		}
+
+		@Override
+		public void onRequestGetControl(RequestControl control) {
+			this.control = control;
+		}
+
+		@Override
+		public void onRequestStart() {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onRequestError(Exception e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void onRequestComplete() {
+		}
+	}
+
+	private class GetMultipleDevicesRealtimeDataListener implements
+			RequestListener<Map<String, List<IOTSampleData>>> {
+		private RequestControl control;
+
+		public GetMultipleDevicesRealtimeDataListener() {
+		}
+
+		@Override
+		public void onRequestCancelled() {
+			if (control != null)
+				control.cancel();
+
+		}
+
+		@Override
+		public void onRequestResult(
+				final Map<String, List<IOTSampleData>> result) {
+
 			
+			
+			
+
+			List<Site> sites = lvAdapter.getItems();
+
+			for (Site s : sites) {
+				
+				List<IOTSampleData> samples = result.get(s.getDevice().getDeviceID());
+				final IOTMonitorData data = new IOTMonitorData();
+				for (IOTSampleData sample : samples) {
+					if (sample.getType() == IOTSampleData.IOTSampleDataType.CO2) {
+						data.setCo2(sample.getValue());
+					} else if (sample.getType() == IOTSampleData.IOTSampleDataType.TEMPERATURE) {
+						data.setTemperature(sample.getValue());
+					} else if (sample.getType() == IOTSampleData.IOTSampleDataType.HUMIDITY) {
+						data.setHumidity(sample.getValue());
+					}
+				}
+				s.setMonitorData(data);
+			}
+
+			lvAdapter.setItems(sites);
+
 			handler.post(new Runnable() {
 
 				@Override

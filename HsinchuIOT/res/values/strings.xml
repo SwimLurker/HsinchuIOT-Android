@@ -30,6 +30,7 @@
 	<string name="error_message_chart_settings_require_endtime">需要填寫結束時間</string>
 	<string name="error_message_chart_settings_invalid_starttime">開始時間應早於結束時間</string>
 	<string name="error_message_user_permission_wrong">用戶權限錯誤，禁止登錄</string>
+	<string name="error_message_gcm_register_failed">推送服務註冊失敗，推送服務不可用</string>
 	<!-- login -->
     <string name="common_login_hint_username">請輸入您的帳號</string>
     <string name="common_login_hint_password">請輸入您的密碼</string>
@@ -56,9 +57,9 @@
     <string name="superuser_main_8hrtitle">二氧化碳8小時均值: </string>
     <string name="superuser_main_1hrtitle">溫度濕度1小時均值: </string>
     
-    <string name="co2">二氧化碳</string>
-    <string name="temperature">溫度</string>
-    <string name="humidity">濕度</string>
+    <string name="co2">二氧化碳:</string>
+    <string name="temperature">溫度:</string>
+    <string name="humidity">濕度:</string>
     
     
     <string name="pull_to_refresh_pull_label">下拉刷新</string>

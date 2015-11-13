@@ -10,9 +10,11 @@ import org.slstudio.hsinchuiot.responseparser.IOTAggregationDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTMonitorDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTReportDataParser;
 import org.slstudio.hsinchuiot.responseparser.IOTSampleDataListParser;
+import org.slstudio.hsinchuiot.responseparser.PushDeviceBindingParser;
 import org.slstudio.hsinchuiot.responseparser.SessionIDParser;
 import org.slstudio.hsinchuiot.responseparser.SiteListJSONParser;
 import org.slstudio.hsinchuiot.responseparser.UserParser;
+import org.slstudio.hsinchuiot.responseparser.V2IOTSampleDataListParser;
 
 public class ResponseParseMapping {
 	public static Map<String, ResponseParser> parserMapping = new HashMap<String, ResponseParser>();
@@ -33,6 +35,8 @@ public class ResponseParseMapping {
 		//parserMapping.put(Constants.ServerAPIURI.GET_DEVICE_LIST_WITH_AGG_DATA, new DeviceListWithAggregationDataParser());
 		parserMapping.put(Constants.ServerAPIURI.GET_SITE_LIST_WITH_AGG_DATA, new SiteListJSONParser());
 		parserMapping.put(Constants.ServerAPIURI.COMMON_CHKVERSION, new CheckVersionJSONParser());
+		parserMapping.put(Constants.ServerAPIURI.GET_REALTIME_DATA_MULTIPLEDEVICES_V2, new V2IOTSampleDataListParser());
+		parserMapping.put(Constants.ServerAPIURI.PUSH_DEVICE_BINDING, new PushDeviceBindingParser());
 	}
 	
 	public static ResponseParser getResponseParser(String requestURI){

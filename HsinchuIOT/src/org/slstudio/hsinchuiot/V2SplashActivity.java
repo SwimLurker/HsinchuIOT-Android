@@ -2,12 +2,16 @@ package org.slstudio.hsinchuiot;
 
 import java.io.File;
 import java.util.Locale;
+import java.util.UUID;
 
 import org.slstudio.hsinchuiot.model.User;
 import org.slstudio.hsinchuiot.service.IOTException;
 import org.slstudio.hsinchuiot.service.LoginService;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.util.IOTLog;
 import org.slstudio.hsinchuiot.util.ImageUtil;
+
+import com.google.android.gcm.GCMRegistrar;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -45,7 +49,7 @@ public class V2SplashActivity extends BaseActivity {
 					public void run() {
 						prepare();
 						login();
-						//showDebugActivity(Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
+						// showDebugActivity(Constants.Action.HSINCHUIOT_USER_CHART_SETTINGS);
 					}
 
 				}).start();
@@ -57,7 +61,8 @@ public class V2SplashActivity extends BaseActivity {
 	}
 
 	private void showProgressDialog() {
-		progressDialog = ProgressDialog.show(V2SplashActivity.this, "", getString(R.string.common_please_wait), true);
+		progressDialog = ProgressDialog.show(V2SplashActivity.this, "",
+				getString(R.string.common_please_wait), true);
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setCanceledOnTouchOutside(false);
 		progressDialog.setCancelable(true);
@@ -92,8 +97,8 @@ public class V2SplashActivity extends BaseActivity {
 		progressDialog.dismiss();
 		finish();
 	}
-	
-	private void showDebugActivity(String action){
+
+	private void showDebugActivity(String action) {
 		Intent intent = new Intent(action);
 		startActivity(intent);
 		progressDialog.dismiss();
@@ -101,10 +106,10 @@ public class V2SplashActivity extends BaseActivity {
 	}
 
 	private void prepare() {
-		//prepareThumbnailImage();
-		ServiceContainer.getInstance().getUpgradeController().resetFirstTimeCheckFlag();
+		// prepareThumbnailImage();
+		ServiceContainer.getInstance().getUpgradeController()
+				.resetFirstTimeCheckFlag();
 		setCurrentLanguage();
-		
 	}
 
 	private void prepareThumbnailImage() {
@@ -117,46 +122,84 @@ public class V2SplashActivity extends BaseActivity {
 			dir.mkdirs();
 		}
 
-		Bitmap siteImage = ImageUtil.getBitmapFromResource(this.getResources(), R.drawable.site_a);
-		ImageUtil.writeBitmapToFile(siteImage, imageDir + "/" + siteImageFilename);
+		Bitmap siteImage = ImageUtil.getBitmapFromResource(this.getResources(),
+				R.drawable.site_a);
+		ImageUtil.writeBitmapToFile(siteImage, imageDir + "/"
+				+ siteImageFilename);
 
-		Bitmap thumbnailImage = ImageUtil.getImageThumbnail(imageDir + "/" + siteImageFilename, 128, 128);
-		ImageUtil.writeBitmapToFile(thumbnailImage, thumbnailDir + "/" + siteImageFilename);
+		Bitmap thumbnailImage = ImageUtil.getImageThumbnail(imageDir + "/"
+				+ siteImageFilename, 128, 128);
+		ImageUtil.writeBitmapToFile(thumbnailImage, thumbnailDir + "/"
+				+ siteImageFilename);
 
 	}
 
 	private void login() {
-		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(V2SplashActivity.this,
-				Constants.PreferenceKey.LOGINNAME);
-		String password = ServiceContainer.getInstance().getPerferenceService().getValue(V2SplashActivity.this,
-				Constants.PreferenceKey.PASSWORD);
+		String loginName = ServiceContainer
+				.getInstance()
+				.getPerferenceService()
+				.getValue(V2SplashActivity.this,
+						Constants.PreferenceKey.LOGINNAME);
+		String password = ServiceContainer
+				.getInstance()
+				.getPerferenceService()
+				.getValue(V2SplashActivity.this,
+						Constants.PreferenceKey.PASSWORD);
 
 		if (loginName.equals("") || password.equals("")) {
 			showLoginActivity();
 		} else {
 			try {
 				if (LoginService.getInstance().login(loginName, password)) {
-					ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_WARNING,
-							LoginService.getWarningThreshold(this));
-					ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.THRESHOLD_BREACH,
-							LoginService.getBreachThreshold(this));
-					User loginUser = ServiceContainer.getInstance().getSessionService().getLoginUser();
+					ServiceContainer
+							.getInstance()
+							.getSessionService()
+							.setSessionValue(
+									Constants.SessionKey.THRESHOLD_WARNING,
+									LoginService.getWarningThreshold(this));
+					ServiceContainer
+							.getInstance()
+							.getSessionService()
+							.setSessionValue(
+									Constants.SessionKey.THRESHOLD_BREACH,
+									LoginService.getBreachThreshold(this));
+					User loginUser = ServiceContainer.getInstance()
+							.getSessionService().getLoginUser();
 
 					if (loginUser == null) {
 						showLoginActivity();
 					} else {
 						if (loginUser.isAdminUser()) {
+							//handle gcm register
+							ServiceContainer.getInstance().getPushService().registerGSM();
+							
 							gotoAdminUserMainScreen();
-						} else if(loginUser.isNormalUser()) {
-							int refreshTime = 10;
-							String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
-							if(!"".equals(refreshTimeStr)){
+							
+							
+						} else if (loginUser.isNormalUser()) {
+							
+							//handle gcm register
+							ServiceContainer.getInstance().getPushService().registerGSM();
+							
+							int refreshTime = 30;
+							String refreshTimeStr = ServiceContainer
+									.getInstance()
+									.getPerferenceService()
+									.getValue(
+											this,
+											Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
+							if (!"".equals(refreshTimeStr)) {
 								refreshTime = Integer.parseInt(refreshTimeStr);
 							}
-							
-							ServiceContainer.getInstance().getSessionService().setSessionValue(Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME, refreshTime);
+
+							ServiceContainer
+									.getInstance()
+									.getSessionService()
+									.setSessionValue(
+											Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME,
+											refreshTime);
 							gotoNormalUserMainScreen();
-						}else{
+						} else {
 							showLoginActivity();
 						}
 					}
@@ -169,7 +212,7 @@ public class V2SplashActivity extends BaseActivity {
 
 		}
 	}
-	
+
 	private void setCurrentLanguage() {
 		String currentLanguage = ServiceContainer.getInstance()
 				.getPerferenceService()
@@ -177,12 +220,12 @@ public class V2SplashActivity extends BaseActivity {
 
 		Resources resources = getResources();
 		Configuration config = resources.getConfiguration();
-		
-		if(!currentLanguage.equals("")){
+
+		if (!currentLanguage.equals("")) {
 			switchLanguage(currentLanguage);
-		}else if((!config.locale.equals(Locale.ENGLISH))
-				&&(!config.locale.equals(Locale.CHINA))
-				&&(!config.locale.equals(Locale.CHINA))){
+		} else if ((!config.locale.equals(Locale.ENGLISH))
+				&& (!config.locale.equals(Locale.CHINA))
+				&& (!config.locale.equals(Locale.CHINA))) {
 			switchLanguage(Constants.Language.TW);
 		}
 	}

@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.slstudio.hsinchuiot.AppConfig;
+
 public class ReportUtil {
 	private static SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
 	private static SimpleDateFormat sdfDateTime = new SimpleDateFormat(
@@ -80,8 +82,9 @@ public class ReportUtil {
 		return new Calendar[] { lastHour, currentHour };
 	}
 
-	public static String get8HoursTimePeriodString(final Calendar from, final Calendar to) {
-		
+	public static String get8HoursTimePeriodString(final Calendar from,
+			final Calendar to) {
+
 		int fromHour = from.get(Calendar.HOUR_OF_DAY);
 		int toHour = to.get(Calendar.HOUR_OF_DAY);
 
@@ -98,7 +101,8 @@ public class ReportUtil {
 
 	}
 
-	public static String get1HourTimePeriodString(final Calendar from, final Calendar to) {
+	public static String get1HourTimePeriodString(final Calendar from,
+			final Calendar to) {
 
 		int fromHour = from.get(Calendar.HOUR_OF_DAY);
 		int toHour = to.get(Calendar.HOUR_OF_DAY);
@@ -118,33 +122,84 @@ public class ReportUtil {
 		Date d = getServerTime(cal.getTime());
 		return sdfHour2.format(d) + ":00:00";
 	}
-	
+
 	public static String getServerTimeHourString(final Date date) {
 		Date d = getServerTime(date);
 		return sdfHour2.format(d) + ":00:00";
 	}
-	
+
 	public static String getServerTimeDayString(final Calendar cal) {
 		Date d = getServerTime(cal.getTime());
 		return sdfDate2.format(d) + " 00:00:00";
 	}
-	
+
 	public static String getServerTimeDayString(final Date date) {
 		Date d = getServerTime(date);
 		return sdfDate2.format(d) + " 00:00:00";
 	}
 
-	public static Date getServerTime(Date localTime){
+	public static Date getServerTime(Date localTime) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(localTime);
 		c.add(Calendar.HOUR, -8);
 		return c.getTime();
+
 	}
-	
-	public static Date getLocalTime(Date utcTime){
+
+	public static Date getLocalTime(Date utcTime) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(utcTime);
 		c.add(Calendar.HOUR, 8);
 		return c.getTime();
+
 	}
+
+	public static boolean isCO2Alarm(float co2) {
+		if (co2 >= 1000) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isCO2Warning(float co2) {
+		if (co2 >= 800 && co2 < 1000) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isTemperatureAlarm(float temperature) {
+		if (temperature <= 15 || temperature >= 28) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isTemperatureWarning(float temperature) {
+		if (temperature < 16 || temperature > 27) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isHumidityAlarm(float humidity) {
+		if (humidity <= 40 || humidity >= 65) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean isHumidityWarning(float humidity) {
+		if (humidity < 45 || humidity > 60) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 }

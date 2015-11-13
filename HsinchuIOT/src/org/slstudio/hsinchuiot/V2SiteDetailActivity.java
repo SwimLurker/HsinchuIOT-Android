@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.SeriesSelection;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -50,12 +51,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-public class V2SuperUserSiteDetailActivity extends BaseActivity {
+public class V2SiteDetailActivity extends BaseActivity {
 	public final String[] monthSelection = { "01", "02", "03", "04", "05",
 			"06", "07", "08", "09", "10", "11", "12" };
 	public final String[] dateSelection = { "01", "02", "03", "04", "05", "06",
@@ -134,9 +136,8 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 	private Date chartStartTime;
 	private Date chartEndTime;
 
-	private XYMultipleSeriesDataset chartDataset = new XYMultipleSeriesDataset();
-	private XYMultipleSeriesRenderer chartRenderer = new XYMultipleSeriesRenderer(
-			3);
+	private XYMultipleSeriesDataset chartDataset;
+	private XYMultipleSeriesRenderer chartRenderer;
 	private XYSeries co2Series;
 	private XYSeriesRenderer co2Renderer;
 	private XYSeries temperatureSeries;
@@ -350,7 +351,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 							btnTimeScope.setVisibility(View.VISIBLE);
 							btnTimeScope2.setVisibility(View.VISIBLE);
 						}
-						generateChart();
+						//generateChart();
 						resendMessage();
 					}
 
@@ -418,7 +419,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 				.findViewById(R.id.btn_chart_timescope_to_second);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(
-				V2SuperUserSiteDetailActivity.this,
+				V2SiteDetailActivity.this,
 				android.R.style.Theme_Black_NoTitleBar).setView(view);
 
 		final AlertDialog dlg = builder.create();
@@ -488,7 +489,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 
 				dlg.dismiss();
 
-				generateChart();
+				//generateChart();
 				resendMessage();
 			}
 
@@ -514,7 +515,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						yearSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -534,7 +535,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						monthSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -567,7 +568,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 				System.arraycopy(dateSelection, 0, date, 0, maxDate);
 
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(date,
+						V2SiteDetailActivity.this).setItems(date,
 						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -587,7 +588,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						hourSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -607,7 +608,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						minuteSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -627,7 +628,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						secondSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -646,7 +647,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						yearSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -666,7 +667,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						monthSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -699,7 +700,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 				System.arraycopy(dateSelection, 0, date, 0, maxDate);
 
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(date,
+						V2SiteDetailActivity.this).setItems(date,
 						new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -719,7 +720,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						hourSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -739,7 +740,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						minuteSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -759,7 +760,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				Dialog dialog = new AlertDialog.Builder(
-						V2SuperUserSiteDetailActivity.this).setItems(
+						V2SiteDetailActivity.this).setItems(
 						secondSelection, new DialogInterface.OnClickListener() {
 
 							public void onClick(DialogInterface dialog,
@@ -814,7 +815,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 				.findViewById(R.id.btn_chart_timescope2_last3months);
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(
-				V2SuperUserSiteDetailActivity.this,
+				V2SiteDetailActivity.this,
 				android.R.style.Theme_Black_NoTitleBar).setView(view);
 
 		final AlertDialog dlg = builder.create();
@@ -995,14 +996,15 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 	private void setChartTimePeriod(int period) {
 		chartStartTime = getStartTime(period);
 		chartEndTime = getEndTime(period);
-		generateChart();
+		//generateChart();
 		resendMessage();
 	}
 
 	private void createChart() {
-		chartDataset.clear();
-		chartRenderer.removeAllRenderers();
-
+		//chartDataset.clear();
+		//chartRenderer.removeAllRenderers();
+		chartDataset = new XYMultipleSeriesDataset();
+		chartRenderer = new XYMultipleSeriesRenderer(3);
 		Resources resources = getResources();
 
 		chartRenderer.setApplyBackgroundColor(true);// 设置是否显示背景色
@@ -1026,27 +1028,28 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		chartRenderer.setYLabels(5);
 
 		chartRenderer.setYLabelsColor(0,
-				resources.getColor(R.color.title_bk_green));
+				resources.getColor(R.color.chart_color_co2));
 		chartRenderer.setYAxisAlign(Align.LEFT, 0);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 0);
 
 		chartRenderer.setYLabelsColor(1,
-				resources.getColor(R.color.title_bk_brown));
+				resources.getColor(R.color.chart_color_temperature));
 		chartRenderer.setYAxisAlign(Align.RIGHT, 1);
 		chartRenderer.setYLabelsAlign(Align.RIGHT, 1);
 
 		chartRenderer.setYLabelsColor(2,
-				resources.getColor(R.color.title_bk_purple));
+				resources.getColor(R.color.chart_color_humidity));
 		chartRenderer.setYAxisAlign(Align.RIGHT, 2);
 		chartRenderer.setYLabelsAlign(Align.LEFT, 2);
 
 		chartRenderer.setZoomButtonsVisible(true);// 是否显示放大缩小按钮
 		chartRenderer.setPointSize(3);// 设置点的大小(图上显示的点的大小和图例中点的大小都会被设置)
 		chartRenderer.setPanEnabled(true);
-		chartRenderer.setClickEnabled(false);
+		chartRenderer.setClickEnabled(true);
+		
 
-		chartRenderer.setShowCustomTextTargetLineY(true);
-		chartRenderer.setFillTargetLineWithColor(true);
+		//chartRenderer.setShowCustomTextTargetLineY(true);
+		//chartRenderer.setFillTargetLineWithColor(true);
 
 		co2Series = new XYSeries(resources.getString(R.string.co2), 0);// 定义XYSeries
 		chartDataset.addSeries(co2Series);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -1055,9 +1058,10 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		chartRenderer.addSeriesRenderer(co2Renderer);// 将单个XYSeriesRenderer增加到XYMultipleSeriesRenderer
 		co2Renderer.setPointStyle(PointStyle.CIRCLE);// 点的类型是圆形
 		co2Renderer.setFillPoints(true);// 设置点是否实心
-		co2Renderer.setColor(resources.getColor(R.color.title_bk_green));
+		co2Renderer.setColor(resources.getColor(R.color.chart_color_co2));
 		co2Renderer.setLineWidth(3);
 		co2Renderer.setDisplayChartValues(true);
+		co2Renderer.setChartValuesTextSize(15);
 
 		temperatureSeries = new XYSeries(
 				resources.getString(R.string.temperature), 1);// 定义XYSeries
@@ -1067,10 +1071,11 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		temperatureRenderer.setPointStyle(PointStyle.CIRCLE);// 点的类型是圆形
 		temperatureRenderer.setFillPoints(true);// 设置点是否实心
 		temperatureRenderer
-				.setColor(resources.getColor(R.color.title_bk_brown));
+				.setColor(resources.getColor(R.color.chart_color_temperature));
 		temperatureRenderer.setLineWidth(3);
 
 		temperatureRenderer.setDisplayChartValues(true);
+		temperatureRenderer.setChartValuesTextSize(15);
 
 		humiditySeries = new XYSeries(resources.getString(R.string.humidity), 2);// 定义XYSeries
 		chartDataset.addSeries(humiditySeries);// 在XYMultipleSeriesDataset中添加XYSeries
@@ -1079,9 +1084,10 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		humidityRenderer.setPointStyle(PointStyle.CIRCLE);// 点的类型是圆形
 		humidityRenderer.setPointStrokeWidth(2);
 		humidityRenderer.setFillPoints(true);// 设置点是否实心
-		humidityRenderer.setColor(resources.getColor(R.color.title_bk_purple));
+		humidityRenderer.setColor(resources.getColor(R.color.chart_color_humidity));
 		humidityRenderer.setLineWidth(3);
 		humidityRenderer.setDisplayChartValues(true);
+		humidityRenderer.setChartValuesTextSize(15);
 
 		// FillOutsideLine fill2 = new
 		// FillOutsideLine(FillOutsideLine.Type.BOUNDS_ALL);
@@ -1112,7 +1118,29 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 
 		chartView = IOTChartFactory.getIOTChartView(this, chartDataset,
 				chartRenderer, dateFormat, new String[] { "ppm", "℃", "%" });
-
+		chartView.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				SeriesSelection seriesSelection = chartView.getCurrentSeriesAndPoint();
+				if(seriesSelection != null){
+					int index = seriesSelection.getSeriesIndex();
+					String info;
+					if(index == 0){
+						info = "CO2:";
+					}else if(index == 1){
+						info = "Temperature:";
+					}else if(index == 2){
+						info = "Humidity:";
+					}else{
+						info = "Unknown";
+					}
+					
+					Toast.makeText(V2SiteDetailActivity.this, info + seriesSelection.getValue(), Toast.LENGTH_SHORT).show();
+				}
+			}
+		});
+		
 		chartLayout.removeAllViews();
 		chartLayout.addView(chartView, new LayoutParams(
 				LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
@@ -1133,14 +1161,13 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 		 * chartRenderer.addYTextLabel(breachThreshold.getCo2UpperBound(),
 		 * "breach", 0, getResources().getColor(R.color.status_alarm));
 		 */
+		
 		co2Series.clear();
 		temperatureSeries.clear();
 		humiditySeries.clear();
 
 		Date minTime = new Date();
 		Date maxTime = new Date();
-
-		Collections.sort(chartData);
 
 		for (IOTSampleData sample : chartData) {
 			if (minTime.after(sample.getTime())) {
@@ -1227,7 +1254,9 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 	}
 
 	private boolean updateChartData(List<IOTSampleData> samples) {
+		createChart();
 		chartData = samples;
+		Collections.sort(chartData);
 		updateChartData();
 		chartView.repaint();
 		return true;
@@ -1839,7 +1868,7 @@ public class V2SuperUserSiteDetailActivity extends BaseActivity {
 					.getSessionService()
 					.getSessionValue(
 							Constants.SessionKey.REALTIME_DATA_MONITOR_REFRESH_TIME,
-							10);
+							30);
 			IOTLog.d(
 					"GetRealtimeChartDataListener",
 					"debuginfo(CHART_DATA) - onRequestComplete: send message MESSAGE_GET_CHART_DATA for "

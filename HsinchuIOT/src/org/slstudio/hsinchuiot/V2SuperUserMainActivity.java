@@ -10,10 +10,15 @@ import org.slstudio.hsinchuiot.fragment.V2ListViewTab;
 import org.slstudio.hsinchuiot.fragment.V2RTDataTab;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.ui.MenuView;
+import org.slstudio.hsinchuiot.ui.TVOffAnimation;
 import org.slstudio.hsinchuiot.ui.adapter.V2SiteListViewAdapter;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +26,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -163,7 +169,49 @@ public class V2SuperUserMainActivity extends BaseActivity {
 			tab.updateListView();
 		}
 	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			new AlertDialog.Builder(this)
+					.setTitle("系統提示")
+					.setMessage("確定要退出嗎?")
+					.setPositiveButton(getResources().getString(R.string.yes),
+							new DialogInterface.OnClickListener() {
 
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									View v = V2SuperUserMainActivity.this.findViewById(R.id.view_main_bg_superuser);
+									v.setBackgroundColor(Color.BLACK);
+									new Handler().postDelayed(new Runnable() {
+
+										@Override
+										public void run() {
+											finish();
+										}
+									}, 1000);
+									
+									View v2 = V2SuperUserMainActivity.this.findViewById(R.id.view_main_layout_superuser);
+									v2.startAnimation(new TVOffAnimation());
+								}
+
+							})
+					.setNegativeButton(getResources().getString(R.string.no),
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
+
+							}).create().show();
+
+		}
+
+		return false;
+
+	}
 	protected void switchSysMenuShow() {
 
 		initSysMenu();

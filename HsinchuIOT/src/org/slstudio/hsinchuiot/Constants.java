@@ -78,6 +78,7 @@ public class Constants {
 		
 		public static final String REALTIME_DATA_MONITOR_REFRESH_TIME = "REALTIME_DATA_MONITOR_REFRESH_TIME";
 		
+		public static final String DEVICE_UUID = "DEVICE_UUID";
 		
 	}
 
@@ -147,6 +148,10 @@ public class Constants {
 		public static final String GET_MONTH_AGG_DATA = "M2MAggByMonth/_NBI/list.lua";
 		public static final String GET_REPORT_DATA = "M2M/_NBI/report.lua";
 		public static final String GET_SITE_LIST_WITH_AGG_DATA = "_NBI/app_list.lua";
+		public static final String GET_REALTIME_DATA_MULTIPLEDEVICES_V2 = "M2M_Last/_NBI/list.lua";
+		public static final String PUSH_DEVICE_BINDING = "_NBI/mobile_dev_binding.lua";
+		
+		
 		
 		public static final String USER_LOGIN="api/session";//登陆接口
 		public static final String USER_UPDATEPWD="v1/user/updatePwd.json";//修改密码和忘记

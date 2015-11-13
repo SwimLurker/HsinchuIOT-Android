@@ -35,12 +35,22 @@ public abstract class HttpConfig {
 
 		@Override
 		public String getHostName() {
-			return AppConfig.HTTP_SCHEME + AppConfig.HTTP_DOMAIN;
+			String hostName = AppConfig.HTTP_SCHEME + AppConfig.HTTP_DOMAIN;
+			if(AppConfig.TESTING){
+				hostName = "http://60.30.32.20";
+			}
+			return hostName;
+			
 		}
 
 		@Override
 		public int getHostPort() {
-			return AppConfig.HTTP_PORT;
+			int port = AppConfig.HTTP_PORT;
+			if(AppConfig.TESTING){
+				port = 33661;
+			}
+			return port;
+			
 		}
 
 	}

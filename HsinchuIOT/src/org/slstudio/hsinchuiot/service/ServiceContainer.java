@@ -2,6 +2,7 @@ package org.slstudio.hsinchuiot.service;
 
 import org.slstudio.hsinchuiot.service.db.DatabaseHelper;
 import org.slstudio.hsinchuiot.service.http.HttpRequestHandler;
+import org.slstudio.hsinchuiot.service.push.GCMPushService;
 import org.slstudio.hsinchuiot.upgrade.UpgradeController;
 
 import com.j256.ormlite.android.apptools.OpenHelperManager;
@@ -13,7 +14,9 @@ public class ServiceContainer {
 	private HttpRequestHandler httpHandler;
 	private PerferenceService appStateService;
 	private SessionService sessionService;
-
+	private DeviceUUIDService uuidService;
+	private GCMPushService pushService;
+	
 	private DatabaseHelper databaseHelper;
 	private UpgradeController upgradeController;
 	private String version;
@@ -60,6 +63,20 @@ public class ServiceContainer {
 			sessionService = new SessionService();
 		}
 		return sessionService;
+	}
+	
+	public DeviceUUIDService getDeviceUUIDService(){
+		if(uuidService == null){
+			uuidService = new DeviceUUIDService(context);
+		}
+		return uuidService;
+	}
+	
+	public GCMPushService getPushService(){
+		if(pushService == null){
+			pushService = new GCMPushService(context);
+		}
+		return pushService;
 	}
 	
 	public HttpRequestHandler getHttpHandler() {

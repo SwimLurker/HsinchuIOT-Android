@@ -339,7 +339,8 @@ public class V2LoginActivity extends BaseActivity {
 						.getInstance()
 						.getPerferenceService()
 						.setValue(V2LoginActivity.this,
-								Constants.PreferenceKey.ENCRYPTED_PASSWORD, null);
+								Constants.PreferenceKey.ENCRYPTED_PASSWORD,
+								null);
 			}
 
 			ServiceContainer.getInstance().getSessionService()
@@ -366,7 +367,7 @@ public class V2LoginActivity extends BaseActivity {
 									.getBreachThreshold(V2LoginActivity.this));
 
 			if (loginUser.isNormalUser()) {
-				int refreshTime = 10;
+				int refreshTime = 30;
 				String refreshTimeStr = ServiceContainer
 						.getInstance()
 						.getPerferenceService()
@@ -396,15 +397,34 @@ public class V2LoginActivity extends BaseActivity {
 					 */
 
 					if (loginUser.isAdminUser()) {
+						//handle gcm register
+						try {
+							ServiceContainer.getInstance().getPushService().registerGSM();
+						} catch (IOTException e) {
+							setException(e);
+							showDialog(DIALOG_ERROR);
+							return;
+						}
+						
 						gotoAdminUserMainScreen();
 					} else if (loginUser.isNormalUser()) {
+						try {
+							ServiceContainer.getInstance().getPushService().registerGSM();
+						} catch (IOTException e) {
+							setException(e);
+							showDialog(DIALOG_ERROR);
+							return;
+						}
+						
 						gotoNormalUserMainScreen();
+						
 					} else {
 						setException(new IOTException(
 								-1,
 								getString(R.string.error_message_user_permission_wrong)));
 						showDialog(DIALOG_ERROR);
 						return;
+
 					}
 				}
 			});

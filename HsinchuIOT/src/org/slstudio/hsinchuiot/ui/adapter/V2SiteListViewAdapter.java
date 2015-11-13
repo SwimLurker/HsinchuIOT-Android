@@ -3,6 +3,7 @@ package org.slstudio.hsinchuiot.ui.adapter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.R;
 import org.slstudio.hsinchuiot.R.color;
@@ -10,6 +11,8 @@ import org.slstudio.hsinchuiot.model.IOTMonitorData;
 import org.slstudio.hsinchuiot.model.IOTMonitorThreshold;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
+import org.slstudio.hsinchuiot.util.ReportUtil;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -194,12 +197,12 @@ public class V2SiteListViewAdapter extends BaseAdapter {
 				leftStatusImg
 						.setBackgroundResource(R.drawable.status_icon_co2_missing);
 				co2TV.setText("");
-			} else if (isCO2Alarm(data.getCo2())) {
+			} else if (ReportUtil.isCO2Alarm(data.getCo2())) {
 				co2TV.setTextColor(alarm);
 				co2TV.setText(Float.toString(data.getCo2()) + " ppm");
 				leftStatusImg
 						.setBackgroundResource(R.drawable.status_icon_co2_alarm);
-			} else if (isCO2Warning(data.getCo2())) {
+			} else if (ReportUtil.isCO2Warning(data.getCo2())) {
 				co2TV.setTextColor(warning);
 				co2TV.setText(Float.toString(data.getCo2()) + " ppm");
 				leftStatusImg
@@ -214,13 +217,13 @@ public class V2SiteListViewAdapter extends BaseAdapter {
 				rightStatusImg
 						.setBackgroundResource(R.drawable.status_icon_temperature_missing);
 				temperatureTV.setText("");
-			} else if (isTemperatureAlarm(data.getTemperature())) {
+			} else if (ReportUtil.isTemperatureAlarm(data.getTemperature())) {
 				temperatureTV.setTextColor(alarm);
 				temperatureTV.setText(Float.toString(data.getTemperature())
 						+ " ℃");
 				rightStatusImg
 						.setBackgroundResource(R.drawable.status_icon_temperature_alarm);
-			} else if (isTemperatureWarning(data.getTemperature())) {
+			} else if (ReportUtil.isTemperatureWarning(data.getTemperature())) {
 				temperatureTV.setTextColor(warning);
 				temperatureTV.setText(Float.toString(data.getTemperature())
 						+ " ℃");
@@ -235,10 +238,10 @@ public class V2SiteListViewAdapter extends BaseAdapter {
 			}
 			if (data == null || data.getHumidity() == 0f) {
 				humidityTV.setText("");
-			} else if (isHumidityAlarm(data.getHumidity())) {
+			} else if (ReportUtil.isHumidityAlarm(data.getHumidity())) {
 				humidityTV.setTextColor(alarm);
 				humidityTV.setText(Float.toString(data.getHumidity()) + " %");
-			} else if (isHumidityWarning(data.getHumidity())) {
+			} else if (ReportUtil.isHumidityWarning(data.getHumidity())) {
 				humidityTV.setTextColor(warning);
 				humidityTV.setText(Float.toString(data.getHumidity()) + " %");
 			} else {
@@ -250,54 +253,7 @@ public class V2SiteListViewAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	private boolean isCO2Alarm(float co2) {
-		if (co2 >= 1000) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isCO2Warning(float co2) {
-		if (co2 >= 800 && co2 < 1000) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isTemperatureAlarm(float temperature) {
-		if (temperature <= 15 || temperature >= 28) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isTemperatureWarning(float temperature) {
-		if (temperature < 16 || temperature > 27) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isHumidityAlarm(float humidity) {
-		if (humidity <= 40 || humidity >= 65) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	private boolean isHumidityWarning(float humidity) {
-		if (humidity < 45 || humidity > 60) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
+	
 	private class StatusComparator implements Comparator<Site> {
 
 		@Override
@@ -317,9 +273,9 @@ public class V2SiteListViewAdapter extends BaseAdapter {
 
 			int co2Status = 0;
 			if (co2 != 0f) {
-				if (isCO2Alarm(co2)) {
+				if (ReportUtil.isCO2Alarm(co2)) {
 					co2Status = 1;
-				} else if (isCO2Warning(co2)) {
+				} else if (ReportUtil.isCO2Warning(co2)) {
 					co2Status = 2;
 				} else {
 					co2Status = 5;
@@ -328,9 +284,9 @@ public class V2SiteListViewAdapter extends BaseAdapter {
 
 			int temperatureStatus = 0;
 			if (temperature != 0f) {
-				if (isTemperatureAlarm(temperature)) {
+				if (ReportUtil.isTemperatureAlarm(temperature)) {
 					temperatureStatus = 3;
-				} else if (isTemperatureWarning(temperature)) {
+				} else if (ReportUtil.isTemperatureWarning(temperature)) {
 					temperatureStatus = 4;
 				} else {
 					temperatureStatus = 6;
