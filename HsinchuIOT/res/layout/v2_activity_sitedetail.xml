@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <include layout="@layout/v2_superuser_sitedetail_title" />
+    <include layout="@layout/v2_sitedetail_title" />
 
     <LinearLayout
         android:id="@+id/id_chart_chartdetail"
@@ -14,6 +14,6 @@
         android:orientation="vertical" >
     </LinearLayout>
 
-    <include layout="@layout/v2_superuser_sitedetail_bottom" />
+    <include layout="@layout/v2_sitedetail_bottom" />
 
 </LinearLayout>

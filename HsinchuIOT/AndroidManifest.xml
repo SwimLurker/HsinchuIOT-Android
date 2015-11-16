@@ -253,6 +253,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="org.slstudio.hsinchuiot.V2AlarmActivity"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
+            android:configChanges="orientation|keyboard|screenSize"
+            android:screenOrientation="landscape"
+            >
+            <intent-filter>
+                <action android:name="org.slstudio.hsinchuiot.alarm" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- 
         <activity
             android:name="org.slstudio.hsinchuiot.SuperUserSettingsActivity"

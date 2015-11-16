@@ -43,6 +43,7 @@ public class Constants {
 		public static final int MESSAGE_UPDATE_CHART_DATA = 3;
 		public static final int MESSAGE_UPDATE_MONITOR_DATA = 4;
 		public static final int V2_MESSAGE_UPDATE_TIME = 5;
+		public static final int V2_MESSAGE_UPDATE_ALARM = 6;
 	}
 
 	public static class SessionKey{
@@ -80,6 +81,7 @@ public class Constants {
 		
 		public static final String DEVICE_UUID = "DEVICE_UUID";
 		
+		public static final String ALARM_LIST = "ALARM_LIST";
 	}
 
 	public static final class Expression {
@@ -101,11 +103,14 @@ public class Constants {
 		public static String HSINCHUIOT_USER_SITEDETAIL = "org.slstudio.hsinchuiot.user_sitedetail";
 		public static String HSINCHUIOT_USER_CHARTDETAIL = "org.slstudio.hsinchuiot.user_chartdetail";
 		public static String HSINCHUIOT_SIGNUP_FIRST_BIT = "org.slstudio.hsinchuiot.signup.first.bit.sucess";
-	 
+		public static String HSINCHUIOT_SITEDETAIL = "org.slstudio.hsinchuiot.sitedetail";
+		public static String HSINCHUIOT_ALARM = "org.slstudio.hsinchuiot.alarm";
+		
 	}
 
 	public static class ResultCode{
 		public static final int CHART_SETTINGS = 1;
+		public static final int ALARM_LIST = 2;
 	}
 
 	public static class ActivityPassValue{

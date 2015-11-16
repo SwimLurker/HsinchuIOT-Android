@@ -110,7 +110,20 @@ public class V2SplashActivity extends BaseActivity {
 		ServiceContainer.getInstance().getUpgradeController()
 				.resetFirstTimeCheckFlag();
 		setCurrentLanguage();
+	
+		//add mock alarms
+		String alarmList = ServiceContainer.getInstance().getPerferenceService().getValue(Constants.PreferenceKey.ALARM_LIST);
+		if(alarmList == null|| alarmList.equals("")){
+			String mockAlarmString = "2015-11-09 18:03:30;73;湖口鄉立圖書館;二氧化碳;1020ppm;超標"
+					+ "|2015-11-09 18:09:30;73;M2M;二氧化碳;1020ppm;超標"
+					+ "|2015-11-21 18:39:30;73;3G移动;二氧化碳;1020ppm;接近超標"
+					+ "|2015-11-11 18:09:30;73;M2M;二氧化碳;1020ppm;接近超標";
+			ServiceContainer.getInstance().getPerferenceService().setValue(Constants.PreferenceKey.ALARM_LIST, mockAlarmString);
+		}
+		
+		
 	}
+	
 
 	private void prepareThumbnailImage() {
 		String imageDir = Constants.ImageLoader.IMAGE_ENGINE_CACHE;
@@ -138,12 +151,12 @@ public class V2SplashActivity extends BaseActivity {
 		String loginName = ServiceContainer
 				.getInstance()
 				.getPerferenceService()
-				.getValue(V2SplashActivity.this,
+				.getValue(
 						Constants.PreferenceKey.LOGINNAME);
 		String password = ServiceContainer
 				.getInstance()
 				.getPerferenceService()
-				.getValue(V2SplashActivity.this,
+				.getValue(
 						Constants.PreferenceKey.PASSWORD);
 
 		if (loginName.equals("") || password.equals("")) {
@@ -171,22 +184,27 @@ public class V2SplashActivity extends BaseActivity {
 					} else {
 						if (loginUser.isAdminUser()) {
 							//handle gcm register
-							ServiceContainer.getInstance().getPushService().registerGSM();
-							
+							try{
+								ServiceContainer.getInstance().getPushService().registerGSM();
+							}catch(IOTException exp){
+								
+							}
 							gotoAdminUserMainScreen();
 							
 							
 						} else if (loginUser.isNormalUser()) {
 							
 							//handle gcm register
-							ServiceContainer.getInstance().getPushService().registerGSM();
-							
+							try{
+								ServiceContainer.getInstance().getPushService().registerGSM();
+							}catch(IOTException exp){
+								
+							}
 							int refreshTime = 30;
 							String refreshTimeStr = ServiceContainer
 									.getInstance()
 									.getPerferenceService()
 									.getValue(
-											this,
 											Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
 							if (!"".equals(refreshTimeStr)) {
 								refreshTime = Integer.parseInt(refreshTimeStr);
@@ -216,7 +234,7 @@ public class V2SplashActivity extends BaseActivity {
 	private void setCurrentLanguage() {
 		String currentLanguage = ServiceContainer.getInstance()
 				.getPerferenceService()
-				.getValue(this, Constants.PreferenceKey.LANGUAGE);
+				.getValue(Constants.PreferenceKey.LANGUAGE);
 
 		Resources resources = getResources();
 		Configuration config = resources.getConfiguration();
@@ -244,6 +262,6 @@ public class V2SplashActivity extends BaseActivity {
 		resources.updateConfiguration(config, dm);
 
 		ServiceContainer.getInstance().getPerferenceService()
-				.setValue(this, Constants.PreferenceKey.LANGUAGE, language);
+				.setValue(Constants.PreferenceKey.LANGUAGE, language);
 	}
 }

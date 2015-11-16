@@ -79,10 +79,10 @@ public class V2LoginActivity extends BaseActivity {
 
 		String loginName = ServiceContainer.getInstance()
 				.getPerferenceService()
-				.getValue(this, Constants.PreferenceKey.LOGINNAME);
+				.getValue(Constants.PreferenceKey.LOGINNAME);
 		String encryptedPassword = ServiceContainer.getInstance()
 				.getPerferenceService()
-				.getValue(this, Constants.PreferenceKey.ENCRYPTED_PASSWORD);
+				.getValue(Constants.PreferenceKey.ENCRYPTED_PASSWORD);
 
 		usernameET = (EditText) findViewById(R.id.login_username);
 		if (!loginName.equals("")) {
@@ -178,7 +178,7 @@ public class V2LoginActivity extends BaseActivity {
 		resources.updateConfiguration(config, dm);
 
 		ServiceContainer.getInstance().getPerferenceService()
-				.setValue(this, Constants.PreferenceKey.LANGUAGE, language);
+				.setValue(Constants.PreferenceKey.LANGUAGE, language);
 	}
 
 	protected void doSignIn() {
@@ -305,13 +305,13 @@ public class V2LoginActivity extends BaseActivity {
 				ServiceContainer
 						.getInstance()
 						.getPerferenceService()
-						.setValue(V2LoginActivity.this,
+						.setValue(
 								Constants.PreferenceKey.LOGINNAME, username);
 
 				ServiceContainer
 						.getInstance()
 						.getPerferenceService()
-						.setValue(V2LoginActivity.this,
+						.setValue(
 								Constants.PreferenceKey.PASSWORD,
 								EncryptUtil.getStringMD5(password));
 
@@ -320,25 +320,25 @@ public class V2LoginActivity extends BaseActivity {
 				ServiceContainer
 						.getInstance()
 						.getPerferenceService()
-						.setValue(V2LoginActivity.this,
+						.setValue(
 								Constants.PreferenceKey.ENCRYPTED_PASSWORD,
 								encryptedPwd);
 			} else {
 				ServiceContainer
 						.getInstance()
 						.getPerferenceService()
-						.setValue(V2LoginActivity.this,
+						.setValue(
 								Constants.PreferenceKey.LOGINNAME, null);
 
 				ServiceContainer
 						.getInstance()
 						.getPerferenceService()
-						.setValue(V2LoginActivity.this,
+						.setValue(
 								Constants.PreferenceKey.PASSWORD, null);
 				ServiceContainer
 						.getInstance()
 						.getPerferenceService()
-						.setValue(V2LoginActivity.this,
+						.setValue(
 								Constants.PreferenceKey.ENCRYPTED_PASSWORD,
 								null);
 			}
@@ -372,7 +372,6 @@ public class V2LoginActivity extends BaseActivity {
 						.getInstance()
 						.getPerferenceService()
 						.getValue(
-								V2LoginActivity.this,
 								Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
 				if (!"".equals(refreshTimeStr)) {
 					refreshTime = Integer.parseInt(refreshTimeStr);
@@ -401,9 +400,8 @@ public class V2LoginActivity extends BaseActivity {
 						try {
 							ServiceContainer.getInstance().getPushService().registerGSM();
 						} catch (IOTException e) {
-							setException(e);
-							showDialog(DIALOG_ERROR);
-							return;
+							//setException(e);
+							//showDialog(DIALOG_ERROR);
 						}
 						
 						gotoAdminUserMainScreen();
@@ -411,9 +409,8 @@ public class V2LoginActivity extends BaseActivity {
 						try {
 							ServiceContainer.getInstance().getPushService().registerGSM();
 						} catch (IOTException e) {
-							setException(e);
-							showDialog(DIALOG_ERROR);
-							return;
+							//setException(e);
+							//showDialog(DIALOG_ERROR);
 						}
 						
 						gotoNormalUserMainScreen();

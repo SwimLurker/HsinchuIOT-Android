@@ -56,5 +56,18 @@
     <string name="common_please_wait">Please Wait</string>
     <string name="error_message_user_permission_wrong">User Permission Error, Forbidden Login</string>
 	<string name="error_message_gcm_register_failed">GCM register failed，the push service may not available</string>
-     
+    <string name="alarm_title">Alarm</string> 
+    <string name="label_co2">CO2:</string>
+    <string name="label_temperature">Temperature:</string>
+    <string name="label_humidity">Humidity:</string>
+    <string name="co2">CO2</string>
+    <string name="temperature">Temperature</string>
+    <string name="humidity">Humidity</string>
+    <string name="dlg_title_systemprompt">System Prompt</string>
+    <string name="dlg_caption_deletealarm">Are you sure to delete the alarm info?</string>
+    <string name="dlg_caption_deleteallalarms">Are you sure to delete all alarm info?</string>
+    <string name="dlg_caption_exit">Are you sure want to quit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    
 </resources>

@@ -67,8 +67,8 @@ public class V2UserMainActivity extends BaseActivity {
 						.get(currentIndex);
 				if (currentFragment != null && !isPaused
 						&& !isRTRequestHandling) {
-					if(sendQueryRealtimeDataRequest(currentFragment.getSite()
-							.getDevice().getDeviceID())){
+					if (sendQueryRealtimeDataRequest(currentFragment.getSite()
+							.getDevice().getDeviceID())) {
 						updateDataInProcessing();
 					}
 				}
@@ -97,7 +97,17 @@ public class V2UserMainActivity extends BaseActivity {
 				handler.sendEmptyMessageDelayed(
 						Constants.MessageKey.V2_MESSAGE_UPDATE_TIME, 1000);
 				break;
+
+			case Constants.MessageKey.V2_MESSAGE_UPDATE_ALARM:
+				V2UserSiteHomePageFragment currentFragment4 = fragments
+						.get(currentIndex);
+				if (currentFragment4 != null && !isPaused) {
+					currentFragment4.updateAlarm();
+				}
+
+				break;
 			}
+
 			super.handleMessage(msg);
 		}
 	};
@@ -127,7 +137,7 @@ public class V2UserMainActivity extends BaseActivity {
 			}
 
 		});
-		
+
 		ServiceContainer.getInstance().getUpgradeController()
 				.checkVersion(null, true);
 		// ServiceContainer.getInstance().getUpgradeController().handleUpgrade();
@@ -190,9 +200,10 @@ public class V2UserMainActivity extends BaseActivity {
 		finish();
 
 	}
-	
+
 	public void updateDataFinished() {
-		IOTLog.d("V2UserMainActivity", "debuginfo - updateDataFinished: update data proceed");
+		IOTLog.d("V2UserMainActivity",
+				"debuginfo - updateDataFinished: update data proceed");
 		progressDialog.dismiss();
 	}
 
@@ -202,12 +213,17 @@ public class V2UserMainActivity extends BaseActivity {
 		showProgressDialog();
 	}
 
+	public void updateAlarmStatus() {
+		handler.sendEmptyMessage(Constants.MessageKey.V2_MESSAGE_UPDATE_ALARM);
+	}
+
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			new AlertDialog.Builder(this)
-					.setTitle("系統提示")
-					.setMessage("確定要退出嗎?")
+					.setTitle(getResources().getString(R.string.dlg_title_systemprompt))
+					.setMessage(getResources().getString(R.string.dlg_caption_exit))
 					.setPositiveButton(getResources().getString(R.string.yes),
 							new OnClickListener() {
 
@@ -261,10 +277,9 @@ public class V2UserMainActivity extends BaseActivity {
 	}
 
 	public void resendMessage() {
-		
+
 		handler.removeMessages(Constants.MessageKey.V2_MESSAGE_UPDATE_TIME);
 
-		
 		IOTLog.d("UserMainActivity",
 				"debuginfo(REALTIME_DATA) - resendMessage, remove msgs in queue");
 		handler.removeMessages(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
@@ -275,19 +290,16 @@ public class V2UserMainActivity extends BaseActivity {
 		for (RequestControl rc : monitorRCList) {
 			rc.cancel();
 		}
-		
-		
+
 		if (currentIndex != -1) {
 
 			handler.sendEmptyMessage(Constants.MessageKey.V2_MESSAGE_UPDATE_TIME);
-			
-			
+
 			IOTLog.d(
 					"UserMainActivity",
 					"debuginfo(REALTIME_DATA) - resendMessage, send message MESSAGE_GET_REALTIME_DATA");
 			handler.sendEmptyMessage(Constants.MessageKey.MESSAGE_GET_REALTIME_DATA);
-			
-			
+
 		}
 	}
 
@@ -318,7 +330,7 @@ public class V2UserMainActivity extends BaseActivity {
 
 			@Override
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				
+
 			}
 
 			@Override
@@ -329,7 +341,8 @@ public class V2UserMainActivity extends BaseActivity {
 	}
 
 	private void showProgressDialog() {
-		progressDialog = ProgressDialog.show(this, "", getString(R.string.chart_waiting), true);
+		progressDialog = ProgressDialog.show(this, "",
+				getString(R.string.chart_waiting), true);
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setCanceledOnTouchOutside(false);
 		progressDialog.setCancelable(true);
@@ -340,7 +353,7 @@ public class V2UserMainActivity extends BaseActivity {
 			}
 		});
 	}
-	
+
 	private void getDeviceList() {
 		String sessionID = ServiceContainer.getInstance().getSessionService()
 				.getSessionID();
@@ -382,8 +395,8 @@ public class V2UserMainActivity extends BaseActivity {
 			resendMessage();
 		}
 
-		//handler.sendEmptyMessage(Constants.MessageKey.V2_MESSAGE_UPDATE_TIME);
-		
+		// handler.sendEmptyMessage(Constants.MessageKey.V2_MESSAGE_UPDATE_TIME);
+
 	}
 
 	private boolean sendQueryRealtimeDataRequest(String deviceID) {
@@ -412,7 +425,7 @@ public class V2UserMainActivity extends BaseActivity {
 		GetRealtimeDataListener l = new GetRealtimeDataListener(deviceID);
 
 		ServiceContainer.getInstance().getHttpHandler().doRequest(request, l);
-		
+
 		return true;
 	}
 

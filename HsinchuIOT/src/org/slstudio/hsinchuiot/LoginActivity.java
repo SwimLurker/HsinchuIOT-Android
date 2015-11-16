@@ -180,16 +180,16 @@ public class LoginActivity extends BaseActivity {
 			}
 
 			if (rememberPassword.isChecked()) {
-				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+				ServiceContainer.getInstance().getPerferenceService().setValue(
 						Constants.PreferenceKey.LOGINNAME, username);
 
-				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+				ServiceContainer.getInstance().getPerferenceService().setValue(
 						Constants.PreferenceKey.PASSWORD, EncryptUtil.getStringMD5(password));
 			} else {
-				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+				ServiceContainer.getInstance().getPerferenceService().setValue(
 						Constants.PreferenceKey.LOGINNAME, null);
 
-				ServiceContainer.getInstance().getPerferenceService().setValue(LoginActivity.this,
+				ServiceContainer.getInstance().getPerferenceService().setValue(
 						Constants.PreferenceKey.PASSWORD, null);
 			}
 
@@ -206,7 +206,7 @@ public class LoginActivity extends BaseActivity {
 
 			if(loginUser.isNormalUser()){
 				int refreshTime = 10;
-				String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(LoginActivity.this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
+				String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
 				if(!"".equals(refreshTimeStr)){
 					refreshTime = Integer.parseInt(refreshTimeStr);
 				}

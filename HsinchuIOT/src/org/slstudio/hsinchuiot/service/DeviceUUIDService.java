@@ -16,7 +16,7 @@ public class DeviceUUIDService {
 		if(uuid == null){
 			synchronized(DeviceUUIDService.class){
 				if(uuid == null){
-					final String id = ServiceContainer.getInstance().getPerferenceService().getValue(context, Constants.PreferenceKey.DEVICE_UUID);
+					final String id = ServiceContainer.getInstance().getPerferenceService().getValue(Constants.PreferenceKey.DEVICE_UUID);
 					if(id != null && !id.equals("")){
 						uuid = UUID.fromString(id);
 					}else{
@@ -32,7 +32,7 @@ public class DeviceUUIDService {
                             throw new RuntimeException(e);
                         }
                         // Write the value out to the prefs file
-                        ServiceContainer.getInstance().getPerferenceService().setValue(context, Constants.PreferenceKey.DEVICE_UUID, uuid.toString());
+                        ServiceContainer.getInstance().getPerferenceService().setValue(Constants.PreferenceKey.DEVICE_UUID, uuid.toString());
                     }
 				}
 			}

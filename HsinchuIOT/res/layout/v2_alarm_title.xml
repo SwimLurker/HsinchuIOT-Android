@@ -17,31 +17,27 @@
         android:paddingTop="5dp" >
 
         <ImageButton
-            android:id="@+id/btn_logoff"
+            android:id="@+id/btn_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_logoff" />
-        <ImageButton
-            android:id="@+id/btn_alarm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/button_alarm_red" /> 
+            android:background="@drawable/button_back" />
+         
         <TextView
-            android:id="@+id/user_main_title"
+            android:id="@+id/user_alarm_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="2015-10-23 21:30"
+            android:text="@string/alarm_title"
             android:textColor="@color/black"
             android:textSize="15sp"
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/btn_detail"
+            android:id="@+id/btn_deleteall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_detail" />
+            android:background="@drawable/button_deleteall" />
     </LinearLayout>
 
     <View

@@ -15,7 +15,7 @@ public class FirstActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		
 		final String sessionId = ServiceContainer.getInstance()
-				.getPerferenceService().getSessionId(this);
+				.getPerferenceService().getSessionId();
 		ServiceContainer.getInstance().getUpgradeController()
 		.checkVersion(null, true);
 		if ("".equals(sessionId)) {

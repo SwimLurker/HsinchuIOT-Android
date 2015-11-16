@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.slstudio.hsinchuiot.fragment.V2AverageValueTab;
 import org.slstudio.hsinchuiot.fragment.V2ListViewTab;
@@ -12,6 +13,7 @@ import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.ui.MenuView;
 import org.slstudio.hsinchuiot.ui.TVOffAnimation;
 import org.slstudio.hsinchuiot.ui.adapter.V2SiteListViewAdapter;
+import org.slstudio.hsinchuiot.util.IOTLog;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -26,6 +28,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -51,6 +54,7 @@ public class V2SuperUserMainActivity extends BaseActivity {
 	private List<V2ListViewTab> fragments = new ArrayList<V2ListViewTab>();
 
 	private ImageButton logoffBtn;
+	private ImageButton alarmBtn;
 	private Button sortBtn;
 	private TextView titleTV;
 
@@ -158,8 +162,6 @@ public class V2SuperUserMainActivity extends BaseActivity {
 		super.onDestroy();
 	}
 
-	
-	
 	@Override
 	public void onAttachFragment(Fragment fragment) {
 		// TODO Auto-generated method stub
@@ -174,8 +176,8 @@ public class V2SuperUserMainActivity extends BaseActivity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			new AlertDialog.Builder(this)
-					.setTitle("系統提示")
-					.setMessage("確定要退出嗎?")
+					.setTitle(getResources().getString(R.string.dlg_title_systemprompt))
+					.setMessage(getResources().getString(R.string.dlg_caption_exit))
 					.setPositiveButton(getResources().getString(R.string.yes),
 							new DialogInterface.OnClickListener() {
 
@@ -212,6 +214,25 @@ public class V2SuperUserMainActivity extends BaseActivity {
 		return false;
 
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Constants.ResultCode.ALARM_LIST) {
+			updateAlarmStatus();
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	
+	public void updateAlarmStatus() {
+		String alarmList = ServiceContainer.getInstance().getPerferenceService().getValue(Constants.PreferenceKey.ALARM_LIST);
+		if(alarmList == null || alarmList.equals("")){
+			alarmBtn.setBackgroundResource(R.drawable.button_alarm);
+		}else{
+			alarmBtn.setBackgroundResource(R.drawable.button_alarm_red);
+		}
+	}
+	
 	protected void switchSysMenuShow() {
 
 		initSysMenu();
@@ -259,6 +280,18 @@ public class V2SuperUserMainActivity extends BaseActivity {
 			}
 
 		});
+		
+		alarmBtn = (ImageButton) findViewById(R.id.btn_alarm);
+		alarmBtn.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				showAlarmList();
+			}
+
+		});
+		
+		updateAlarmStatus();
 		
 		titleTV = (TextView)findViewById(R.id.superuser_title);
 		
@@ -360,4 +393,10 @@ public class V2SuperUserMainActivity extends BaseActivity {
 		finish();
 	}
 
+	private void showAlarmList(){
+		Intent intent = new Intent(Constants.Action.HSINCHUIOT_ALARM);
+		startActivityForResult(intent, Constants.ResultCode.ALARM_LIST);
+	}
+	
+	
 }

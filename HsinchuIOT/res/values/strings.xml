@@ -57,9 +57,9 @@
     <string name="superuser_main_8hrtitle">二氧化碳8小時均值: </string>
     <string name="superuser_main_1hrtitle">溫度濕度1小時均值: </string>
     
-    <string name="co2">二氧化碳:</string>
-    <string name="temperature">溫度:</string>
-    <string name="humidity">濕度:</string>
+    <string name="co2">二氧化碳</string>
+    <string name="temperature">溫度</string>
+    <string name="humidity">濕度</string>
     
     
     <string name="pull_to_refresh_pull_label">下拉刷新</string>
@@ -109,4 +109,13 @@
      <string name="chart_time_scope_last2months">前兩月</string>
      <string name="chart_time_scope_last3months">前三月</string>
      <string name="chart_waiting">正在獲取數據...</string>
+     <string name="alarm_title">告警</string>
+     
+     <string name="label_co2">二氧化碳:</string>
+    <string name="label_temperature">溫度:</string>
+    <string name="label_humidity">濕度:</string>
+    <string name="dlg_title_systemprompt">系統提示</string>
+    <string name="dlg_caption_deletealarm">妳確定要刪除該告警信息嗎？</string>
+    <string name="dlg_caption_deleteallalarms">妳確定要刪除全部告警信息嗎？</string>
+    <string name="dlg_caption_exit">妳確定要要退出嗎？</string>
 </resources>

@@ -4,10 +4,12 @@ import java.util.UUID;
 
 import org.slstudio.hsinchuiot.AppConfig;
 import org.slstudio.hsinchuiot.R;
+import org.slstudio.hsinchuiot.model.Alarm;
 import org.slstudio.hsinchuiot.model.User;
 import org.slstudio.hsinchuiot.service.IOTException;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
 import org.slstudio.hsinchuiot.service.push.GCMServerRegister;
+import org.slstudio.hsinchuiot.util.AlarmHelper;
 import org.slstudio.hsinchuiot.util.IOTLog;
 
 import com.google.android.gcm.GCMRegistrar;
@@ -37,15 +39,19 @@ public class GCMPushService {
 				IOTLog.d("GSMPushService", "GCM registered with senderID");
 			} else {
 				IOTLog.d("GSMPushService", "GCM already registered with ID:" + regID);
+				if(!GCMRegistrar.isRegisteredOnServer(context)){
+					registerToServer(regID);
+				}
 			}
+			if(AppConfig.TESTING){
+				AlarmHelper.sendAlarmNotification(context, new Alarm("2015-11-11 18:09:30;73;M2M;二氧化碳;1020ppm;接近超標"));
 			
-			if(!GCMRegistrar.isRegisteredOnServer(context)){
-				registerToServer(regID);
+				AlarmHelper.sendAlarmNotification(context, new Alarm("2015-11-12 18:09:30;73;M2M;二氧化碳;1020ppm;超標"));
 			}
 			
 		} catch (Exception exp) {
 			IOTLog.e("GSMPushService", "GSM register failed:" + exp.getMessage(), exp);
-			throw new IOTException(-2, context.getString(R.string.error_message_user_permission_wrong));
+			throw new IOTException(-2, context.getString(R.string.error_message_gcm_register_failed));
 		}
 	}
 	
@@ -65,7 +71,7 @@ public class GCMPushService {
 			throw new IOTException(-1, "Device key is null");
 		}
 		
-		if(regID == null){
+		if(regID == null || regID.equals("")){
 			throw new IOTException(-1, "Token is null");
 		}
 		

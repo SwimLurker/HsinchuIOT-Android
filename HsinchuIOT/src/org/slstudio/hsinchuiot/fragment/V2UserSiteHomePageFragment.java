@@ -1,12 +1,16 @@
 package org.slstudio.hsinchuiot.fragment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import org.slstudio.hsinchuiot.Constants;
 import org.slstudio.hsinchuiot.R;
 import org.slstudio.hsinchuiot.V2SiteDetailActivity;
+import org.slstudio.hsinchuiot.model.Alarm;
 import org.slstudio.hsinchuiot.model.IOTMonitorData;
 import org.slstudio.hsinchuiot.model.Site;
 import org.slstudio.hsinchuiot.service.ServiceContainer;
@@ -35,6 +39,7 @@ public class V2UserSiteHomePageFragment extends Fragment {
 	private TextView tvTitle;
 	private TextView tvInfo; 
 	private ImageButton logoffBtn;
+	private ImageButton alarmBtn;
 	private ImageButton detailBtn;
 	
 	private LinearLayout llCo2Panel;
@@ -101,6 +106,15 @@ public class V2UserSiteHomePageFragment extends Fragment {
 
 	}
 	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == Constants.ResultCode.ALARM_LIST) {
+			updateAlarm();
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	
 	private void initViews(View parentView) {
 		tvTitle = (TextView)parentView.findViewById(R.id.user_main_title);
 		if(site != null){
@@ -116,6 +130,18 @@ public class V2UserSiteHomePageFragment extends Fragment {
 			
 		});
 
+		alarmBtn = (ImageButton)parentView.findViewById(R.id.btn_alarm);
+		alarmBtn.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				showAlarmList();	
+			}
+			
+		});
+		updateAlarm();
+		
+		
 		detailBtn = (ImageButton)parentView.findViewById(R.id.btn_detail);
 		detailBtn.setOnClickListener(new OnClickListener(){
 
@@ -260,6 +286,37 @@ public class V2UserSiteHomePageFragment extends Fragment {
 		tvInfo.setText(sdf.format(new Date()));
 	}
 	
+	public void updateAlarm() {
+		alarmBtn.setBackgroundResource(R.drawable.button_alarm);
+		List<Alarm> alarms = getSiteAlarms();
+		for(Alarm alarm: alarms){
+			if(alarm.getAlarmSite().equals(site.getSiteName())){
+				alarmBtn.setBackgroundResource(R.drawable.button_alarm_red);
+				break;
+			}
+		}
+	}
+	
+	private List<Alarm> getSiteAlarms() {
+		List<Alarm> result = new ArrayList<Alarm>();
+		try {
+			String alarmListString = ServiceContainer.getInstance()
+					.getPerferenceService()
+					.getValue(Constants.PreferenceKey.ALARM_LIST);
+			StringTokenizer st = new StringTokenizer(alarmListString, "|");
+			while (st.hasMoreElements()) {
+				String alarmString = st.nextToken();
+
+				Alarm alarm = new Alarm(alarmString);
+				result.add(alarm);				
+			}
+		} catch (Exception exp) {
+			IOTLog.e("V2AlarmActivity", "Retrieve alarm list failed", exp);
+		}
+
+		return result;
+	}
+	
 	private void logoff() {
 		ServiceContainer.getInstance().getSessionService().setLoginUser(null);
 		ServiceContainer.getInstance().getSessionService().setSessionID(null);
@@ -284,7 +341,8 @@ public class V2UserSiteHomePageFragment extends Fragment {
 		from.set(Calendar.SECOND, 0);
 		from.add(Calendar.HOUR_OF_DAY, -8);
 		
-		Intent intent = new Intent();
+		Intent intent = new Intent(Constants.Action.HSINCHUIOT_SITEDETAIL);
+		
 		intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE,
 				site);
 		
@@ -304,7 +362,13 @@ public class V2UserSiteHomePageFragment extends Fragment {
 		intent.putExtra(Constants.ActivityPassValue.CHART_AGGR_ENDTIME,
 				to.getTime().getTime());
 		
-		intent.setClass(getActivity(), V2SiteDetailActivity.class);
 		startActivity(intent);
+	}
+	
+	private void showAlarmList(){
+		Intent intent = new Intent(Constants.Action.HSINCHUIOT_ALARM);
+		intent.putExtra(Constants.ActivityPassValue.SELECTED_SITE,
+				site);
+		startActivityForResult(intent, Constants.ResultCode.ALARM_LIST);
 	}
 }

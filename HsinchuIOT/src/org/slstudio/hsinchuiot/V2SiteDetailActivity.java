@@ -196,7 +196,7 @@ public class V2SiteDetailActivity extends BaseActivity {
 			chartEndTime.setTime(endTimeLong);
 		}
 
-		setContentView(R.layout.v2_activity_superuser_sitedetail);
+		setContentView(R.layout.v2_activity_sitedetail);
 
 		initViews();
 		createChart();

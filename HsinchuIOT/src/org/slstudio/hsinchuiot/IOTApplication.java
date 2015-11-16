@@ -2,6 +2,7 @@ package org.slstudio.hsinchuiot;
 
 import java.io.File;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Stack;
 
 import org.apache.log4j.Level;
@@ -19,9 +20,13 @@ import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 
 public class IOTApplication extends Application {
+	
 	private static Stack<BaseActivity> stack = new Stack<BaseActivity>();
 
 	@Override
@@ -92,6 +97,16 @@ public class IOTApplication extends Application {
 		SDKInitializer.initialize(this);
 	}
 
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// TODO Auto-generated method stub
+		super.onConfigurationChanged(newConfig);
+		String language = ServiceContainer.getInstance().getPerferenceService().getValue(Constants.PreferenceKey.LANGUAGE);
+				
+		switchLanguage(language);
+	}
+
+	
 	public void checkAndCreateLogFolder(String path) {
 		File file = new File(path);
 		if (!file.exists()) {
@@ -117,6 +132,23 @@ public class IOTApplication extends Application {
 			iterator.remove();
 			baseActivity.finish();
 		}
+	}
+	
+	private void switchLanguage(String language) {
+		Resources resources = getResources();
+		Configuration config = resources.getConfiguration();
+		DisplayMetrics dm = resources.getDisplayMetrics();
+		if (language.equals(Constants.Language.EN)) {
+			config.locale = Locale.ENGLISH;
+		} else if (language.equals(Constants.Language.CN)) {
+			config.locale = Locale.CHINA;
+		} else {
+			config.locale = Locale.TAIWAN;
+		}
+		resources.updateConfiguration(config, dm);
+
+		ServiceContainer.getInstance().getPerferenceService()
+				.setValue(Constants.PreferenceKey.LANGUAGE, language);
 	}
 
 }

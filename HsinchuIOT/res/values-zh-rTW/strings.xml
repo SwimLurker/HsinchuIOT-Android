@@ -52,5 +52,17 @@
     <string name="common_please_wait">請等待</string>
     <string name="error_message_user_permission_wrong">用戶權限錯誤，禁止登錄</string>
     <string name="error_message_gcm_register_failed">推送服務註冊失敗，推送服務不可用</string>
-
+	<string name="alarm_title">告警</string>
+	<string name="label_co2">二氧化碳:</string>
+    <string name="label_temperature">溫度:</string>
+    <string name="label_humidity">濕度:</string>
+    <string name="co2">二氧化碳</string>
+    <string name="temperature">溫度</string>
+    <string name="humidity">濕度</string>
+    <string name="dlg_title_systemprompt">系統提示</string>
+    <string name="dlg_caption_deletealarm">妳確定要刪除該告警信息嗎？</string>
+    <string name="dlg_caption_deleteallalarms">妳確定要刪除全部告警信息嗎？</string>
+    <string name="dlg_caption_exit">妳確定要要退出嗎？</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
 </resources>

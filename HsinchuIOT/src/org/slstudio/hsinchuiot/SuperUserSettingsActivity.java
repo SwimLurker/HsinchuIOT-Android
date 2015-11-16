@@ -66,14 +66,14 @@ public class SuperUserSettingsActivity extends BaseActivity {
 			// remember password
 			if (swRememberPassword.isChecked()) {
 				User user = ServiceContainer.getInstance().getSessionService().getLoginUser();
-				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.LOGINNAME,
+				ServiceContainer.getInstance().getPerferenceService().setValue(Constants.PreferenceKey.LOGINNAME,
 						user.getLoginName());
-				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.PASSWORD,
+				ServiceContainer.getInstance().getPerferenceService().setValue(Constants.PreferenceKey.PASSWORD,
 						user.getPassword());
 			} else {
-				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.LOGINNAME,
+				ServiceContainer.getInstance().getPerferenceService().setValue(Constants.PreferenceKey.LOGINNAME,
 						null);
-				ServiceContainer.getInstance().getPerferenceService().setValue(this, Constants.PreferenceKey.PASSWORD,
+				ServiceContainer.getInstance().getPerferenceService().setValue(Constants.PreferenceKey.PASSWORD,
 						null);
 			}
 			// warning threshold
@@ -171,41 +171,41 @@ public class SuperUserSettingsActivity extends BaseActivity {
 
 			// save to preference
 
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.WARNING_CO2_LOWERVALUE,
 					Integer.toString(warningThreshold.getCo2LowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.WARNING_CO2_UPPERVALUE,
 					Integer.toString(warningThreshold.getCo2UpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE,
 					Integer.toString(warningThreshold.getTemperatureLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE,
 					Integer.toString(warningThreshold.getTemperatureUpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE,
 					Integer.toString(warningThreshold.getHumidityLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE,
 					Integer.toString(warningThreshold.getHumidityUpperBound()));
 
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.BREACH_CO2_LOWERVALUE,
 					Integer.toString(breachThreshold.getCo2LowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.BREACH_CO2_UPPERVALUE,
 					Integer.toString(breachThreshold.getCo2UpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE,
 					Integer.toString(breachThreshold.getTemperatureLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE,
 					Integer.toString(breachThreshold.getTemperatureUpperBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE,
 					Integer.toString(breachThreshold.getHumidityLowerBound()));
-			ServiceContainer.getInstance().getPerferenceService().setValue(this,
+			ServiceContainer.getInstance().getPerferenceService().setValue(
 					Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE,
 					Integer.toString(breachThreshold.getHumidityUpperBound()));
 
@@ -242,7 +242,7 @@ public class SuperUserSettingsActivity extends BaseActivity {
 		etHumidityLowerValueBreach = (EditText) findViewById(R.id.et_settings_humidity_lowervalue_breach);
 		etHumidityUpperValueBreach = (EditText) findViewById(R.id.et_settings_humidity_uppervalue_breach);
 
-		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(this,
+		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.LOGINNAME);
 		if (loginName != null && (!loginName.equals(""))) {
 			swRememberPassword.setChecked(true);

@@ -167,9 +167,9 @@ public class SplashActivity extends BaseActivity {
 	}
 
 	private void login() {
-		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(SplashActivity.this,
+		String loginName = ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.LOGINNAME);
-		String password = ServiceContainer.getInstance().getPerferenceService().getValue(SplashActivity.this,
+		String password = ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.PASSWORD);
 
 		if (loginName.equals("") || password.equals("")) {
@@ -190,7 +190,7 @@ public class SplashActivity extends BaseActivity {
 							gotoAdminUserMainScreen();
 						} else if(loginUser.isNormalUser()) {
 							int refreshTime = 10;
-							String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(this, Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
+							String refreshTimeStr = ServiceContainer.getInstance().getPerferenceService().getValue(Constants.PreferenceKey.REALTIME_DATA_MONITOR_REFRESH_TIME);
 							if(!"".equals(refreshTimeStr)){
 								refreshTime = Integer.parseInt(refreshTimeStr);
 							}

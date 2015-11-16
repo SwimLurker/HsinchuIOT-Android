@@ -186,52 +186,52 @@ public class LoginService {
 
 	public static IOTMonitorThreshold getWarningThreshold(Context context) {
 		int co2LowerValue = Integer.MIN_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.WARNING_CO2_LOWERVALUE))) {
-			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(
 					Constants.PreferenceKey.WARNING_CO2_LOWERVALUE));
 		} else {
 			co2LowerValue = Integer.MIN_VALUE;
 		}
 		int co2UpperValue = Integer.MAX_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.WARNING_CO2_UPPERVALUE))) {
-			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(
 					Constants.PreferenceKey.WARNING_CO2_UPPERVALUE));
 		} else {
 			co2UpperValue = 800;
 		}
 
 		int temperatureLowerValue = Integer.MIN_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE))) {
 			temperatureLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE));
+					.getValue(Constants.PreferenceKey.WARNING_TEMPERATURE_LOWERVALUE));
 		} else {
 			temperatureLowerValue = 16;
 		}
 		int temperatureUpperValue = Integer.MAX_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE))) {
 			temperatureUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE));
+					.getValue(Constants.PreferenceKey.WARNING_TEMPERATURE_UPPERVALUE));
 		} else {
 			temperatureUpperValue = 27;
 		}
 
 		int humidityLowerValue = Integer.MIN_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE))) {
 			humidityLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE));
+					.getValue(Constants.PreferenceKey.WARNING_HUMIDITY_LOWERVALUE));
 		} else {
 			humidityLowerValue = 0;
 		}
 		int humidityUpperValue = Integer.MAX_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE))) {
 			humidityUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE));
+					.getValue(Constants.PreferenceKey.WARNING_HUMIDITY_UPPERVALUE));
 		} else {
 			humidityUpperValue = 100;
 		}
@@ -243,52 +243,52 @@ public class LoginService {
 
 	public static IOTMonitorThreshold getBreachThreshold(Context context) {
 		int co2LowerValue = Integer.MIN_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.BREACH_CO2_LOWERVALUE))) {
-			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+			co2LowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(
 					Constants.PreferenceKey.BREACH_CO2_LOWERVALUE));
 		} else {
 			co2LowerValue = Integer.MIN_VALUE;
 		}
 		int co2UpperValue = Integer.MAX_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.BREACH_CO2_UPPERVALUE))) {
-			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+			co2UpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService().getValue(
 					Constants.PreferenceKey.BREACH_CO2_UPPERVALUE));
 		} else {
 			co2UpperValue = 1000;
 		}
 
 		int temperatureLowerValue = Integer.MIN_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE))) {
 			temperatureLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE));
+					.getValue(Constants.PreferenceKey.BREACH_TEMPERATURE_LOWERVALUE));
 		} else {
 			temperatureLowerValue = 15;
 		}
 		int temperatureUpperValue = Integer.MAX_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE))) {
 			temperatureUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE));
+					.getValue(Constants.PreferenceKey.BREACH_TEMPERATURE_UPPERVALUE));
 		} else {
 			temperatureUpperValue = 28;
 		}
 
 		int humidityLowerValue = Integer.MIN_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE))) {
 			humidityLowerValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE));
+					.getValue(Constants.PreferenceKey.BREACH_HUMIDITY_LOWERVALUE));
 		} else {
 			humidityLowerValue = 0;
 		}
 		int humidityUpperValue = Integer.MAX_VALUE;
-		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(context,
+		if (!"".equals(ServiceContainer.getInstance().getPerferenceService().getValue(
 				Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE))) {
 			humidityUpperValue = Integer.parseInt(ServiceContainer.getInstance().getPerferenceService()
-					.getValue(context, Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE));
+					.getValue(Constants.PreferenceKey.BREACH_HUMIDITY_UPPERVALUE));
 		} else {
 			humidityUpperValue = 100;
 		}

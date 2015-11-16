@@ -13,7 +13,7 @@ public class AuthedHttpRequest extends NoneAuthedHttpRequest {
 
 	private void init() {
 		String token = ServiceContainer.getInstance().getPerferenceService()
-				.getSessionId(ServiceContainer.getInstance().getContext());
+				.getSessionId();
 		addParameter("token", token);
 		String version = ServiceContainer.getInstance().getVersion();
 		addParameter("clientVersion", version);

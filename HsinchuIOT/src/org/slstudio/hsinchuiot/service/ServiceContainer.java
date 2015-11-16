@@ -52,7 +52,7 @@ public class ServiceContainer {
 
 	public PerferenceService getPerferenceService() {
 		if (appStateService == null) {
-			appStateService = new PerferenceService();
+			appStateService = new PerferenceService(context);
 		}
 
 		return appStateService;
